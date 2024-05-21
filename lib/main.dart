@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:volta/app_theme.dart';
-import 'package:volta/screens/home_screen.dart';
+import 'package:volta/screens/home_screen/home_screen.dart';
 
 void main() {
   runApp(const MyApp());
