@@ -32,12 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tool App'),
+      ),
       body: Row(
         children: [
           // Sidebar
-          Container(
+          SizedBox(
             width: 200,
-            color: Colors.grey[200],
             child: ListView.builder(
               itemCount: _toolNames.length,
               itemBuilder: (context, index) {
@@ -45,8 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 return ListTile(
                   title: Text(toolName),
                   selected: toolName == _selectedTool,
-                  selectedColor: Colors.white,
-                  selectedTileColor: Colors.blue,
                   onTap: () {
                     setState(() {
                       _selectedTool = toolName;
@@ -113,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const Text(
                           'Output',

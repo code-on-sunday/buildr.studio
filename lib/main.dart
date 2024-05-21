@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:volta/app_theme.dart';
 import 'package:volta/screens/home_screen.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomeScreen(),
+    return MaterialApp(
+      title: 'Tool App',
+      theme: AppTheme.blackAndWhiteTheme,
+      home: const HomeScreen(),
     );
   }
 }
