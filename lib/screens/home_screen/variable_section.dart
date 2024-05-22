@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:volta/models/tool.dart';
 
 class VariableSection extends StatelessWidget {
-  final String selectedTool;
-  final Map<String, List<String>> toolVariables;
+  final Tool selectedTool;
 
   const VariableSection({
     super.key,
     required this.selectedTool,
-    required this.toolVariables,
   });
 
   @override
@@ -18,7 +17,7 @@ class VariableSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Variables for $selectedTool',
+            'Variables for ${selectedTool.name}',
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -27,7 +26,7 @@ class VariableSection extends StatelessWidget {
           const SizedBox(height: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: toolVariables[selectedTool]!
+            children: selectedTool.variables
                 .map((variable) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Row(

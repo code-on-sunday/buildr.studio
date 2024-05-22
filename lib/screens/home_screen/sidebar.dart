@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:volta/models/tool.dart';
 
 class Sidebar extends StatelessWidget {
-  final List<String> toolNames;
-  final String selectedTool;
-  final void Function(String) onToolSelected;
+  final List<Tool> tools;
+  final Tool? selectedTool;
+  final void Function(Tool) onToolSelected;
 
   const Sidebar({
     super.key,
-    required this.toolNames,
+    required this.tools,
     required this.selectedTool,
     required this.onToolSelected,
   });
@@ -17,14 +18,14 @@ class Sidebar extends StatelessWidget {
     return SizedBox(
       width: 200,
       child: ListView.builder(
-        itemCount: toolNames.length,
+        itemCount: tools.length,
         itemBuilder: (context, index) {
-          final toolName = toolNames[index];
+          final tool = tools[index];
           return ListTile(
-            title: Text(toolName),
-            selected: toolName == selectedTool,
+            title: Text(tool.name),
+            selected: selectedTool == tool,
             onTap: () {
-              onToolSelected(toolName);
+              onToolSelected(tool);
             },
           );
         },

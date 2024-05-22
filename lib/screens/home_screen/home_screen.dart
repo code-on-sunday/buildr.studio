@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:volta/models/tool.dart';
+import 'package:volta/repositories/tool_repository.dart';
 
 import 'output_section.dart';
 import 'sidebar.dart';
@@ -12,56 +15,57 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // List of tool names (for demo purpose)
-  final List<String> _toolNames = [
-    'Tool 1',
-    'Tool 2',
-    'Tool 3',
-    'Tool 4',
-    'Tool 5'
-  ];
+  late final ToolRepository _toolRepository;
+  List<Tool> _tools = [];
+  Tool? _selectedTool;
 
-  // List of variables for each tool (for demo purpose)
-  final Map<String, List<String>> _toolVariables = {
-    'Tool 1': ['Variable 1', 'Variable 2', 'Variable 3'],
-    'Tool 2': ['Variable 4', 'Variable 5', 'Variable 6'],
-    'Tool 3': ['Variable 7', 'Variable 8', 'Variable 9'],
-    'Tool 4': ['Variable 10', 'Variable 11', 'Variable 12'],
-    'Tool 5': ['Variable 13', 'Variable 14', 'Variable 15'],
-  };
+  @override
+  void initState() {
+    super.initState();
+    _toolRepository = GetIt.I.get<ToolRepository>();
+    _loadTools();
+  }
 
-  // Selected tool
-  late String _selectedTool = _toolNames.first;
+  Future<void> _loadTools() async {
+    try {
+      _tools = await _toolRepository.getTools();
+      if (_tools.isNotEmpty) {
+        _selectedTool = _tools.first;
+      }
+      setState(() {});
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error loading tools: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tool App'),
-      ),
       body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Sidebar
           Sidebar(
-            toolNames: _toolNames,
+            tools: _tools,
             selectedTool: _selectedTool,
-            onToolSelected: (toolName) {
+            onToolSelected: (tool) {
               setState(() {
-                _selectedTool = toolName;
+                _selectedTool = tool;
               });
             },
           ),
 
-          // Main Content Area
+          // Main Content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Variable Section
-                VariableSection(
-                  selectedTool: _selectedTool,
-                  toolVariables: _toolVariables,
-                ),
+                if (_selectedTool != null)
+                  VariableSection(
+                    selectedTool: _selectedTool!,
+                  ),
 
                 // Output Section
                 const OutputSection(),
