@@ -57,6 +57,7 @@ class VariableSection extends StatelessWidget {
                                 hintText: variable.hintLabel,
                                 border: const OutlineInputBorder(),
                               ),
+                              maxLines: 10,
                             )
                           else if (variable.inputType == 'dropdown')
                             DropdownButtonFormField<String>(
