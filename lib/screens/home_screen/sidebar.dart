@@ -23,6 +23,10 @@ class Sidebar extends StatelessWidget {
           final tool = tools[index];
           return ListTile(
             title: Text(tool.name),
+            trailing: Tooltip(
+              message: tool.description,
+              child: const Icon(Icons.info_outline),
+            ),
             selected: selectedTool == tool,
             onTap: () {
               onToolSelected(tool);

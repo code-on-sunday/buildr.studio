@@ -15,3 +15,8 @@
 - On the Home screen, users see a list of tool names.
 - The list of tool names is loaded from a JSON file in the asset bundle.
 - The JSON file contains a list of tools, each tool has the name, the description, the id.
+
+## Story 3:
+
+- Addition to existing UI of the Home screen, users should see the info icon at the end of each tool item in the list.
+- When users hover on the icon, it shows the tool description in the tooltip.
