@@ -20,7 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Tool> _tools = [];
   Tool? _selectedTool;
   List<Variable> _variables = [];
-  bool _isSidebarVisible = true;
+  bool _isSidebarVisible = false;
+  int _selectedNavRailIndex = 0;
 
   @override
   void initState() {
@@ -61,54 +62,76 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _onNavRailItemTapped(int index) {
+    final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
+    setState(() {
+      if (!isLargeScreen) {
+        if (_selectedNavRailIndex == index) {
+          _isSidebarVisible = !_isSidebarVisible;
+        } else {
+          _isSidebarVisible = true;
+        }
+      }
+      _selectedNavRailIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
 
     return Scaffold(
-      body: Stack(
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (isLargeScreen)
-                Sidebar(
-                  tools: _tools,
-                  selectedTool: _selectedTool,
-                  onToolSelected: (tool) async {
-                    setState(() {
-                      _selectedTool = tool;
-                    });
-                    await _loadVariables(tool.id);
-                  },
-                  onClose: _toggleSidebar,
-                  showCloseButton:
-                      false, // Hide the close button on large screens
-                ),
-              Expanded(
-                child: Column(
+          NavigationRail(
+            selectedIndex: _selectedNavRailIndex,
+            onDestinationSelected: _onNavRailItemTapped,
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.build),
+                label: Text('Build'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.folder),
+                label: Text('File Explorer'),
+              ),
+            ],
+          ),
+          if (isLargeScreen)
+            Sidebar(
+              onClose: _toggleSidebar,
+              child: _selectedNavRailIndex == 0
+                  ? ListView.builder(
+                      itemCount: _tools.length,
+                      itemBuilder: (context, index) {
+                        final tool = _tools[index];
+                        return ListTile(
+                          title: Text(tool.name),
+                          trailing: Tooltip(
+                            message: tool.description,
+                            child: const Icon(Icons.info_outline),
+                          ),
+                          selected: _selectedTool == tool,
+                          onTap: () {
+                            setState(() {
+                              _selectedTool = tool;
+                            });
+                            _loadVariables(tool.id);
+                          },
+                        );
+                      },
+                    )
+                  : const Center(
+                      child: Text('File Explorer'),
+                    ),
+            ),
+          Expanded(
+            child: Stack(
+              children: [
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (!isLargeScreen)
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: _toggleSidebar,
-                              icon: const Icon(Icons.menu),
-                            ),
-                            const SizedBox(width: 16),
-                            const Text(
-                              'Volta',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     if (_selectedTool != null)
                       VariableSection(
                         selectedTool: _selectedTool!,
@@ -117,28 +140,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     const OutputSection(),
                   ],
                 ),
-              ),
-            ],
-          ),
-          if (!isLargeScreen && _isSidebarVisible)
-            Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              child: Sidebar(
-                tools: _tools,
-                selectedTool: _selectedTool,
-                onToolSelected: (tool) async {
-                  setState(() {
-                    _selectedTool = tool;
-                  });
-                  await _loadVariables(tool.id);
-                  _toggleSidebar();
-                },
-                onClose: _toggleSidebar,
-                showCloseButton: true, // Show the close button on small screens
-              ),
+                if (!isLargeScreen && _isSidebarVisible)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    child: Sidebar(
+                      onClose: _toggleSidebar,
+                      child: _selectedNavRailIndex == 0
+                          ? ListView.builder(
+                              itemCount: _tools.length,
+                              itemBuilder: (context, index) {
+                                final tool = _tools[index];
+                                return ListTile(
+                                  title: Text(tool.name),
+                                  trailing: Tooltip(
+                                    message: tool.description,
+                                    child: const Icon(Icons.info_outline),
+                                  ),
+                                  selected: _selectedTool == tool,
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedTool = tool;
+                                    });
+                                    _loadVariables(tool.id);
+                                  },
+                                );
+                              },
+                            )
+                          : const Center(
+                              child: Text('File Explorer'),
+                            ),
+                    ),
+                  ),
+              ],
             ),
+          ),
         ],
       ),
     );

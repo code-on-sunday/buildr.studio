@@ -48,3 +48,39 @@
 ## Story 6:
 
 - Addition to current features, when the screen is large, the side bar should not show the collapse button on the top right corner.
+
+## Story 7:
+
+- Addition to current features, there should be a navigation rail on the left side of the app.
+- The sidebar is placed on the right of the navigation rail.
+- The Variable and the Output sections are placed on the right of the sidebar.
+- The navigation rail is always display no matter what the screen size is.
+- The navigation rails contains 2 items:
+  - 1st: A build icon
+  - 2nd: A file explorer icon
+- The side bar should not contain the list of tool names only anymore. The side bar content should depend on the selected icon on the navigation rail as described below:
+  - When the screen width is larger than 800:
+    - The side bar is always shown next to the navigation rail.
+    - When the build icon is selected on the rail, the side bar shows the list of tool names as how the side bar is currently implemented.
+    - When the file explorer icon is selected, the side bar shows a placeholder text.
+  - When the screen width is less than 800:
+    - The side bar is hidden by default.
+    - When an icon on the navigation rail is clicked, the side bar shows up at the front of the current UI, next to the navigation rail.
+    - When the same icon is clicked again, the side bar is hidden again.
+    - When another icon is clicked while the side bar is showing, the content of the side bar changes. The side bar is still showing.
+- Implementation suggestions:
+  - The NavigationRail class of `material` package is recommended to use.
+  - The SideBar should accept a child widget that shows the content.
+
+## Story 8:
+
+- Addition to the current features.
+- When the screen size is less than 800:
+  - The side bar is hidden by default.
+  - When an icon on the navigation rail is clicked, the side bar is shown next to navigation rail as the current implementation. But the side bar must be placed on the above layer that covers the variable and output sections below.
+  - If the current selected icon is clicked, the side bar should disappear.
+  - If an icon that is not the current selected icon is clicked while the side bar is showing, the content of the side bar changes. The side bar is still showing.
+- When the screen width is larger than 800:
+  - The side bar is always shown next to the navigation rail.
+  - When the build icon is selected on the rail, the side bar shows the list of tool names as how the side bar is currently implemented.
+  - When the file explorer icon is selected, the side bar shows a placeholder text.
