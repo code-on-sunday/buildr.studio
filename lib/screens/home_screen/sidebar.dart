@@ -16,7 +16,7 @@ class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200,
+      width: 400,
       child: ListView.builder(
         itemCount: tools.length,
         itemBuilder: (context, index) {

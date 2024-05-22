@@ -7,6 +7,7 @@ import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:volta/models/tool.dart' as _i4;
+import 'package:volta/models/variable.dart' as _i5;
 import 'package:volta/repositories/tool_repository.dart' as _i2;
 
 // ignore_for_file: type=lint
@@ -38,4 +39,14 @@ class MockToolRepository extends _i1.Mock implements _i2.ToolRepository {
         ),
         returnValue: _i3.Future<List<_i4.Tool>>.value(<_i4.Tool>[]),
       ) as _i3.Future<List<_i4.Tool>>);
+
+  @override
+  _i3.Future<List<_i5.Variable>> getVariables(String? toolId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getVariables,
+          [toolId],
+        ),
+        returnValue: _i3.Future<List<_i5.Variable>>.value(<_i5.Variable>[]),
+      ) as _i3.Future<List<_i5.Variable>>);
 }

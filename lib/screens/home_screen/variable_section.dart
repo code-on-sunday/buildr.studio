@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:volta/models/tool.dart';
+import 'package:volta/models/variable.dart';
 
 class VariableSection extends StatelessWidget {
   final Tool selectedTool;
+  final List<Variable> variables;
 
   const VariableSection({
     super.key,
     required this.selectedTool,
+    required this.variables,
   });
 
   @override
@@ -16,9 +19,9 @@ class VariableSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Variables for ${selectedTool.name}',
-            style: const TextStyle(
+          const Text(
+            'Variables',
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -26,26 +29,48 @@ class VariableSection extends StatelessWidget {
           const SizedBox(height: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: selectedTool.variables
+            children: variables
                 .map((variable) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '$variable:',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Row(
+                            children: [
+                              Text(
+                                '<${variable.name.toUpperCase()}>',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              Tooltip(
+                                message: variable.description,
+                                child: const Icon(Icons.info_outline),
+                              )
+                            ],
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextField(
+                          const SizedBox(height: 8),
+                          if (variable.inputType == 'text_field')
+                            TextField(
                               decoration: InputDecoration(
-                                hintText: 'Enter $variable',
+                                hintText: variable.hintLabel,
                                 border: const OutlineInputBorder(),
                               ),
+                            )
+                          else if (variable.inputType == 'dropdown')
+                            DropdownButtonFormField<String>(
+                              hint: Text(variable.selectLabel!),
+                              items: [
+                                ...?variable.sourceName
+                                    ?.split(',')
+                                    .map((option) => DropdownMenuItem(
+                                          value: option.trim(),
+                                          child: Text(option.trim()),
+                                        )),
+                              ],
+                              onChanged: (value) {},
                             ),
-                          ),
                         ],
                       ),
                     ))

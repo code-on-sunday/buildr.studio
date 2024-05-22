@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:volta/models/tool.dart';
+import 'package:volta/models/variable.dart';
 import 'package:volta/repositories/tool_repository.dart';
 import 'package:volta/screens/home_screen/home_screen.dart';
 
@@ -27,25 +28,33 @@ void main() {
       // Arrange
       final tools = [
         Tool(
-          id: 'tool1',
-          name: 'Tool 1',
-          description: 'This is the first tool.',
-          variables: ['Variable 1', 'Variable 2', 'Variable 3'],
+          id: 'new_functionalities',
+          name: 'Add new functionalities',
+          description: 'Add new functionalities to existing implementation',
         ),
         Tool(
           id: 'tool2',
           name: 'Tool 2',
           description: 'This is the second tool.',
-          variables: ['Variable 4', 'Variable 5', 'Variable 6'],
         ),
         Tool(
           id: 'tool3',
           name: 'Tool 3',
           description: 'This is the third tool.',
-          variables: ['Variable 7', 'Variable 8', 'Variable 9'],
+        ),
+      ];
+      final variables = [
+        Variable(
+          name: 'Implementation',
+          description: 'Existing implementation',
+          valueFormat: 'text',
+          inputType: 'text_field',
+          hintLabel: 'Insert the existing implementation here',
         ),
       ];
       when(mockToolRepository.getTools()).thenAnswer((_) async => tools);
+      when(mockToolRepository.getVariables('new_functionalities'))
+          .thenAnswer((_) async => variables);
 
       // Act
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
@@ -54,8 +63,8 @@ void main() {
       // Assert
       expect(find.byType(ListView), findsOneWidget);
       expect(find.byType(ListTile), findsNWidgets(3));
-      expect(find.text('Variables for Tool 1'), findsOneWidget);
-      expect(find.byType(TextField), findsNWidgets(3));
+      expect(find.text('Variables'), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
       expect(find.text('Output'), findsOneWidget);
       expect(find.byType(SingleChildScrollView), findsOneWidget);
     });
@@ -65,25 +74,58 @@ void main() {
       // Arrange
       final tools = [
         Tool(
-          id: 'tool1',
-          name: 'Tool 1',
-          description: 'This is the first tool.',
-          variables: ['Variable 1', 'Variable 2', 'Variable 3'],
+          id: 'new_functionalities',
+          name: 'Add new functionalities',
+          description: 'Add new functionalities to existing implementation',
         ),
         Tool(
           id: 'tool2',
           name: 'Tool 2',
           description: 'This is the second tool.',
-          variables: ['Variable 4', 'Variable 5', 'Variable 6'],
         ),
         Tool(
           id: 'tool3',
           name: 'Tool 3',
           description: 'This is the third tool.',
-          variables: ['Variable 7', 'Variable 8', 'Variable 9'],
+        ),
+      ];
+      final variables1 = [
+        Variable(
+          name: 'Implementation',
+          description: 'Existing implementation',
+          valueFormat: 'text',
+          inputType: 'text_field',
+          hintLabel: 'Insert the existing implementation here',
+        ),
+      ];
+      final variables2 = [
+        Variable(
+          name: 'Variable 1',
+          description: 'This is the first variable.',
+          valueFormat: 'text',
+          inputType: 'text_field',
+          hintLabel: 'Enter Variable 1',
+        ),
+        Variable(
+          name: 'Variable 2',
+          description: 'This is the second variable.',
+          valueFormat: 'text',
+          inputType: 'text_field',
+          hintLabel: 'Enter Variable 2',
+        ),
+        Variable(
+          name: 'Variable 3',
+          description: 'This is the third variable.',
+          valueFormat: 'text',
+          inputType: 'text_field',
+          hintLabel: 'Enter Variable 3',
         ),
       ];
       when(mockToolRepository.getTools()).thenAnswer((_) async => tools);
+      when(mockToolRepository.getVariables('new_functionalities'))
+          .thenAnswer((_) async => variables1);
+      when(mockToolRepository.getVariables('tool2'))
+          .thenAnswer((_) async => variables2);
 
       // Act
       await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
@@ -92,8 +134,137 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.text('Variables for Tool 2'), findsOneWidget);
+      expect(find.text('Variables'), findsOneWidget);
       expect(find.byType(TextField), findsNWidgets(3));
+    });
+
+    testWidgets('HomeScreen displays variables for the selected tool',
+        (WidgetTester tester) async {
+      // Arrange
+      final tools = [
+        Tool(
+          id: 'new_functionalities',
+          name: 'Add new functionalities',
+          description: 'Add new functionalities to existing implementation',
+        ),
+        Tool(
+          id: 'tool2',
+          name: 'Tool 2',
+          description: 'This is the second tool.',
+        ),
+        Tool(
+          id: 'tool3',
+          name: 'Tool 3',
+          description: 'This is the third tool.',
+        ),
+      ];
+      final variables = [
+        Variable(
+          name: 'Implementation',
+          description: 'Existing implementation',
+          valueFormat: 'text',
+          inputType: 'text_field',
+          hintLabel: 'Insert the existing implementation here',
+        ),
+      ];
+      when(mockToolRepository.getTools()).thenAnswer((_) async => tools);
+      when(mockToolRepository.getVariables('new_functionalities'))
+          .thenAnswer((_) async => variables);
+
+      // Act
+      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Add new functionalities'));
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.text('Variables'), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
+      expect(
+          find.text('Insert the existing implementation here'), findsOneWidget);
+    });
+
+    testWidgets('HomeScreen displays dropdown for variables with select label',
+        (WidgetTester tester) async {
+      // Arrange
+      final tools = [
+        Tool(
+          id: 'new_functionalities',
+          name: 'Add new functionalities',
+          description: 'Add new functionalities to existing implementation',
+        ),
+      ];
+      final variables = [
+        Variable(
+          name: 'Implementation',
+          description: 'Existing implementation',
+          valueFormat: 'text',
+          inputType: 'dropdown',
+          hintLabel: 'Select implementation',
+          selectLabel: 'Select an option',
+          sourceName: 'Option 1, Option 2, Option 3',
+        ),
+      ];
+      when(mockToolRepository.getTools()).thenAnswer((_) async => tools);
+      when(mockToolRepository.getVariables('new_functionalities'))
+          .thenAnswer((_) async => variables);
+
+      // Act
+      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Add new functionalities'));
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.text('Variables'), findsOneWidget);
+      expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
+      expect(find.text('Select an option'), findsOneWidget);
+
+      // Act
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(find.text('Option 1'), findsOneWidget);
+      expect(find.text('Option 2'), findsOneWidget);
+      expect(find.text('Option 3'), findsOneWidget);
+    });
+
+    testWidgets('HomeScreen displays tooltip for variable description',
+        (WidgetTester tester) async {
+      // Arrange
+      final tools = [
+        Tool(
+          id: 'new_functionalities',
+          name: 'Add new functionalities',
+          description: 'Add new functionalities to existing implementation',
+        ),
+      ];
+      final variables = [
+        Variable(
+          name: 'Implementation',
+          description:
+              'Existing implementation with a longer description that should be displayed in a tooltip',
+          valueFormat: 'text',
+          inputType: 'text_field',
+          hintLabel: 'Insert the existing implementation here',
+        ),
+      ];
+      when(mockToolRepository.getTools()).thenAnswer((_) async => tools);
+      when(mockToolRepository.getVariables('new_functionalities'))
+          .thenAnswer((_) async => variables);
+
+      // Act
+      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Add new functionalities'));
+      await tester.pumpAndSettle();
+
+      // Assert
+      expect(
+          find.byTooltip(
+              'Existing implementation with a longer description that should be displayed in a tooltip'),
+          findsOneWidget);
     });
   });
 }

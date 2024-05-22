@@ -20,3 +20,17 @@
 
 - Addition to existing UI of the Home screen, users should see the info icon at the end of each tool item in the list.
 - When users hover on the icon, it shows the tool description in the tooltip.
+
+## Story 4:
+
+- Addition to current features, when a tool is selected, the list of variables is loaded from a tool-specific JSON file in the asset bundle.
+- The file name is the tool id.
+- The JSON file contains the list of variables.
+- Each variable contains these information:
+  - Name
+  - Description
+  - Value format: plain text | JSON object
+  - Input type: text field | dropdown
+  - Source name (If the input type is dropdown)
+  - Hint label (to show when the input value is empty)
+  - Select label (to show when the input type is dropdown and the input value is empty)

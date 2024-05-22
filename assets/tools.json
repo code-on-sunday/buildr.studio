@@ -1,20 +1,17 @@
 [
   {
-    "description": "This is the first tool.",
-    "id": "tool1",
-    "name": "Tool 1",
-    "variables": ["Variable 1", "Variable 2", "Variable 3"]
+    "description": "Add new functionalities to existing implementation",
+    "id": "new_functionalities",
+    "name": "Add new functionalities"
   },
   {
     "description": "This is the second tool.",
     "id": "tool2",
-    "name": "Tool 2",
-    "variables": ["Variable 4", "Variable 5", "Variable 6"]
+    "name": "Tool 2"
   },
   {
     "description": "This is the third tool.",
     "id": "tool3",
-    "name": "Tool 3",
-    "variables": ["Variable 7", "Variable 8", "Variable 9"]
+    "name": "Tool 3"
   }
 ]

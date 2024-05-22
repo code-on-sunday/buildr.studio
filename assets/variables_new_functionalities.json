@@ -1,0 +1,18 @@
+[
+  {
+    "description": "Source code of the existing implementation",
+    "hint_label": "Insert the existing implementation here",
+    "input_type": "text_field",
+    "name": "Implementation",
+    "value_format": "text"
+  },
+  {
+    "description": "Files",
+    "hint_label": "",
+    "input_type": "dropdown",
+    "name": "Files",
+    "select_label": "Select a file",
+    "source_name": "file1,file2,file3",
+    "value_format": "json"
+  }
+]
