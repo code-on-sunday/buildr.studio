@@ -20,7 +20,7 @@ class VariableSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Variables',
+            'Input',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

@@ -63,7 +63,7 @@ void main() {
       // Assert
       expect(find.byType(ListView), findsOneWidget);
       expect(find.byType(ListTile), findsNWidgets(3));
-      expect(find.text('Variables'), findsOneWidget);
+      expect(find.text('Input'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
       expect(find.text('Output'), findsOneWidget);
       expect(find.byType(SingleChildScrollView), findsOneWidget);
@@ -134,7 +134,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.text('Variables'), findsOneWidget);
+      expect(find.text('Input'), findsOneWidget);
       expect(find.byType(TextField), findsNWidgets(3));
     });
 
@@ -178,7 +178,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.text('Variables'), findsOneWidget);
+      expect(find.text('Input'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
       expect(
           find.text('Insert the existing implementation here'), findsOneWidget);
@@ -216,7 +216,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.text('Variables'), findsOneWidget);
+      expect(find.text('Input'), findsOneWidget);
       expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
       expect(find.text('Select an option'), findsOneWidget);
 

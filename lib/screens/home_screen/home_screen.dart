@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Tool> _tools = [];
   Tool? _selectedTool;
   List<Variable> _variables = [];
+  bool _isSidebarVisible = true;
 
   @override
   void initState() {
@@ -54,41 +55,90 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _toggleSidebar() {
+    setState(() {
+      _isSidebarVisible = !_isSidebarVisible;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
+
     return Scaffold(
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
         children: [
-          // Sidebar
-          Sidebar(
-            tools: _tools,
-            selectedTool: _selectedTool,
-            onToolSelected: (tool) async {
-              setState(() {
-                _selectedTool = tool;
-              });
-              await _loadVariables(tool.id);
-            },
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (isLargeScreen)
+                Sidebar(
+                  tools: _tools,
+                  selectedTool: _selectedTool,
+                  onToolSelected: (tool) async {
+                    setState(() {
+                      _selectedTool = tool;
+                    });
+                    await _loadVariables(tool.id);
+                  },
+                  onClose: _toggleSidebar,
+                  showCloseButton:
+                      false, // Hide the close button on large screens
+                ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!isLargeScreen)
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              onPressed: _toggleSidebar,
+                              icon: const Icon(Icons.menu),
+                            ),
+                            const SizedBox(width: 16),
+                            const Text(
+                              'Volta',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (_selectedTool != null)
+                      VariableSection(
+                        selectedTool: _selectedTool!,
+                        variables: _variables,
+                      ),
+                    const OutputSection(),
+                  ],
+                ),
+              ),
+            ],
           ),
-
-          // Main Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Variable Section
-                if (_selectedTool != null)
-                  VariableSection(
-                    selectedTool: _selectedTool!,
-                    variables: _variables,
-                  ),
-
-                // Output Section
-                const OutputSection(),
-              ],
+          if (!isLargeScreen && _isSidebarVisible)
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: Sidebar(
+                tools: _tools,
+                selectedTool: _selectedTool,
+                onToolSelected: (tool) async {
+                  setState(() {
+                    _selectedTool = tool;
+                  });
+                  await _loadVariables(tool.id);
+                  _toggleSidebar();
+                },
+                onClose: _toggleSidebar,
+                showCloseButton: true, // Show the close button on small screens
+              ),
             ),
-          ),
         ],
       ),
     );

@@ -34,3 +34,17 @@
   - Source name (If the input type is dropdown)
   - Hint label (to show when the input value is empty)
   - Select label (to show when the input type is dropdown and the input value is empty)
+
+## Story 5:
+
+- Addition to current features, the Home screen should be responsive.
+- When the screen width is less than the tablet width:
+  - The current side bar should be hidden.
+  - There should be a hamburger menu button on the top left of the screen.
+  - When users click on the hamburger menu button, the tablet version of the side bar shows up by sliding from the left. It shows on top of the current UI.
+  - When the tablet version side bar is opened, it has a collapse button on the top right to slide the side bar to the outside of the UI and show the hamburger menu button again.
+  - While the table version side bar is opened, if the screen size is changed to be larger than the tablet width, the states must be reset and the old side bar should be shown.
+
+## Story 6:
+
+- Addition to current features, when the screen is large, the side bar should not show the collapse button on the top right corner.
