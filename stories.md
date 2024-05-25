@@ -90,3 +90,8 @@
 - The File Explorer area should show the Open Folder button when there is no one opened.
 - When a folder is opened, it should show the file hierarchy of the folder.
 - The File Explorer area should be scrollable in the vertical direction when the content is too long.
+
+## Story 10:
+
+- Click on the Open Project button allows users to select a folder on their machine.
+- The file hierarchy of the selected project will be displayed in the File Explorer section.

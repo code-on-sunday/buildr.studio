@@ -1,14 +1,54 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-class FileExplorerSection extends StatelessWidget {
-  final String? openedFolderPath;
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+
+class FileExplorerSection extends StatefulWidget {
   final void Function(String) onOpenFolder;
 
   const FileExplorerSection({
     super.key,
-    this.openedFolderPath,
     required this.onOpenFolder,
   });
+
+  @override
+  _FileExplorerSectionState createState() => _FileExplorerSectionState();
+}
+
+class _FileExplorerSectionState extends State<FileExplorerSection> {
+  String? _selectedFolderPath;
+  List<FileSystemEntity> _files = [];
+
+  Future<void> _loadFiles(String folderPath) async {
+    try {
+      final directory = Directory(folderPath);
+      final files = await directory.list().toList();
+      setState(() {
+        _selectedFolderPath = folderPath;
+        _files = files;
+      });
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error loading files: $e');
+    }
+  }
+
+  void _openFolder() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final selectedDirectory = await FilePicker.platform.getDirectoryPath(
+        initialDirectory: directory.path,
+      );
+      if (selectedDirectory != null) {
+        _loadFiles(selectedDirectory);
+        widget.onOpenFolder(selectedDirectory);
+      }
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error selecting folder: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +57,10 @@ class FileExplorerSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (openedFolderPath == null)
+          if (_selectedFolderPath == null)
             ElevatedButton(
-              onPressed: () {
-                // Implement folder selection logic
-                onOpenFolder('/path/to/folder');
-              },
-              child: const Text('Open Folder'),
+              onPressed: _openFolder,
+              child: const Text('Open Project'),
             )
           else
             Expanded(
@@ -31,7 +68,7 @@ class FileExplorerSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Opened Folder: $openedFolderPath',
+                    'Opened Folder: $_selectedFolderPath',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -40,12 +77,20 @@ class FileExplorerSection extends StatelessWidget {
                   const SizedBox(height: 16),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: 20,
+                      itemCount: _files.length,
                       itemBuilder: (context, index) {
-                        final fileName = 'file_${index + 1}.txt';
+                        final file = _files[index];
+                        final fileName = file.path.split('/').last;
                         return ListTile(
                           title: Text(fileName),
-                          trailing: const Icon(Icons.insert_drive_file),
+                          trailing: file is Directory
+                              ? const Icon(Icons.folder)
+                              : const Icon(Icons.insert_drive_file),
+                          onTap: () {
+                            if (file is Directory) {
+                              _loadFiles(file.path);
+                            }
+                          },
                         );
                       },
                     ),

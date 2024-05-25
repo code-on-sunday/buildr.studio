@@ -23,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Variable> _variables = [];
   bool _isSidebarVisible = false;
   int _selectedNavRailIndex = 0;
-  String? _openedFolderPath;
 
   @override
   void initState() {
@@ -78,12 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _openFolder(String folderPath) {
-    setState(() {
-      _openedFolderPath = folderPath;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
@@ -131,8 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     )
                   : FileExplorerSection(
-                      openedFolderPath: _openedFolderPath,
-                      onOpenFolder: _openFolder,
+                      onOpenFolder: (_) {},
                     ),
             ),
           Expanded(
@@ -178,8 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             )
                           : FileExplorerSection(
-                              openedFolderPath: _openedFolderPath,
-                              onOpenFolder: _openFolder,
+                              onOpenFolder: (_) {},
                             ),
                     ),
                   ),
