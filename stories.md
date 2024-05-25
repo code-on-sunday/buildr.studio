@@ -111,3 +111,7 @@ The content of the selected folder must be displayed recursively. However, curre
 - Only the last path should be used as the name of each item in the file tree.
 - When the folder is selected, only the first level content should be displayed. All nested subfolders should be collapsed.
 - When users click on a folder, the sub-tree of that folder is expanded.
+
+## Story 14:
+
+- Give this case: If a filepath is either "D:\CodeOnSunday\ai_hub\subdir\pubspec.lock" or "D:/CodeOnSunday/ai_hub/subdir/pubspec.lock", it should be displayed as "pubsec.lock" in the "subdir" folder when the "subdir" folder is expanded and the root selected folder path is "D:\CodeOnSunday\ai_hub". The backward slash or forward slash dividers should not be matter.

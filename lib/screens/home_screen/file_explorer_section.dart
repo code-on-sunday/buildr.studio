@@ -53,7 +53,7 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
   }
 
   Widget _buildFileSystemEntityTile(FileSystemEntity entity) {
-    final fileName = entity.path.split('/').last;
+    final fileName = _getDisplayFileName(entity);
     return ListTile(
       title: Text(fileName),
       trailing: entity is Directory
@@ -77,6 +77,25 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
         }
       },
     );
+  }
+
+  String _getDisplayFileName(FileSystemEntity entity) {
+    try {
+      final path = entity.path;
+      final parts = path.split(Platform.pathSeparator);
+      final rootFolderPath = widget.selectedFolderPath;
+      if (rootFolderPath != null && path.startsWith(rootFolderPath)) {
+        final relativePath = path.substring(rootFolderPath.length + 1);
+        final fileName = relativePath.split(Platform.pathSeparator).last;
+        return fileName;
+      } else {
+        return parts.last;
+      }
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error getting display file name: $e');
+      return entity.path.split(Platform.pathSeparator).last;
+    }
   }
 
   Widget _buildFileSystemEntityTree(List<FileSystemEntity> entities) {
