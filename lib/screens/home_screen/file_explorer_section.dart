@@ -19,6 +19,7 @@ class FileExplorerSection extends StatefulWidget {
 class _FileExplorerSectionState extends State<FileExplorerSection> {
   List<FileSystemEntity> _files = [];
   Map<String, bool> _isExpanded = {};
+  String? _hoverIndex;
 
   @override
   void initState() {
@@ -54,44 +55,65 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
 
   Widget _buildFileSystemEntityTile(FileSystemEntity entity) {
     final fileName = _getDisplayFileName(entity);
-    return Row(
-      children: [
-        Expanded(
-          child: GestureDetector(
-            onTap: () {
-              if (entity is Directory) {
-                setState(() {
-                  _isExpanded[entity.path] =
-                      !(_isExpanded[entity.path] ?? false);
-                });
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                fileName,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) {
+        setState(() {
+          _hoverIndex = entity.path;
+        });
+      },
+      onExit: (_) {
+        setState(() {
+          _hoverIndex = null;
+        });
+      },
+      child: GestureDetector(
+        onTap: () {
+          if (entity is Directory) {
+            setState(() {
+              _isExpanded[entity.path] = !(_isExpanded[entity.path] ?? false);
+            });
+          }
+        },
+        child: Container(
+          color: _hoverIndex == entity.path
+              ? Colors.grey[200]
+              : Colors.transparent,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  fileName,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                  ),
                 ),
               ),
-            ),
+              if (entity is Directory)
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  icon: Icon(
+                    _isExpanded[entity.path] ?? false
+                        ? Icons.arrow_drop_down
+                        : Icons.arrow_right,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isExpanded[entity.path] =
+                          !(_isExpanded[entity.path] ?? false);
+                    });
+                  },
+                )
+              else
+                const Icon(
+                  Icons.insert_drive_file,
+                  size: 12,
+                ),
+            ],
           ),
         ),
-        if (entity is Directory)
-          IconButton(
-            icon: Icon(_isExpanded[entity.path] ?? false
-                ? Icons.arrow_drop_down
-                : Icons.arrow_right),
-            onPressed: () {
-              setState(() {
-                _isExpanded[entity.path] = !(_isExpanded[entity.path] ?? false);
-              });
-            },
-          )
-        else
-          const Icon(Icons.insert_drive_file),
-      ],
+      ),
     );
   }
 

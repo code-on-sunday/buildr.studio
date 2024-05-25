@@ -115,3 +115,7 @@ The content of the selected folder must be displayed recursively. However, curre
 ## Story 14:
 
 - Give this case: If a filepath is either "D:\CodeOnSunday\ai_hub\subdir\pubspec.lock" or "D:/CodeOnSunday/ai_hub/subdir/pubspec.lock", it should be displayed as "pubsec.lock" in the "subdir" folder when the "subdir" folder is expanded and the root selected folder path is "D:\CodeOnSunday\ai_hub". The backward slash or forward slash dividers should not be matter.
+
+## Story 15:
+
+Set hover color of items in the file explorer to light grey.
