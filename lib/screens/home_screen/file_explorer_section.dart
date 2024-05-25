@@ -81,15 +81,6 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
               : Colors.transparent,
           child: Row(
             children: [
-              Expanded(
-                child: Text(
-                  fileName,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
-              ),
               if (entity is Directory)
                 IconButton(
                   visualDensity: VisualDensity.compact,
@@ -110,6 +101,17 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
                   Icons.insert_drive_file,
                   size: 12,
                 ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  fileName,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ),
+              if (entity is Directory) const SizedBox(width: 8),
             ],
           ),
         ),

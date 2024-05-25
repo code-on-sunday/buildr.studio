@@ -119,3 +119,8 @@ The content of the selected folder must be displayed recursively. However, curre
 ## Story 15:
 
 Set hover color of items in the file explorer to light grey.
+
+## Story 16:
+
+Instead of showing the arrow button at the end of each folder row in the file explorer, show it at the beginning of each folder row.
+Do the same with the file icon.
