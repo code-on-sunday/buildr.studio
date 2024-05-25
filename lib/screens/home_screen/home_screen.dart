@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:volta/models/tool.dart';
 import 'package:volta/models/variable.dart';
 import 'package:volta/repositories/tool_repository.dart';
@@ -23,6 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Variable> _variables = [];
   bool _isSidebarVisible = false;
   int _selectedNavRailIndex = 0;
+  String? _selectedFolderPath;
+  List<FileSystemEntity> _files = [];
 
   @override
   void initState() {
@@ -54,6 +60,35 @@ class _HomeScreenState extends State<HomeScreen> {
       print('Error loading variables for tool $toolId: $e');
       _variables = [];
       setState(() {});
+    }
+  }
+
+  Future<void> _loadFiles(String folderPath) async {
+    try {
+      final directory = Directory(folderPath);
+      final files = await directory.list().toList();
+      setState(() {
+        _selectedFolderPath = folderPath;
+        _files = files;
+      });
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error loading files: $e');
+    }
+  }
+
+  void _openFolder() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final selectedDirectory = await FilePicker.platform.getDirectoryPath(
+        initialDirectory: directory.path,
+      );
+      if (selectedDirectory != null) {
+        await _loadFiles(selectedDirectory);
+      }
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error selecting folder: $e');
     }
   }
 
@@ -124,7 +159,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     )
                   : FileExplorerSection(
-                      onOpenFolder: (_) {},
+                      selectedFolderPath: _selectedFolderPath,
+                      files: _files,
+                      onOpenFolder: _openFolder,
                     ),
             ),
           Expanded(
@@ -170,7 +207,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             )
                           : FileExplorerSection(
-                              onOpenFolder: (_) {},
+                              selectedFolderPath: _selectedFolderPath,
+                              files: _files,
+                              onOpenFolder: _openFolder,
                             ),
                     ),
                   ),

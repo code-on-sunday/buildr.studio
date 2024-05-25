@@ -95,3 +95,7 @@
 
 - Click on the Open Project button allows users to select a folder on their machine.
 - The file hierarchy of the selected project will be displayed in the File Explorer section.
+
+## Story 11:
+
+- Once the File Explorer has data, the data should not lose when switch to the Tools section.
