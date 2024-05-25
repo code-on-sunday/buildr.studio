@@ -4,6 +4,7 @@ import 'package:volta/models/tool.dart';
 import 'package:volta/models/variable.dart';
 import 'package:volta/repositories/tool_repository.dart';
 
+import 'file_explorer_section.dart';
 import 'output_section.dart';
 import 'sidebar.dart';
 import 'variable_section.dart';
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Variable> _variables = [];
   bool _isSidebarVisible = false;
   int _selectedNavRailIndex = 0;
+  String? _openedFolderPath;
 
   @override
   void initState() {
@@ -49,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _variables = await _toolRepository.getVariables(toolId);
       setState(() {});
     } catch (e) {
-      // Log the error or display it to the UI
+      // Log the error or display it to the US
       print('Error loading variables for tool $toolId: $e');
       _variables = [];
       setState(() {});
@@ -73,6 +75,12 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
       _selectedNavRailIndex = index;
+    });
+  }
+
+  void _openFolder(String folderPath) {
+    setState(() {
+      _openedFolderPath = folderPath;
     });
   }
 
@@ -122,8 +130,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       },
                     )
-                  : const Center(
-                      child: Text('File Explorer'),
+                  : FileExplorerSection(
+                      openedFolderPath: _openedFolderPath,
+                      onOpenFolder: _openFolder,
                     ),
             ),
           Expanded(
@@ -168,8 +177,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               },
                             )
-                          : const Center(
-                              child: Text('File Explorer'),
+                          : FileExplorerSection(
+                              openedFolderPath: _openedFolderPath,
+                              onOpenFolder: _openFolder,
                             ),
                     ),
                   ),

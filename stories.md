@@ -84,3 +84,9 @@
   - The side bar is always shown next to the navigation rail.
   - When the build icon is selected on the rail, the side bar shows the list of tool names as how the side bar is currently implemented.
   - When the file explorer icon is selected, the side bar shows a placeholder text.
+
+## Story 9:
+
+- The File Explorer area should show the Open Folder button when there is no one opened.
+- When a folder is opened, it should show the file hierarchy of the folder.
+- The File Explorer area should be scrollable in the vertical direction when the content is too long.
