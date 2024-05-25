@@ -53,7 +53,7 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
     }
   }
 
-  Widget _buildFileSystemEntityTile(FileSystemEntity entity) {
+  Widget _buildFileSystemEntityTile(FileSystemEntity entity, int level) {
     final fileName = _getDisplayFileName(entity);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -97,9 +97,13 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
                   },
                 )
               else
-                const Icon(
-                  Icons.insert_drive_file,
-                  size: 12,
+                const Padding(
+                  padding:
+                      EdgeInsets.only(left: 16, top: 8, bottom: 8, right: 12),
+                  child: Icon(
+                    Icons.insert_drive_file,
+                    size: 12,
+                  ),
                 ),
               const SizedBox(width: 8),
               Expanded(
@@ -109,9 +113,10 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (entity is Directory) const SizedBox(width: 8),
             ],
           ),
         ),
@@ -138,7 +143,8 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
     }
   }
 
-  Widget _buildFileSystemEntityTree(List<FileSystemEntity> entities) {
+  Widget _buildFileSystemEntityTree(
+      List<FileSystemEntity> entities, int level) {
     final folders = <Directory>[];
     final files = <File>[];
 
@@ -163,17 +169,18 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildFileSystemEntityTile(entity),
+              _buildFileSystemEntityTile(entity, level),
               Padding(
-                padding: const EdgeInsets.only(left: 16.0),
+                padding: const EdgeInsets.only(left: 16),
                 child: _buildFileSystemEntityTree(
                   Directory(entity.path).listSync().toList(),
+                  level + 1,
                 ),
               ),
             ],
           );
         } else {
-          return _buildFileSystemEntityTile(entity);
+          return _buildFileSystemEntityTile(entity, level);
         }
       }).toList(),
     );
@@ -206,7 +213,7 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
                   const SizedBox(height: 16),
                   Expanded(
                     child: SingleChildScrollView(
-                        child: _buildFileSystemEntityTree(_files)),
+                        child: _buildFileSystemEntityTree(_files, 0)),
                   ),
                 ],
               ),
