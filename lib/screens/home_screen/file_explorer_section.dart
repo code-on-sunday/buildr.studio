@@ -79,31 +79,22 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
           color: _hoverIndex == entity.path
               ? Colors.grey[200]
               : Colors.transparent,
+          padding: const EdgeInsets.all(4),
           child: Row(
             children: [
               if (entity is Directory)
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  icon: Icon(
+                RotatedBox(
+                  quarterTurns: _isExpanded[entity.path] ?? false ? 1 : 0,
+                  child: Icon(
                     _isExpanded[entity.path] ?? false
-                        ? Icons.arrow_drop_down
-                        : Icons.arrow_right,
+                        ? Icons.chevron_right
+                        : Icons.chevron_right,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _isExpanded[entity.path] =
-                          !(_isExpanded[entity.path] ?? false);
-                    });
-                  },
                 )
               else
-                const Padding(
-                  padding:
-                      EdgeInsets.only(left: 16, top: 8, bottom: 8, right: 12),
-                  child: Icon(
-                    Icons.insert_drive_file,
-                    size: 12,
-                  ),
+                const Icon(
+                  Icons.insert_drive_file,
+                  size: 12,
                 ),
               const SizedBox(width: 8),
               Expanded(
