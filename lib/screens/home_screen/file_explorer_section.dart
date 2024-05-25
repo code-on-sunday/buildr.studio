@@ -115,9 +115,26 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
   }
 
   Widget _buildFileSystemEntityTree(List<FileSystemEntity> entities) {
+    final folders = <Directory>[];
+    final files = <File>[];
+
+    for (final entity in entities) {
+      if (entity is Directory) {
+        folders.add(entity);
+      } else if (entity is File) {
+        files.add(entity);
+      }
+    }
+
+    folders
+        .sort((a, b) => a.path.toLowerCase().compareTo(b.path.toLowerCase()));
+    files.sort((a, b) => a.path.toLowerCase().compareTo(b.path.toLowerCase()));
+
+    final sortedEntities = [...folders, ...files];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: entities.map((entity) {
+      children: sortedEntities.map((entity) {
         if (entity is Directory && (_isExpanded[entity.path] ?? false)) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,

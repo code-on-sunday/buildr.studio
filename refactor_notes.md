@@ -9,3 +9,7 @@ Make item names in the File Explorer less bold and smaller. Reduce the vertical 
 - At the end of the file row must still show the file icon.
 
 ---
+
+The direct items of an expanded folder must be shorted by types (Folder to Files), then by A-Z.
+
+---
