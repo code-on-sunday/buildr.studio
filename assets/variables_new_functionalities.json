@@ -1,18 +1,16 @@
 [
   {
-    "description": "Source code of the existing implementation",
-    "hint_label": "Insert the existing implementation here",
+    "description": "Files that contains the implementation",
+    "hint_label": "Tag @ files that contains the implementation",
     "input_type": "text_field",
-    "name": "Implementation",
+    "name": "Current Implementation Files",
     "value_format": "text"
   },
   {
-    "description": "Files",
-    "hint_label": "",
-    "input_type": "dropdown",
-    "name": "Files",
-    "select_label": "Select a file",
-    "source_name": "file1,file2,file3",
-    "value_format": "json"
+    "description": "Detailed requirements",
+    "hint_label": "Enter your detailed requirements",
+    "input_type": "text_field",
+    "name": "Requirements",
+    "value_format": "text"
   }
 ]
