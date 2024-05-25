@@ -19,7 +19,7 @@ class FileExplorerSection extends StatefulWidget {
 class _FileExplorerSectionState extends State<FileExplorerSection> {
   List<FileSystemEntity> _files = [];
   Map<String, bool> _isExpanded = {};
-  String? _hoverIndex;
+  String? _selectedItemPath;
 
   @override
   void initState() {
@@ -55,30 +55,20 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
 
   Widget _buildFileSystemEntityTile(FileSystemEntity entity, int level) {
     final fileName = _getDisplayFileName(entity);
+    final isSelected = _selectedItemPath == entity.path;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
-      onEnter: (_) {
-        setState(() {
-          _hoverIndex = entity.path;
-        });
-      },
-      onExit: (_) {
-        setState(() {
-          _hoverIndex = null;
-        });
-      },
       child: GestureDetector(
         onTap: () {
-          if (entity is Directory) {
-            setState(() {
+          setState(() {
+            if (entity is Directory) {
               _isExpanded[entity.path] = !(_isExpanded[entity.path] ?? false);
-            });
-          }
+            }
+            _selectedItemPath = entity.path;
+          });
         },
         child: Container(
-          color: _hoverIndex == entity.path
-              ? Colors.grey[200]
-              : Colors.transparent,
+          color: isSelected ? Colors.black : Colors.transparent,
           padding: const EdgeInsets.all(4),
           child: Row(
             children: [
@@ -89,20 +79,23 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
                     _isExpanded[entity.path] ?? false
                         ? Icons.chevron_right
                         : Icons.chevron_right,
+                    color: isSelected ? Colors.white : Colors.black,
                   ),
                 )
               else
                 const Icon(
                   Icons.insert_drive_file,
                   size: 12,
+                  color: Colors.black,
                 ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   fileName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
+                    color: isSelected ? Colors.white : Colors.black,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

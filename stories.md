@@ -124,3 +124,12 @@ Set hover color of items in the file explorer to light grey.
 
 Instead of showing the arrow button at the end of each folder row in the file explorer, show it at the beginning of each folder row.
 Do the same with the file icon.
+
+## Story 17:
+
+When an item (folder item or file item) in the file explorer is in the selected state, its background color changes to black, content color changes to white.
+An item is changed to the selected state if one of these conditions met:
+
+- It's clicked while it's in the unselected state.
+- It's clicked while it's in the selected state AND it's a folder item.
+  Only one item is in the selected state at a time.
