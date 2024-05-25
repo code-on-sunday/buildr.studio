@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:volta/app_theme.dart';
 import 'package:volta/repositories/tool_repository.dart';
-import 'package:volta/screens/home_screen/home_screen.dart';
+import 'package:volta/screens/home_screen.dart';
 
 void main() {
   runApp(const MyApp());

@@ -6,7 +6,7 @@ import 'package:mockito/mockito.dart';
 import 'package:volta/models/tool.dart';
 import 'package:volta/models/variable.dart';
 import 'package:volta/repositories/tool_repository.dart';
-import 'package:volta/screens/home_screen/home_screen.dart';
+import 'package:volta/screens/home_screen.dart';
 
 import '../test_utils.dart';
 import 'home_screen_test.mocks.dart';
