@@ -9,6 +9,7 @@ import 'package:volta/repositories/tool_repository.dart';
 import 'file_explorer_section.dart';
 import 'output_section.dart';
 import 'sidebar.dart';
+import 'sidebar_content.dart';
 import 'variable_section.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -123,24 +124,14 @@ class _HomeScreenState extends State<HomeScreen> {
             Sidebar(
               onClose: _toggleSidebar,
               child: _selectedNavRailIndex == 0
-                  ? ListView.builder(
-                      itemCount: _tools.length,
-                      itemBuilder: (context, index) {
-                        final tool = _tools[index];
-                        return ListTile(
-                          title: Text(tool.name),
-                          trailing: Tooltip(
-                            message: tool.description,
-                            child: const Icon(Icons.info_outline),
-                          ),
-                          selected: _selectedTool == tool,
-                          onTap: () {
-                            setState(() {
-                              _selectedTool = tool;
-                            });
-                            _loadVariables(tool.id);
-                          },
-                        );
+                  ? SidebarContent(
+                      tools: _tools,
+                      selectedTool: _selectedTool,
+                      onToolSelected: (tool) {
+                        setState(() {
+                          _selectedTool = tool;
+                        });
+                        _loadVariables(tool.id);
                       },
                     )
                   : FileExplorerSection(
@@ -170,24 +161,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Sidebar(
                       onClose: _toggleSidebar,
                       child: _selectedNavRailIndex == 0
-                          ? ListView.builder(
-                              itemCount: _tools.length,
-                              itemBuilder: (context, index) {
-                                final tool = _tools[index];
-                                return ListTile(
-                                  title: Text(tool.name),
-                                  trailing: Tooltip(
-                                    message: tool.description,
-                                    child: const Icon(Icons.info_outline),
-                                  ),
-                                  selected: _selectedTool == tool,
-                                  onTap: () {
-                                    setState(() {
-                                      _selectedTool = tool;
-                                    });
-                                    _loadVariables(tool.id);
-                                  },
-                                );
+                          ? SidebarContent(
+                              tools: _tools,
+                              selectedTool: _selectedTool,
+                              onToolSelected: (tool) {
+                                setState(() {
+                                  _selectedTool = tool;
+                                });
+                                _loadVariables(tool.id);
                               },
                             )
                           : FileExplorerSection(
