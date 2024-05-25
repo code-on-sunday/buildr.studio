@@ -18,6 +18,7 @@ class FileExplorerSection extends StatefulWidget {
 
 class _FileExplorerSectionState extends State<FileExplorerSection> {
   List<FileSystemEntity> _files = [];
+  Map<String, bool> _isExpanded = {};
 
   @override
   void initState() {
@@ -40,6 +41,10 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
       final files = await directory.list().toList();
       setState(() {
         _files = files;
+        _isExpanded = {
+          for (final entity in files)
+            if (entity is Directory) entity.path: false
+        };
       });
     } catch (e) {
       // Log the error or display it to the UI
@@ -50,13 +55,25 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
   Widget _buildFileSystemEntityTile(FileSystemEntity entity) {
     final fileName = entity.path.split('/').last;
     return ListTile(
-      title: Text(_toSnakeCase(fileName)),
+      title: Text(fileName),
       trailing: entity is Directory
-          ? const Icon(Icons.folder)
+          ? IconButton(
+              icon: Icon(_isExpanded[entity.path] ?? false
+                  ? Icons.arrow_drop_down
+                  : Icons.arrow_right),
+              onPressed: () {
+                setState(() {
+                  _isExpanded[entity.path] =
+                      !(_isExpanded[entity.path] ?? false);
+                });
+              },
+            )
           : const Icon(Icons.insert_drive_file),
       onTap: () {
         if (entity is Directory) {
-          _loadFiles(entity.path);
+          setState(() {
+            _isExpanded[entity.path] = !(_isExpanded[entity.path] ?? false);
+          });
         }
       },
     );
@@ -66,7 +83,7 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: entities.map((entity) {
-        if (entity is Directory) {
+        if (entity is Directory && (_isExpanded[entity.path] ?? false)) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -84,10 +101,6 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
         }
       }).toList(),
     );
-  }
-
-  String _toSnakeCase(String input) {
-    return input.replaceAll(' ', '_').toLowerCase();
   }
 
   @override

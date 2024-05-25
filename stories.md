@@ -105,3 +105,9 @@
 - The selected folder content, including sub-directories, in the File Explorer section, should be displayed as a recursive tree.
 
 The content of the selected folder must be displayed recursively. However, current implementation that is using nested ListView is not the expected implementation. It leads to UI layout issue.
+
+## Story 13:
+
+- Only the last path should be used as the name of each item in the file tree.
+- When the folder is selected, only the first level content should be displayed. All nested subfolders should be collapsed.
+- When users click on a folder, the sub-tree of that folder is expanded.
