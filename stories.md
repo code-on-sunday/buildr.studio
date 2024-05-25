@@ -99,3 +99,9 @@
 ## Story 11:
 
 - Once the File Explorer has data, the data should not lose when switch to the Tools section.
+
+## Story 12:
+
+- The selected folder content, including sub-directories, in the File Explorer section, should be displayed as a recursive tree.
+
+The content of the selected folder must be displayed recursively. However, current implementation that is using nested ListView is not the expected implementation. It leads to UI layout issue.

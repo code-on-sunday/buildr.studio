@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -28,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isSidebarVisible = false;
   int _selectedNavRailIndex = 0;
   String? _selectedFolderPath;
-  List<FileSystemEntity> _files = [];
 
   @override
   void initState() {
@@ -63,28 +60,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _loadFiles(String folderPath) async {
-    try {
-      final directory = Directory(folderPath);
-      final files = await directory.list().toList();
-      setState(() {
-        _selectedFolderPath = folderPath;
-        _files = files;
-      });
-    } catch (e) {
-      // Log the error or display it to the UI
-      print('Error loading files: $e');
-    }
-  }
-
-  void _openFolder() async {
+  Future<void> _openFolder() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
       final selectedDirectory = await FilePicker.platform.getDirectoryPath(
         initialDirectory: directory.path,
       );
       if (selectedDirectory != null) {
-        await _loadFiles(selectedDirectory);
+        setState(() {
+          _selectedFolderPath = selectedDirectory;
+        });
       }
     } catch (e) {
       // Log the error or display it to the UI
@@ -160,7 +145,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   : FileExplorerSection(
                       selectedFolderPath: _selectedFolderPath,
-                      files: _files,
                       onOpenFolder: _openFolder,
                     ),
             ),
@@ -208,7 +192,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             )
                           : FileExplorerSection(
                               selectedFolderPath: _selectedFolderPath,
-                              files: _files,
                               onOpenFolder: _openFolder,
                             ),
                     ),
