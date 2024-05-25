@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/release
 
 /.venv/
+
+# don't check in golden failure output
+**/failures/*.png

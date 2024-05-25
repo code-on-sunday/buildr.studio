@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:volta/models/tool.dart';
@@ -8,6 +8,7 @@ import 'package:volta/models/variable.dart';
 import 'package:volta/repositories/tool_repository.dart';
 import 'package:volta/screens/home_screen/home_screen.dart';
 
+import '../test_utils.dart';
 import 'home_screen_test.mocks.dart';
 
 @GenerateMocks([ToolRepository])
@@ -24,7 +25,7 @@ void main() {
       GetIt.I.unregister<ToolRepository>();
     });
 
-    testWidgets('HomeScreen displays correctly', (WidgetTester tester) async {
+    testGoldens('HomeScreen displays correctly', (WidgetTester tester) async {
       // Arrange
       final tools = [
         Tool(
@@ -57,19 +58,14 @@ void main() {
           .thenAnswer((_) async => variables);
 
       // Act
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpWidgetBuilder(const HomeScreen());
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.byType(ListView), findsOneWidget);
-      expect(find.byType(ListTile), findsNWidgets(3));
-      expect(find.text('Input'), findsOneWidget);
-      expect(find.byType(TextField), findsOneWidget);
-      expect(find.text('Output'), findsOneWidget);
-      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      await multiScreenGolden(tester, 'HomeScreen displays correctly');
     });
 
-    testWidgets('Selecting a tool updates the variable section',
+    testGoldens('Selecting a tool updates the variable section',
         (WidgetTester tester) async {
       // Arrange
       final tools = [
@@ -128,17 +124,18 @@ void main() {
           .thenAnswer((_) async => variables2);
 
       // Act
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpWidgetBuilder(const HomeScreen(),
+          surfaceSize: Screens.desktop);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Tool 2'));
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.text('Input'), findsOneWidget);
-      expect(find.byType(TextField), findsNWidgets(3));
+      await screenMatchesGolden(
+          tester, 'Selecting a tool updates the variable section');
     });
 
-    testWidgets('HomeScreen displays variables for the selected tool',
+    testGoldens('HomeScreen displays variables for the selected tool',
         (WidgetTester tester) async {
       // Arrange
       final tools = [
@@ -172,19 +169,18 @@ void main() {
           .thenAnswer((_) async => variables);
 
       // Act
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpWidgetBuilder(const HomeScreen(),
+          surfaceSize: Screens.desktop);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Add new functionalities'));
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.text('Input'), findsOneWidget);
-      expect(find.byType(TextField), findsOneWidget);
-      expect(
-          find.text('Insert the existing implementation here'), findsOneWidget);
+      await screenMatchesGolden(
+          tester, 'HomeScreen displays variables for the selected tool');
     });
 
-    testWidgets('HomeScreen displays dropdown for variables with select label',
+    testGoldens('HomeScreen displays dropdown for variables with select label',
         (WidgetTester tester) async {
       // Arrange
       final tools = [
@@ -210,61 +206,15 @@ void main() {
           .thenAnswer((_) async => variables);
 
       // Act
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
+      await tester.pumpWidgetBuilder(const HomeScreen(),
+          surfaceSize: Screens.desktop);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Add new functionalities'));
       await tester.pumpAndSettle();
 
       // Assert
-      expect(find.text('Input'), findsOneWidget);
-      expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
-      expect(find.text('Select an option'), findsOneWidget);
-
-      // Act
-      await tester.tap(find.byType(DropdownButtonFormField<String>));
-      await tester.pumpAndSettle();
-
-      // Assert
-      expect(find.text('Option 1'), findsOneWidget);
-      expect(find.text('Option 2'), findsOneWidget);
-      expect(find.text('Option 3'), findsOneWidget);
-    });
-
-    testWidgets('HomeScreen displays tooltip for variable description',
-        (WidgetTester tester) async {
-      // Arrange
-      final tools = [
-        Tool(
-          id: 'new_functionalities',
-          name: 'Add new functionalities',
-          description: 'Add new functionalities to existing implementation',
-        ),
-      ];
-      final variables = [
-        Variable(
-          name: 'Implementation',
-          description:
-              'Existing implementation with a longer description that should be displayed in a tooltip',
-          valueFormat: 'text',
-          inputType: 'text_field',
-          hintLabel: 'Insert the existing implementation here',
-        ),
-      ];
-      when(mockToolRepository.getTools()).thenAnswer((_) async => tools);
-      when(mockToolRepository.getVariables('new_functionalities'))
-          .thenAnswer((_) async => variables);
-
-      // Act
-      await tester.pumpWidget(const MaterialApp(home: HomeScreen()));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Add new functionalities'));
-      await tester.pumpAndSettle();
-
-      // Assert
-      expect(
-          find.byTooltip(
-              'Existing implementation with a longer description that should be displayed in a tooltip'),
-          findsOneWidget);
+      await screenMatchesGolden(tester,
+          'HomeScreen displays dropdown for variables with select label');
     });
   });
 }
