@@ -161,3 +161,7 @@ Display the relative path to the root folder instead of showing the full path of
 ## Story 23:
 
 Show folder icon in the Chip if the selected path is of a folder.
+
+## Story 24:
+
+Show folder icon in the Chip if the selected path is of a folder.

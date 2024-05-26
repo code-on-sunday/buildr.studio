@@ -5,28 +5,22 @@ import 'package:provider/provider.dart';
 import 'package:volta/models/tool.dart';
 import 'package:volta/models/variable.dart';
 import 'package:volta/screens/home_screen/file_explorer_state.dart';
+import 'package:volta/screens/home_screen/variable_section_state.dart';
 
-class VariableSection extends StatefulWidget {
+class VariableSection extends StatelessWidget {
   final Tool selectedTool;
   final List<Variable> variables;
+  final VariableSectionState variableSectionState;
 
   const VariableSection({
     super.key,
     required this.selectedTool,
     required this.variables,
+    required this.variableSectionState,
   });
 
   @override
-  State<VariableSection> createState() => _VariableSectionState();
-}
-
-class _VariableSectionState extends State<VariableSection> {
-  List<String> _selectedPaths = [];
-
-  @override
   Widget build(BuildContext context) {
-    final fileExplorerState = Provider.of<FileExplorerState>(context);
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -42,133 +36,161 @@ class _VariableSectionState extends State<VariableSection> {
           const SizedBox(height: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: widget.variables
+            children: variables
                 .map((variable) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                '<${variable.name.toUpperCase()}>',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge!
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              Tooltip(
-                                message: variable.description,
-                                child: const Icon(Icons.info_outline),
-                              )
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          if (variable.inputType == 'text_field')
-                            TextField(
-                              decoration: InputDecoration(
-                                hintText: variable.hintLabel,
-                                border: const OutlineInputBorder(),
-                              ),
-                              maxLines: 3,
-                            )
-                          else if (variable.inputType == 'dropdown')
-                            DropdownButtonFormField<String>(
-                              hint: Text(variable.selectLabel!),
-                              items: [
-                                ...?variable.sourceName
-                                    ?.split(',')
-                                    .map((option) => DropdownMenuItem(
-                                          value: option.trim(),
-                                          child: Text(option.trim()),
-                                        )),
-                              ],
-                              onChanged: (value) {},
-                            )
-                          else if (variable.inputType == 'sources')
-                            DragTarget<List<String>>(
-                              onAcceptWithDetails: (details) {
-                                setState(() {
-                                  _selectedPaths = details.data;
-                                });
-                              },
-                              builder: (context, candidateData, rejectedData) {
-                                final isHighlighted = candidateData.isNotEmpty;
-                                return Container(
-                                  padding: const EdgeInsets.all(16.0),
-                                  decoration: BoxDecoration(
-                                    color: isHighlighted ||
-                                            _selectedPaths.isNotEmpty
-                                        ? Colors.orange.shade50
-                                        : null,
-                                    border: Border.all(
-                                      color: isHighlighted
-                                          ? Colors.orange
-                                          : Colors.grey.shade400,
-                                      width: isHighlighted ? 4.0 : 2.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                  child: _selectedPaths.isNotEmpty
-                                      ? Wrap(
-                                          spacing: 4,
-                                          runSpacing: 4,
-                                          children: _selectedPaths.map((path) {
-                                            try {
-                                              final isFolder = FileSystemEntity
-                                                  .isDirectorySync(path);
-                                              return Chip(
-                                                label: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    if (isFolder)
-                                                      const Icon(Icons.folder,
-                                                          size: 18),
-                                                    const SizedBox(width: 4),
-                                                    Text(
-                                                      fileExplorerState
-                                                          .getDisplayFileName(
-                                                              path),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            } catch (e) {
-                                              // Log the error or display it to the UI
-                                              print(
-                                                  'Error checking file type: $e');
-                                              return const SizedBox.shrink();
-                                            }
-                                          }).toList(),
-                                        )
-                                      : Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            const Icon(Icons.upload_file,
-                                                size: 48, color: Colors.grey),
-                                            const SizedBox(height: 16),
-                                            Text(
-                                              'Drag and drop your sources here',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge
-                                                  ?.copyWith(
-                                                      color: Colors.grey),
-                                            )
-                                          ],
-                                        ),
-                                );
-                              },
-                            ),
-                        ],
+                      child: VariableInput(
+                        variable: variable,
+                        selectedPaths: variableSectionState.selectedPaths,
+                        onPathsSelected: variableSectionState.onPathsSelected,
                       ),
                     ))
                 .toList(),
           ),
         ],
       ),
+    );
+  }
+}
+
+class VariableInput extends StatelessWidget {
+  final Variable variable;
+  final List<String> selectedPaths;
+  final void Function(List<String>) onPathsSelected;
+
+  const VariableInput({
+    super.key,
+    required this.variable,
+    required this.selectedPaths,
+    required this.onPathsSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              '<${variable.name.toUpperCase()}>',
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            Tooltip(
+              message: variable.description,
+              child: const Icon(Icons.info_outline),
+            )
+          ],
+        ),
+        const SizedBox(height: 8),
+        if (variable.inputType == 'text_field')
+          TextField(
+            decoration: InputDecoration(
+              hintText: variable.hintLabel,
+              border: const OutlineInputBorder(),
+            ),
+            maxLines: 3,
+          )
+        else if (variable.inputType == 'dropdown')
+          DropdownButtonFormField<String>(
+            hint: Text(variable.selectLabel!),
+            items: [
+              ...?variable.sourceName
+                  ?.split(',')
+                  .map((option) => DropdownMenuItem(
+                        value: option.trim(),
+                        child: Text(option.trim()),
+                      )),
+            ],
+            onChanged: (value) {},
+          )
+        else if (variable.inputType == 'sources')
+          SourcesInput(
+            selectedPaths: selectedPaths,
+            onPathsSelected: onPathsSelected,
+          ),
+      ],
+    );
+  }
+}
+
+class SourcesInput extends StatelessWidget {
+  final List<String> selectedPaths;
+  final void Function(List<String>) onPathsSelected;
+
+  const SourcesInput({
+    super.key,
+    required this.selectedPaths,
+    required this.onPathsSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fileExplorerState = context.watch<FileExplorerState>();
+
+    return DragTarget<List<String>>(
+      onAcceptWithDetails: (details) {
+        onPathsSelected(details.data);
+      },
+      builder: (context, candidateData, rejectedData) {
+        final isHighlighted = candidateData.isNotEmpty;
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: isHighlighted || selectedPaths.isNotEmpty
+                ? Colors.orange.shade50
+                : null,
+            border: Border.all(
+              color: isHighlighted ? Colors.orange : Colors.grey.shade400,
+              width: isHighlighted ? 4.0 : 2.0,
+            ),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: selectedPaths.isNotEmpty
+              ? Wrap(
+                  spacing: 4,
+                  runSpacing: 4,
+                  children: selectedPaths.map((path) {
+                    try {
+                      final isFolder = FileSystemEntity.isDirectorySync(path);
+                      return Chip(
+                        label: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (isFolder) const Icon(Icons.folder, size: 18),
+                            const SizedBox(width: 4),
+                            Text(
+                              fileExplorerState.getDisplayFileName(path),
+                            ),
+                          ],
+                        ),
+                      );
+                    } catch (e) {
+                      // Log the error or display it to the UI
+                      print('Error checking file type: $e');
+                      return const SizedBox.shrink();
+                    }
+                  }).toList(),
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.upload_file, size: 48, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Drag and drop your sources here',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(color: Colors.grey),
+                    )
+                  ],
+                ),
+        );
+      },
     );
   }
 }

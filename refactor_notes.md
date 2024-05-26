@@ -19,3 +19,7 @@ Refactor to lift the state of the file or folder selection in the FileExplorerSe
 ---
 
 Refactor the FileExplorerSection widget to less use the calls context.watch or context.read. Turn the widget into a StatelessWidget if possible.
+
+---
+
+Refactor to move logic and state out of the the VariableSection widget. Switch it to a StatelessWidget if possible.

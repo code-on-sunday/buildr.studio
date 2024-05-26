@@ -6,6 +6,7 @@ import 'package:volta/screens/home_screen/output_section.dart';
 import 'package:volta/screens/home_screen/sidebar.dart';
 import 'package:volta/screens/home_screen/sidebar_content.dart';
 import 'package:volta/screens/home_screen/variable_section.dart';
+import 'package:volta/screens/home_screen/variable_section_state.dart';
 
 import 'home_screen_state.dart';
 
@@ -18,9 +19,12 @@ class HomeScreen extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => HomeScreenState(context)),
         ChangeNotifierProvider(create: (context) => FileExplorerState()),
+        ChangeNotifierProvider(create: (context) => VariableSectionState()),
       ],
-      child: Consumer2<HomeScreenState, FileExplorerState>(
-        builder: (context, homeState, fileExplorerState, child) {
+      child:
+          Consumer3<HomeScreenState, FileExplorerState, VariableSectionState>(
+        builder: (context, homeState, fileExplorerState, variableSectionState,
+            child) {
           final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
 
           return Scaffold(
@@ -62,6 +66,7 @@ class HomeScreen extends StatelessWidget {
                             VariableSection(
                               selectedTool: homeState.selectedTool!,
                               variables: homeState.variables,
+                              variableSectionState: variableSectionState,
                             ),
                           const OutputSection(),
                         ],
