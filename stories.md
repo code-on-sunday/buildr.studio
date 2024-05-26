@@ -137,3 +137,8 @@ An item is changed to the selected state if one of these conditions met:
 ## Story 18:
 
 In addition to current features, implement the multi-select feature. This feature is enabled if the users are holding the Control key on the keyboard. The implementation must detect when the key is pressed.
+
+## Story 19:
+
+When the input type is "Sources", show the drag and drop area that says: "Drag and drop your sources here". Make sure the text grammatically correct.
+The implementation should use the standard drag and drop mechanism of Flutter.

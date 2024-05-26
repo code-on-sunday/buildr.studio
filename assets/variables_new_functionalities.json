@@ -1,8 +1,8 @@
 [
   {
     "description": "Files that contains the implementation",
-    "hint_label": "Tag @ files that contains the implementation",
-    "input_type": "text_field",
+    "hint_label": "Provide files that contains the implementation",
+    "input_type": "sources",
     "name": "Current Implementation Files",
     "value_format": "text"
   },

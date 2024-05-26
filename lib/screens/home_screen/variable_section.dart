@@ -1,8 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:volta/models/tool.dart';
 import 'package:volta/models/variable.dart';
 
-class VariableSection extends StatelessWidget {
+class VariableSection extends StatefulWidget {
   final Tool selectedTool;
   final List<Variable> variables;
 
@@ -11,6 +13,13 @@ class VariableSection extends StatelessWidget {
     required this.selectedTool,
     required this.variables,
   });
+
+  @override
+  State<VariableSection> createState() => _VariableSectionState();
+}
+
+class _VariableSectionState extends State<VariableSection> {
+  List<File> droppedFiles = [];
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +38,7 @@ class VariableSection extends StatelessWidget {
           const SizedBox(height: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: variables
+            children: widget.variables
                 .map((variable) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Column(
@@ -71,6 +80,36 @@ class VariableSection extends StatelessWidget {
                                         )),
                               ],
                               onChanged: (value) {},
+                            )
+                          else if (variable.inputType == 'sources')
+                            DragTarget<List<String>>(
+                              builder: (context, candidateData, rejectedData) {
+                                return Container(
+                                  padding: const EdgeInsets.all(16.0),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.grey.shade400,
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.upload_file,
+                                          size: 48, color: Colors.grey),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Drag and drop your sources here',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.copyWith(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
                         ],
                       ),
