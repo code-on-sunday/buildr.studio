@@ -177,3 +177,11 @@ While the ctrl key is pressed, clicking on that folder item should only change i
 ## Story 27:
 
 When starting to drag content from file explorer, the selected paths should exclude files or folders that are descendants of any selected folders.
+
+## Story 28:
+
+A function that accepts the content of a Git ignore file and a path, return true if the path matches one of rules in the Git ignore content.
+
+Remember that Git ignore supports a wide range of rules. A simple check (e.g. filepath.contain(rule)) is not enough. An external package to handle that still hasn't existed yet.
+
+Add some test cases to cover all possible cases.
