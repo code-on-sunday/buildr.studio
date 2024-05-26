@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:volta/screens/home_screen/file_explorer_section.dart';
+import 'package:volta/screens/home_screen/file_explorer_state.dart';
 import 'package:volta/screens/home_screen/output_section.dart';
 import 'package:volta/screens/home_screen/sidebar.dart';
 import 'package:volta/screens/home_screen/sidebar_content.dart';
@@ -13,10 +14,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => HomeScreenState(context),
-      child: Consumer<HomeScreenState>(
-        builder: (context, state, child) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => HomeScreenState(context)),
+        ChangeNotifierProvider(create: (context) => FileExplorerState()),
+      ],
+      child: Consumer2<HomeScreenState, FileExplorerState>(
+        builder: (context, homeState, fileExplorerState, child) {
           final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
 
           return Scaffold(
@@ -24,8 +28,8 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 NavigationRail(
-                  selectedIndex: state.selectedNavRailIndex,
-                  onDestinationSelected: state.onNavRailItemTapped,
+                  selectedIndex: homeState.selectedNavRailIndex,
+                  onDestinationSelected: homeState.onNavRailItemTapped,
                   destinations: const [
                     NavigationRailDestination(
                       icon: Icon(Icons.build),
@@ -39,17 +43,14 @@ class HomeScreen extends StatelessWidget {
                 ),
                 if (isLargeScreen)
                   Sidebar(
-                    onClose: state.toggleSidebar,
-                    child: state.selectedNavRailIndex == 0
+                    onClose: homeState.toggleSidebar,
+                    child: homeState.selectedNavRailIndex == 0
                         ? SidebarContent(
-                            tools: state.tools,
-                            selectedTool: state.selectedTool,
-                            onToolSelected: state.onToolSelected,
+                            tools: homeState.tools,
+                            selectedTool: homeState.selectedTool,
+                            onToolSelected: homeState.onToolSelected,
                           )
-                        : FileExplorerSection(
-                            selectedFolderPath: state.selectedFolderPath,
-                            onOpenFolder: state.openFolder,
-                          ),
+                        : const FileExplorerSection(),
                   ),
                 Expanded(
                   child: Stack(
@@ -57,32 +58,28 @@ class HomeScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (state.selectedTool != null)
+                          if (homeState.selectedTool != null)
                             VariableSection(
-                              selectedTool: state.selectedTool!,
-                              variables: state.variables,
+                              selectedTool: homeState.selectedTool!,
+                              variables: homeState.variables,
                             ),
                           const OutputSection(),
                         ],
                       ),
-                      if (!isLargeScreen && state.isSidebarVisible)
+                      if (!isLargeScreen && homeState.isSidebarVisible)
                         Positioned(
                           top: 0,
                           left: 0,
                           bottom: 0,
                           child: Sidebar(
-                            onClose: state.toggleSidebar,
-                            child: state.selectedNavRailIndex == 0
+                            onClose: homeState.toggleSidebar,
+                            child: homeState.selectedNavRailIndex == 0
                                 ? SidebarContent(
-                                    tools: state.tools,
-                                    selectedTool: state.selectedTool,
-                                    onToolSelected: state.onToolSelected,
+                                    tools: homeState.tools,
+                                    selectedTool: homeState.selectedTool,
+                                    onToolSelected: homeState.onToolSelected,
                                   )
-                                : FileExplorerSection(
-                                    selectedFolderPath:
-                                        state.selectedFolderPath,
-                                    onOpenFolder: state.openFolder,
-                                  ),
+                                : const FileExplorerSection(),
                           ),
                         ),
                     ],

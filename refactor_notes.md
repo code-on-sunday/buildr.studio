@@ -13,3 +13,5 @@ Make item names in the File Explorer less bold and smaller. Reduce the vertical 
 The direct items of an expanded folder must be shorted by types (Folder to Files), then by A-Z.
 
 ---
+
+Refactor to lift the state of the file or folder selection in the FileExplorerSection up to the HomeScreen. A new ChangeNotifier class can be created if needed.

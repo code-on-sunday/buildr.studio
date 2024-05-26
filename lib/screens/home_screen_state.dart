@@ -1,7 +1,5 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:volta/models/tool.dart';
 import 'package:volta/models/variable.dart';
 import 'package:volta/repositories/tool_repository.dart';
@@ -14,7 +12,6 @@ class HomeScreenState extends ChangeNotifier {
   List<Variable> _variables = [];
   bool _isSidebarVisible = false;
   int _selectedNavRailIndex = 0;
-  String? _selectedFolderPath;
 
   HomeScreenState(this._context) {
     _toolRepository = GetIt.I.get<ToolRepository>();
@@ -26,7 +23,6 @@ class HomeScreenState extends ChangeNotifier {
   List<Variable> get variables => _variables;
   bool get isSidebarVisible => _isSidebarVisible;
   int get selectedNavRailIndex => _selectedNavRailIndex;
-  String? get selectedFolderPath => _selectedFolderPath;
 
   Future<void> _loadTools() async {
     try {
@@ -51,22 +47,6 @@ class HomeScreenState extends ChangeNotifier {
       print('Error loading variables for tool $toolId: $e');
       _variables = [];
       notifyListeners();
-    }
-  }
-
-  Future<void> openFolder() async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final selectedDirectory = await FilePicker.platform.getDirectoryPath(
-        initialDirectory: directory.path,
-      );
-      if (selectedDirectory != null) {
-        _selectedFolderPath = selectedDirectory;
-        notifyListeners();
-      }
-    } catch (e) {
-      // Log the error or display it to the UI
-      print('Error selecting folder: $e');
     }
   }
 
