@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class FileExplorerSection extends StatefulWidget {
   final String? selectedFolderPath;
@@ -19,12 +20,20 @@ class FileExplorerSection extends StatefulWidget {
 class _FileExplorerSectionState extends State<FileExplorerSection> {
   List<FileSystemEntity> _files = [];
   Map<String, bool> _isExpanded = {};
-  String? _selectedItemPath;
+  Map<String, bool> _isSelected = {};
+  bool _isControlPressed = false;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _loadFiles(widget.selectedFolderPath);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -46,6 +55,7 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
           for (final entity in files)
             if (entity is Directory) entity.path: false
         };
+        _isSelected = {for (final entity in files) entity.path: false};
       });
     } catch (e) {
       // Log the error or display it to the UI
@@ -55,7 +65,7 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
 
   Widget _buildFileSystemEntityTile(FileSystemEntity entity, int level) {
     final fileName = _getDisplayFileName(entity);
-    final isSelected = _selectedItemPath == entity.path;
+    final isSelected = _isSelected[entity.path] ?? false;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
@@ -64,7 +74,14 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
             if (entity is Directory) {
               _isExpanded[entity.path] = !(_isExpanded[entity.path] ?? false);
             }
-            _selectedItemPath = entity.path;
+            if (_isControlPressed) {
+              _isSelected[entity.path] = !(_isSelected[entity.path] ?? false);
+            } else {
+              _isSelected.forEach((key, value) {
+                _isSelected[key] = false;
+              });
+              _isSelected[entity.path] = true;
+            }
           });
         },
         child: Container(
@@ -83,10 +100,10 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
                   ),
                 )
               else
-                const Icon(
+                Icon(
                   Icons.insert_drive_file,
                   size: 12,
-                  color: Colors.black,
+                  color: isSelected ? Colors.white : Colors.black,
                 ),
               const SizedBox(width: 8),
               Expanded(
@@ -196,8 +213,33 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
                   ),
                   const SizedBox(height: 16),
                   Expanded(
-                    child: SingleChildScrollView(
-                        child: _buildFileSystemEntityTree(_files, 0)),
+                    child: KeyboardListener(
+                      focusNode: _focusNode,
+                      autofocus: true,
+                      onKeyEvent: (event) {
+                        print(event.logicalKey);
+                        switch (event) {
+                          case KeyDownEvent()
+                              when event.logicalKey ==
+                                      LogicalKeyboardKey.controlLeft ||
+                                  event.logicalKey ==
+                                      LogicalKeyboardKey.controlRight:
+                            _isControlPressed = true;
+                            break;
+                          case KeyUpEvent()
+                              when event.logicalKey ==
+                                      LogicalKeyboardKey.controlLeft ||
+                                  event.logicalKey ==
+                                      LogicalKeyboardKey.controlRight:
+                            _isControlPressed = false;
+                            break;
+                          default:
+                        }
+                      },
+                      child: SingleChildScrollView(
+                        child: _buildFileSystemEntityTree(_files, 0),
+                      ),
+                    ),
                   ),
                 ],
               ),

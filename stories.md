@@ -133,3 +133,7 @@ An item is changed to the selected state if one of these conditions met:
 - It's clicked while it's in the unselected state.
 - It's clicked while it's in the selected state AND it's a folder item.
   Only one item is in the selected state at a time.
+
+## Story 18:
+
+In addition to current features, implement the multi-select feature. This feature is enabled if the users are holding the Control key on the keyboard. The implementation must detect when the key is pressed.
