@@ -153,3 +153,7 @@ The LongPressDraggable must be placed in the FileExplorerSection widget, NOT the
 ## Story 21:
 
 Highlight the DragTarget box when the object enters the area. When the object is dropped, show the data as list of string separated by commas.
+
+## Story 22:
+
+Display the relative path to the root folder instead of showing the full path of each item in the variable section that has the "sources" type.

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:volta/models/tool.dart';
 import 'package:volta/models/variable.dart';
+import 'package:volta/screens/home_screen/file_explorer_state.dart';
 
 class VariableSection extends StatefulWidget {
   final Tool selectedTool;
@@ -21,6 +23,8 @@ class _VariableSectionState extends State<VariableSection> {
 
   @override
   Widget build(BuildContext context) {
+    final fileExplorerState = Provider.of<FileExplorerState>(context);
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -99,31 +103,37 @@ class _VariableSectionState extends State<VariableSection> {
                                     ),
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      if (_selectedPaths.isEmpty) ...[
-                                        const Icon(Icons.upload_file,
-                                            size: 48, color: Colors.grey),
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          'Drag and drop your sources here',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge
-                                              ?.copyWith(color: Colors.grey),
+                                  child: _selectedPaths.isNotEmpty
+                                      ? Wrap(
+                                          spacing: 4,
+                                          runSpacing: 4,
+                                          children: _selectedPaths
+                                              .map((path) => Chip(
+                                                    label: Text(
+                                                      fileExplorerState
+                                                          .getDisplayFileName(
+                                                              path),
+                                                    ),
+                                                  ))
+                                              .toList(),
                                         )
-                                      ],
-                                      if (_selectedPaths.isNotEmpty)
-                                        Text(
-                                          _selectedPaths.join(', '),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.copyWith(color: Colors.black),
+                                      : Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(Icons.upload_file,
+                                                size: 48, color: Colors.grey),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              'Drag and drop your sources here',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge
+                                                  ?.copyWith(
+                                                      color: Colors.grey),
+                                            )
+                                          ],
                                         ),
-                                    ],
-                                  ),
                                 );
                               },
                             ),

@@ -109,9 +109,8 @@ class FileExplorerState extends ChangeNotifier {
     return true;
   }
 
-  String getDisplayFileName(FileSystemEntity entity) {
+  String getDisplayFileName(String path) {
     try {
-      final path = entity.path;
       final parts = path.split(Platform.pathSeparator);
       final rootFolderPath = selectedFolderPath;
       if (rootFolderPath != null && path.startsWith(rootFolderPath)) {
@@ -124,7 +123,7 @@ class FileExplorerState extends ChangeNotifier {
     } catch (e) {
       // Log the error or display it to the UI
       print('Error getting display file name: $e');
-      return entity.path.split(Platform.pathSeparator).last;
+      return path.split(Platform.pathSeparator).last;
     }
   }
 }

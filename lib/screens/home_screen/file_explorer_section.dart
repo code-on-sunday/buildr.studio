@@ -13,7 +13,7 @@ class FileExplorerSection extends StatelessWidget {
     int level,
     FileExplorerState fileExplorerState,
   ) {
-    final fileName = fileExplorerState.getDisplayFileName(entity);
+    final fileName = fileExplorerState.getDisplayFileName(entity.path);
     final isSelected = fileExplorerState.isSelected[entity.path] ?? false;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -149,6 +149,7 @@ class FileExplorerSection extends StatelessWidget {
                         data: fileExplorerState.selectedPaths,
                         dragAnchorStrategy: pointerDragAnchorStrategy,
                         feedback: const CollectionIcon(),
+                        delay: const Duration(milliseconds: 150),
                         child: _buildFileSystemEntityTree(
                           context,
                           fileExplorerState.files,
