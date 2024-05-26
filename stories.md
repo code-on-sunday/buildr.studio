@@ -157,3 +157,7 @@ Highlight the DragTarget box when the object enters the area. When the object is
 ## Story 22:
 
 Display the relative path to the root folder instead of showing the full path of each item in the variable section that has the "sources" type.
+
+## Story 23:
+
+Show folder icon in the Chip if the selected path is of a folder.

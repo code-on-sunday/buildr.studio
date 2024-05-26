@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:volta/models/tool.dart';
@@ -111,15 +113,34 @@ class _VariableSectionState extends State<VariableSection> {
                                       ? Wrap(
                                           spacing: 4,
                                           runSpacing: 4,
-                                          children: _selectedPaths
-                                              .map((path) => Chip(
-                                                    label: Text(
+                                          children: _selectedPaths.map((path) {
+                                            try {
+                                              final isFolder = FileSystemEntity
+                                                  .isDirectorySync(path);
+                                              return Chip(
+                                                label: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    if (isFolder)
+                                                      const Icon(Icons.folder,
+                                                          size: 18),
+                                                    const SizedBox(width: 4),
+                                                    Text(
                                                       fileExplorerState
                                                           .getDisplayFileName(
                                                               path),
                                                     ),
-                                                  ))
-                                              .toList(),
+                                                  ],
+                                                ),
+                                              );
+                                            } catch (e) {
+                                              // Log the error or display it to the UI
+                                              print(
+                                                  'Error checking file type: $e');
+                                              return const SizedBox.shrink();
+                                            }
+                                          }).toList(),
                                         )
                                       : Column(
                                           mainAxisAlignment:
