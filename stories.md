@@ -149,3 +149,7 @@ The implementation should use the standard drag and drop mechanism of Flutter.
 As the user long presses on the LongPressDraggable in the FileExplorerSection widget, a collection icon widget appears beneath the user's finger, and the user drags the icon widget to the DragTarget in the variable section and releases it. The DragTarget will receive the list of paths of selected items, which can read from the FileExplorerState, when users release. Since the data should be read from the FileExplorerState, the FileExploreSection must not need to be turned into a StatefulWidget.
 
 The LongPressDraggable must be placed in the FileExplorerSection widget, NOT the variable section.
+
+## Story 21:
+
+Highlight the DragTarget box when the object enters the area. When the object is dropped, show the data as list of string separated by commas.

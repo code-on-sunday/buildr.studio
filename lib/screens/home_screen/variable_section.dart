@@ -17,6 +17,8 @@ class VariableSection extends StatefulWidget {
 }
 
 class _VariableSectionState extends State<VariableSection> {
+  List<String> _selectedPaths = [];
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -80,33 +82,46 @@ class _VariableSectionState extends State<VariableSection> {
                           else if (variable.inputType == 'sources')
                             DragTarget<List<String>>(
                               onAcceptWithDetails: (details) {
-                                final selectedPaths = details.data;
-                                // Handle the selected paths here
-                                print('Selected paths: $selectedPaths');
+                                setState(() {
+                                  _selectedPaths = details.data;
+                                });
                               },
                               builder: (context, candidateData, rejectedData) {
+                                final isHighlighted = candidateData.isNotEmpty;
                                 return Container(
                                   padding: const EdgeInsets.all(16.0),
                                   decoration: BoxDecoration(
                                     border: Border.all(
-                                      color: Colors.grey.shade400,
-                                      width: 2.0,
+                                      color: isHighlighted
+                                          ? Colors.orange
+                                          : Colors.grey.shade400,
+                                      width: isHighlighted ? 4.0 : 2.0,
                                     ),
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      const Icon(Icons.upload_file,
-                                          size: 48, color: Colors.grey),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        'Drag and drop your sources here',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge
-                                            ?.copyWith(color: Colors.grey),
-                                      ),
+                                      if (_selectedPaths.isEmpty) ...[
+                                        const Icon(Icons.upload_file,
+                                            size: 48, color: Colors.grey),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          'Drag and drop your sources here',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(color: Colors.grey),
+                                        )
+                                      ],
+                                      if (_selectedPaths.isNotEmpty)
+                                        Text(
+                                          _selectedPaths.join(', '),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(color: Colors.black),
+                                        ),
                                     ],
                                   ),
                                 );
