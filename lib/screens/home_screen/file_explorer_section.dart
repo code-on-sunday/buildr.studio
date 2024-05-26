@@ -21,10 +21,14 @@ class FileExplorerSection extends StatelessWidget {
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () {
-          if (entity is Directory) {
-            fileExplorerState.toggleExpansion(entity);
+          if (fileExplorerState.isControlPressed) {
+            fileExplorerState.toggleSelection(entity);
+          } else {
+            if (entity is Directory) {
+              fileExplorerState.toggleExpansion(entity);
+            }
+            fileExplorerState.toggleSelection(entity);
           }
-          fileExplorerState.toggleSelection(entity);
         },
         child: Container(
           color: isSelected ? Colors.black : Colors.transparent,
@@ -36,7 +40,9 @@ class FileExplorerSection extends StatelessWidget {
                   quarterTurns: isExpanded ? 1 : 0,
                   child: GestureDetector(
                     onTap: () {
-                      fileExplorerState.toggleExpansion(entity);
+                      if (!fileExplorerState.isControlPressed || !isSelected) {
+                        fileExplorerState.toggleExpansion(entity);
+                      }
                     },
                     child: Icon(
                       isExpanded ? Icons.chevron_right : Icons.chevron_right,

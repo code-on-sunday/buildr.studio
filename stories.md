@@ -169,3 +169,7 @@ Show folder icon in the Chip if the selected path is of a folder.
 ## Story 25:
 
 Click on the chevron icon at the beginning of the folder item will expand it but won't change its selected state.
+
+## Story 26:
+
+While the ctrl key is pressed, clicking on that folder item should only change its selection state and won't change its expansion state.
