@@ -165,3 +165,7 @@ Show folder icon in the Chip if the selected path is of a folder.
 ## Story 24:
 
 Show folder icon in the Chip if the selected path is of a folder.
+
+## Story 25:
+
+Click on the chevron icon at the beginning of the folder item will expand it but won't change its selected state.

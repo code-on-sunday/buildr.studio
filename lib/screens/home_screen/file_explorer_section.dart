@@ -15,11 +15,15 @@ class FileExplorerSection extends StatelessWidget {
   ) {
     final fileName = fileExplorerState.getDisplayFileName(entity.path);
     final isSelected = fileExplorerState.isSelected[entity.path] ?? false;
+    final isExpanded = fileExplorerState.isExpanded[entity.path] ?? false;
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () {
-          fileExplorerState.toggleExpansion(entity);
+          if (entity is Directory) {
+            fileExplorerState.toggleExpansion(entity);
+          }
           fileExplorerState.toggleSelection(entity);
         },
         child: Container(
@@ -29,15 +33,15 @@ class FileExplorerSection extends StatelessWidget {
             children: [
               if (entity is Directory)
                 RotatedBox(
-                  quarterTurns:
-                      fileExplorerState.isExpanded[entity.path] ?? false
-                          ? 1
-                          : 0,
-                  child: Icon(
-                    fileExplorerState.isExpanded[entity.path] ?? false
-                        ? Icons.chevron_right
-                        : Icons.chevron_right,
-                    color: isSelected ? Colors.white : Colors.black,
+                  quarterTurns: isExpanded ? 1 : 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      fileExplorerState.toggleExpansion(entity);
+                    },
+                    child: Icon(
+                      isExpanded ? Icons.chevron_right : Icons.chevron_right,
+                      color: isSelected ? Colors.white : Colors.black,
+                    ),
                   ),
                 )
               else
