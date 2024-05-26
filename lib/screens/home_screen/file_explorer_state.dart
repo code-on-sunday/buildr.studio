@@ -102,4 +102,23 @@ class FileExplorerState extends ChangeNotifier {
     }
     return true;
   }
+
+  String getDisplayFileName(FileSystemEntity entity) {
+    try {
+      final path = entity.path;
+      final parts = path.split(Platform.pathSeparator);
+      final rootFolderPath = selectedFolderPath;
+      if (rootFolderPath != null && path.startsWith(rootFolderPath)) {
+        final relativePath = path.substring(rootFolderPath.length + 1);
+        final fileName = relativePath.split(Platform.pathSeparator).last;
+        return fileName;
+      } else {
+        return parts.last;
+      }
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error getting display file name: $e');
+      return entity.path.split(Platform.pathSeparator).last;
+    }
+  }
 }

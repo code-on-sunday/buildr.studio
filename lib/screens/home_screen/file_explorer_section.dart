@@ -4,24 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:volta/screens/home_screen/file_explorer_state.dart';
 
-class FileExplorerSection extends StatefulWidget {
+class FileExplorerSection extends StatelessWidget {
   const FileExplorerSection({super.key});
 
-  @override
-  _FileExplorerSectionState createState() => _FileExplorerSectionState();
-}
-
-class _FileExplorerSectionState extends State<FileExplorerSection> {
-  Widget _buildFileSystemEntityTile(FileSystemEntity entity, int level) {
-    final fileName = _getDisplayFileName(entity);
-    final isSelected =
-        context.watch<FileExplorerState>().isSelected[entity.path] ?? false;
+  Widget _buildFileSystemEntityTile(
+    BuildContext context,
+    FileSystemEntity entity,
+    int level,
+    FileExplorerState fileExplorerState,
+  ) {
+    final fileName = fileExplorerState.getDisplayFileName(entity);
+    final isSelected = fileExplorerState.isSelected[entity.path] ?? false;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () {
-          context.read<FileExplorerState>().toggleExpansion(entity);
-          context.read<FileExplorerState>().toggleSelection(entity);
+          fileExplorerState.toggleExpansion(entity);
+          fileExplorerState.toggleSelection(entity);
         },
         child: Container(
           color: isSelected ? Colors.black : Colors.transparent,
@@ -30,17 +29,12 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
             children: [
               if (entity is Directory)
                 RotatedBox(
-                  quarterTurns: context
-                              .watch<FileExplorerState>()
-                              .isExpanded[entity.path] ??
-                          false
-                      ? 1
-                      : 0,
+                  quarterTurns:
+                      fileExplorerState.isExpanded[entity.path] ?? false
+                          ? 1
+                          : 0,
                   child: Icon(
-                    context
-                                .watch<FileExplorerState>()
-                                .isExpanded[entity.path] ??
-                            false
+                    fileExplorerState.isExpanded[entity.path] ?? false
                         ? Icons.chevron_right
                         : Icons.chevron_right,
                     color: isSelected ? Colors.white : Colors.black,
@@ -72,28 +66,12 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
     );
   }
 
-  String _getDisplayFileName(FileSystemEntity entity) {
-    try {
-      final path = entity.path;
-      final parts = path.split(Platform.pathSeparator);
-      final rootFolderPath =
-          context.read<FileExplorerState>().selectedFolderPath;
-      if (rootFolderPath != null && path.startsWith(rootFolderPath)) {
-        final relativePath = path.substring(rootFolderPath.length + 1);
-        final fileName = relativePath.split(Platform.pathSeparator).last;
-        return fileName;
-      } else {
-        return parts.last;
-      }
-    } catch (e) {
-      // Log the error or display it to the UI
-      print('Error getting display file name: $e');
-      return entity.path.split(Platform.pathSeparator).last;
-    }
-  }
-
   Widget _buildFileSystemEntityTree(
-      List<FileSystemEntity> entities, int level) {
+    BuildContext context,
+    List<FileSystemEntity> entities,
+    int level,
+  ) {
+    final fileExplorerState = context.read<FileExplorerState>();
     final folders = <Directory>[];
     final files = <File>[];
 
@@ -115,15 +93,16 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: sortedEntities.map((entity) {
         if (entity is Directory &&
-            (context.watch<FileExplorerState>().isExpanded[entity.path] ??
-                false)) {
+            (fileExplorerState.isExpanded[entity.path] ?? false)) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildFileSystemEntityTile(entity, level),
+              _buildFileSystemEntityTile(
+                  context, entity, level, fileExplorerState),
               Padding(
                 padding: const EdgeInsets.only(left: 16),
                 child: _buildFileSystemEntityTree(
+                  context,
                   Directory(entity.path).listSync().toList(),
                   level + 1,
                 ),
@@ -131,7 +110,8 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
             ],
           );
         } else {
-          return _buildFileSystemEntityTile(entity, level);
+          return _buildFileSystemEntityTile(
+              context, entity, level, fileExplorerState);
         }
       }).toList(),
     );
@@ -139,14 +119,15 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
 
   @override
   Widget build(BuildContext context) {
+    final fileExplorerState = context.watch<FileExplorerState>();
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (context.watch<FileExplorerState>().selectedFolderPath == null)
+          if (fileExplorerState.selectedFolderPath == null)
             ElevatedButton(
-              onPressed: context.read<FileExplorerState>().openFolder,
+              onPressed: fileExplorerState.openFolder,
               child: const Text('Open Project'),
             )
           else
@@ -155,7 +136,7 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Opened Folder: ${context.watch<FileExplorerState>().selectedFolderPath}',
+                    'Opened Folder: ${fileExplorerState.selectedFolderPath}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -165,7 +146,8 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
                   Expanded(
                     child: SingleChildScrollView(
                       child: _buildFileSystemEntityTree(
-                        context.watch<FileExplorerState>().files,
+                        context,
+                        fileExplorerState.files,
                         0,
                       ),
                     ),
