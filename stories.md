@@ -173,3 +173,7 @@ Click on the chevron icon at the beginning of the folder item will expand it but
 ## Story 26:
 
 While the ctrl key is pressed, clicking on that folder item should only change its selection state and won't change its expansion state.
+
+## Story 27:
+
+When starting to drag content from file explorer, the selected paths should exclude files or folders that are descendants of any selected folders.

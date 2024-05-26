@@ -32,10 +32,23 @@ class FileExplorerState extends ChangeNotifier {
   bool get isControlPressed => _isControlPressed;
   String? get selectedFolderPath => _selectedFolderPath;
   List<String> get selectedPaths {
-    return _isSelected.entries
-        .where((entry) => entry.value)
-        .map((entry) => entry.key)
-        .toList();
+    final selectedPaths = <String>[];
+    final selectedEntries = _isSelected.entries.where((entry) => entry.value);
+    for (final entry in selectedEntries) {
+      if (entry.value) {
+        bool isDescendant = false;
+        for (final folderPath in selectedEntries.map((e) => e.key)) {
+          if (entry.key.startsWith(folderPath) && entry.key != folderPath) {
+            isDescendant = true;
+            break;
+          }
+        }
+        if (!isDescendant) {
+          selectedPaths.add(entry.key);
+        }
+      }
+    }
+    return selectedPaths;
   }
 
   Future<void> openFolder() async {
