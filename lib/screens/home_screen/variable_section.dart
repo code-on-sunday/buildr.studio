@@ -95,6 +95,10 @@ class _VariableSectionState extends State<VariableSection> {
                                 return Container(
                                   padding: const EdgeInsets.all(16.0),
                                   decoration: BoxDecoration(
+                                    color: isHighlighted ||
+                                            _selectedPaths.isNotEmpty
+                                        ? Colors.orange.shade50
+                                        : null,
                                     border: Border.all(
                                       color: isHighlighted
                                           ? Colors.orange
