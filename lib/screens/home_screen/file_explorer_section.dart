@@ -22,17 +22,17 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
   Map<String, bool> _isExpanded = {};
   Map<String, bool> _isSelected = {};
   bool _isControlPressed = false;
-  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _loadFiles(widget.selectedFolderPath);
+    ServicesBinding.instance.keyboard.addHandler(_onKeyEvent);
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    ServicesBinding.instance.keyboard.removeHandler(_onKeyEvent);
     super.dispose();
   }
 
@@ -42,6 +42,25 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
     if (widget.selectedFolderPath != oldWidget.selectedFolderPath) {
       _loadFiles(widget.selectedFolderPath);
     }
+  }
+
+  bool _onKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.controlLeft ||
+          event.logicalKey == LogicalKeyboardKey.controlRight) {
+        setState(() {
+          _isControlPressed = true;
+        });
+      }
+    } else if (event is KeyUpEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.controlLeft ||
+          event.logicalKey == LogicalKeyboardKey.controlRight) {
+        setState(() {
+          _isControlPressed = false;
+        });
+      }
+    }
+    return true;
   }
 
   Future<void> _loadFiles(String? folderPath) async {
@@ -213,32 +232,8 @@ class _FileExplorerSectionState extends State<FileExplorerSection> {
                   ),
                   const SizedBox(height: 16),
                   Expanded(
-                    child: KeyboardListener(
-                      focusNode: _focusNode,
-                      autofocus: true,
-                      onKeyEvent: (event) {
-                        print(event.logicalKey);
-                        switch (event) {
-                          case KeyDownEvent()
-                              when event.logicalKey ==
-                                      LogicalKeyboardKey.controlLeft ||
-                                  event.logicalKey ==
-                                      LogicalKeyboardKey.controlRight:
-                            _isControlPressed = true;
-                            break;
-                          case KeyUpEvent()
-                              when event.logicalKey ==
-                                      LogicalKeyboardKey.controlLeft ||
-                                  event.logicalKey ==
-                                      LogicalKeyboardKey.controlRight:
-                            _isControlPressed = false;
-                            break;
-                          default:
-                        }
-                      },
-                      child: SingleChildScrollView(
-                        child: _buildFileSystemEntityTree(_files, 0),
-                      ),
+                    child: SingleChildScrollView(
+                      child: _buildFileSystemEntityTree(_files, 0),
                     ),
                   ),
                 ],
