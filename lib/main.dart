@@ -5,6 +5,8 @@ import 'package:volta/repositories/tool_repository.dart';
 import 'package:volta/screens/home_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  setupDependencyInjection();
   runApp(const MyApp());
 }
 
@@ -23,28 +25,14 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    setupDependencyInjection();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: GetIt.I.allReady(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const MaterialApp(
-              home: Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            );
-          }
-          return MaterialApp(
-            title: 'Tool App',
-            theme: AppTheme.blackAndWhiteTheme,
-            home: const HomeScreen(),
-          );
-        });
+    return MaterialApp(
+      title: 'Tool App',
+      theme: AppTheme.blackAndWhiteTheme,
+      home: const HomeScreen(),
+    );
   }
 }

@@ -24,6 +24,12 @@ class HomeScreenState extends ChangeNotifier {
   bool get isSidebarVisible => _isSidebarVisible;
   int get selectedNavRailIndex => _selectedNavRailIndex;
 
+  @override
+  void dispose() {
+    print('Disposing HomeScreenState');
+    super.dispose();
+  }
+
   Future<void> _loadTools() async {
     try {
       _tools = await _toolRepository.getTools();

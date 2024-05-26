@@ -149,7 +149,6 @@ class FileExplorerSection extends StatelessWidget {
                         data: fileExplorerState.selectedPaths,
                         dragAnchorStrategy: pointerDragAnchorStrategy,
                         feedback: const CollectionIcon(),
-                        delay: const Duration(milliseconds: 150),
                         child: _buildFileSystemEntityTree(
                           context,
                           fileExplorerState.files,
