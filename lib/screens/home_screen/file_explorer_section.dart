@@ -145,10 +145,15 @@ class FileExplorerSection extends StatelessWidget {
                   const SizedBox(height: 16),
                   Expanded(
                     child: SingleChildScrollView(
-                      child: _buildFileSystemEntityTree(
-                        context,
-                        fileExplorerState.files,
-                        0,
+                      child: LongPressDraggable<List<String>>(
+                        data: fileExplorerState.selectedPaths,
+                        dragAnchorStrategy: pointerDragAnchorStrategy,
+                        feedback: const CollectionIcon(),
+                        child: _buildFileSystemEntityTree(
+                          context,
+                          fileExplorerState.files,
+                          0,
+                        ),
                       ),
                     ),
                   ),
@@ -156,6 +161,26 @@ class FileExplorerSection extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class CollectionIcon extends StatelessWidget {
+  const CollectionIcon({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Icon(
+        Icons.collections,
+        color: Colors.white,
+        size: 24,
       ),
     );
   }

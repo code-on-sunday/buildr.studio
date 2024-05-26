@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:volta/models/tool.dart';
 import 'package:volta/models/variable.dart';
@@ -19,8 +17,6 @@ class VariableSection extends StatefulWidget {
 }
 
 class _VariableSectionState extends State<VariableSection> {
-  List<File> droppedFiles = [];
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -83,6 +79,11 @@ class _VariableSectionState extends State<VariableSection> {
                             )
                           else if (variable.inputType == 'sources')
                             DragTarget<List<String>>(
+                              onAcceptWithDetails: (details) {
+                                final selectedPaths = details.data;
+                                // Handle the selected paths here
+                                print('Selected paths: $selectedPaths');
+                              },
                               builder: (context, candidateData, rejectedData) {
                                 return Container(
                                   padding: const EdgeInsets.all(16.0),

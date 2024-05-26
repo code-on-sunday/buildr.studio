@@ -31,6 +31,12 @@ class FileExplorerState extends ChangeNotifier {
   Map<String, bool> get isSelected => _isSelected;
   bool get isControlPressed => _isControlPressed;
   String? get selectedFolderPath => _selectedFolderPath;
+  List<String> get selectedPaths {
+    return _isSelected.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
+  }
 
   Future<void> openFolder() async {
     try {
