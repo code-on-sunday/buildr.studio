@@ -203,3 +203,7 @@ Concatenated content must contains multiple file content, each file content in t
 ```
 CONTENT
 ```
+
+## Story 32:
+
+Show a Run button at the top right corner of the Home Screen. When users click on it, it calls the getConcatenatedContent function

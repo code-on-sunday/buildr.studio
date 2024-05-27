@@ -18,7 +18,7 @@ class VariableSectionState extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? getConcatenatedContent(BuildContext context, List<String> paths) {
+  String? getConcatenatedContent(BuildContext context) {
     try {
       final gitIgnoreContent =
           context.read<FileExplorerState>().gitIgnoreContent;
@@ -27,7 +27,7 @@ class VariableSectionState extends ChangeNotifier {
       }
 
       final concatenatedContent = StringBuffer();
-      for (final p in paths) {
+      for (final p in _selectedPaths) {
         final fileInfo = FileSystemEntity.typeSync(p);
         if (fileInfo == FileSystemEntityType.file) {
           final file = File(p);
@@ -55,7 +55,8 @@ class VariableSectionState extends ChangeNotifier {
           }
         }
       }
-      return concatenatedContent.toString().trim();
+      _concatenatedContent = concatenatedContent.toString().trim();
+      return _concatenatedContent;
     } catch (e) {
       // Log or display the error to the UI
       print('Error concatenating file contents: $e');
