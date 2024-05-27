@@ -207,3 +207,29 @@ CONTENT
 ## Story 32:
 
 Show a Run button at the top right corner of the Home Screen. When users click on it, it calls the getConcatenatedContent function
+
+## Story 33:
+
+The getVariables function is obsoleted because the tool-specific JSON file's format changed as the new one provided below. When a tool is selected, the tool-specific JSON file will be loaded to read the prompt and variables from. The new format here:
+
+````
+{
+  "prompt": "Given this existing implementation:\n<implementation>\n{{IMPLEMENTATION}}\n</implementation>\n\nApplying the vanilla state management solution of Flutter, modify the implementation to satisfy the feature below:\n<feature>\n{{FEATURE}}\n</feature>\n\nSome minimum requirements you MUST follow:\n- Errors must be logged or displayed to the UI.\n- If your response mentions a file in the implementation, the file name must be in snake case.\n- Only include the modified files in your response.\n\nRemember that the source code of each file in your response must be wrapped in a Markdown code block to be well formatted.\n\nThe response must contains multiple parts, each part has the following format:\n---<File name>---\n```dart\nSource code\n```",
+  "variables": [
+    {
+      "description": "Files that contains the implementation",
+      "hint_label": "Provide files that contains the implementation",
+      "input_type": "sources",
+      "name": "IMPLEMENTATION",
+      "value_format": "text"
+    },
+    {
+      "description": "Detailed requirements",
+      "hint_label": "Enter your detailed requirements",
+      "input_type": "text_field",
+      "name": "REQUIREMENTS",
+      "value_format": "text"
+    }
+  ]
+}
+````

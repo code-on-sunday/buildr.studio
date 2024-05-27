@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:volta/models/prompt.dart';
 import 'package:volta/models/tool.dart';
-import 'package:volta/models/variable.dart';
 
 class ToolRepository {
   Future<List<Tool>> getTools() async {
@@ -17,15 +17,17 @@ class ToolRepository {
     }
   }
 
-  Future<List<Variable>> getVariables(String toolId) async {
+  Future<Prompt> getPromptAndVariables(String toolId) async {
     try {
-      final variablesJson =
-          await rootBundle.loadString('assets/variables_$toolId.json');
-      final variablesData = json.decode(variablesJson) as List<dynamic>;
-      return variablesData.map((data) => Variable.fromJson(data)).toList();
+      final toolDataJson =
+          await rootBundle.loadString('assets/tools/$toolId.json');
+      final toolData = json.decode(toolDataJson) as Map<String, dynamic>;
+
+      final prompt = Prompt.fromJson(toolData);
+      return prompt;
     } catch (e) {
       // Log the error or display it to the UI
-      print('Error loading variables for tool $toolId: $e');
+      print('Error loading prompt and variables for tool $toolId: $e');
       rethrow;
     }
   }

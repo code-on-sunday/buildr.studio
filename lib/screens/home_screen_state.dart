@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:volta/models/prompt.dart';
 import 'package:volta/models/tool.dart';
-import 'package:volta/models/variable.dart';
 import 'package:volta/repositories/tool_repository.dart';
 
 class HomeScreenState extends ChangeNotifier {
@@ -9,7 +9,7 @@ class HomeScreenState extends ChangeNotifier {
   late final ToolRepository _toolRepository;
   List<Tool> _tools = [];
   Tool? _selectedTool;
-  List<Variable> _variables = [];
+  Prompt? _prompt;
   bool _isSidebarVisible = false;
   int _selectedNavRailIndex = 0;
 
@@ -20,22 +20,16 @@ class HomeScreenState extends ChangeNotifier {
 
   List<Tool> get tools => _tools;
   Tool? get selectedTool => _selectedTool;
-  List<Variable> get variables => _variables;
+  Prompt? get prompt => _prompt;
   bool get isSidebarVisible => _isSidebarVisible;
   int get selectedNavRailIndex => _selectedNavRailIndex;
-
-  @override
-  void dispose() {
-    print('Disposing HomeScreenState');
-    super.dispose();
-  }
 
   Future<void> _loadTools() async {
     try {
       _tools = await _toolRepository.getTools();
       if (_tools.isNotEmpty) {
         _selectedTool = _tools.first;
-        await _loadVariables(_selectedTool!.id);
+        await _loadPromptAndVariables(_selectedTool!.id);
       }
       notifyListeners();
     } catch (e) {
@@ -44,14 +38,14 @@ class HomeScreenState extends ChangeNotifier {
     }
   }
 
-  Future<void> _loadVariables(String toolId) async {
+  Future<void> _loadPromptAndVariables(String toolId) async {
     try {
-      _variables = await _toolRepository.getVariables(toolId);
+      _prompt = await _toolRepository.getPromptAndVariables(toolId);
       notifyListeners();
     } catch (e) {
-      // Log the error or display it to the US
-      print('Error loading variables for tool $toolId: $e');
-      _variables = [];
+      // Log the error or display it to the UI
+      print('Error loading prompt and variables for tool $toolId: $e');
+      _prompt = null;
       notifyListeners();
     }
   }
@@ -77,6 +71,6 @@ class HomeScreenState extends ChangeNotifier {
   void onToolSelected(Tool tool) {
     _selectedTool = tool;
     notifyListeners();
-    _loadVariables(tool.id);
+    _loadPromptAndVariables(tool.id);
   }
 }

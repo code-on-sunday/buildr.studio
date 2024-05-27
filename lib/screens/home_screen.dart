@@ -65,7 +65,7 @@ class HomeScreen extends StatelessWidget {
                           if (homeState.selectedTool != null)
                             VariableSection(
                               selectedTool: homeState.selectedTool!,
-                              variables: homeState.variables,
+                              variables: homeState.prompt?.variables ?? [],
                               variableSectionState: variableSectionState,
                             ),
                           const OutputSection(),
