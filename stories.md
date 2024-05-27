@@ -193,3 +193,13 @@ Grey out items that matches the rules in the `.gitignore` file in the root proje
 ## Story 30:
 
 A function that concatenates the content of all files inside the selected paths in the variable section, exceptions files excluded by the gitignore rules. The path that is used to check if it matches the gitignore rules must be the relative path to the root selected folder path of the file explorer.
+
+## Story 31:
+
+Each path in the paths arg of the getConcatenatedContent() function could be a file or a directory. Retrieve all the files.
+Concatenated content must contains multiple file content, each file content in the following format:
+---<file name>---
+
+```
+CONTENT
+```

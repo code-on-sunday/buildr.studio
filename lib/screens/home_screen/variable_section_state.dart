@@ -28,12 +28,31 @@ class VariableSectionState extends ChangeNotifier {
 
       final concatenatedContent = StringBuffer();
       for (final p in paths) {
-        final file = File(p);
-        final relativePath =
-            '${path.separator}${path.relative(p, from: context.read<FileExplorerState>().selectedFolderPath!)}';
-        if (!GitIgnoreChecker.isPathIgnored(gitIgnoreContent, relativePath)) {
-          concatenatedContent.write(file.readAsStringSync());
-          concatenatedContent.write('\n');
+        final fileInfo = FileSystemEntity.typeSync(p);
+        if (fileInfo == FileSystemEntityType.file) {
+          final file = File(p);
+          final relativePath =
+              '${path.separator}${path.relative(file.path, from: context.read<FileExplorerState>().selectedFolderPath!)}';
+          if (!GitIgnoreChecker.isPathIgnored(gitIgnoreContent, relativePath)) {
+            concatenatedContent.write('---${path.basename(p)}---\n```\n');
+            concatenatedContent.write(file.readAsStringSync());
+            concatenatedContent.write('\n```\n');
+          }
+        } else if (fileInfo == FileSystemEntityType.directory) {
+          final directory = Directory(p);
+          final files =
+              directory.listSync(recursive: true).whereType<File>().toList();
+          for (final file in files) {
+            final relativePath =
+                '${path.separator}${path.relative(file.path, from: context.read<FileExplorerState>().selectedFolderPath!)}';
+            if (!GitIgnoreChecker.isPathIgnored(
+                gitIgnoreContent, relativePath)) {
+              concatenatedContent
+                  .write('---${path.basename(file.path)}---\n```\n');
+              concatenatedContent.write(file.readAsStringSync());
+              concatenatedContent.write('\n```\n');
+            }
+          }
         }
       }
       return concatenatedContent.toString().trim();
