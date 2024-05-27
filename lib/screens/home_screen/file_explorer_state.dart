@@ -11,6 +11,7 @@ class FileExplorerState extends ChangeNotifier {
   Map<String, bool> _isSelected = {};
   bool _isControlPressed = false;
   String? _selectedFolderPath;
+  String? _gitIgnoreContent;
 
   FileExplorerState() {
     ServicesBinding.instance.keyboard.addHandler(
@@ -31,6 +32,7 @@ class FileExplorerState extends ChangeNotifier {
   Map<String, bool> get isSelected => _isSelected;
   bool get isControlPressed => _isControlPressed;
   String? get selectedFolderPath => _selectedFolderPath;
+  String? get gitIgnoreContent => _gitIgnoreContent;
   List<String> get selectedPaths {
     final selectedPaths = <String>[];
     final selectedEntries = _isSelected.entries.where((entry) => entry.value);
@@ -60,6 +62,7 @@ class FileExplorerState extends ChangeNotifier {
       _loadFiles(selectedDirectory);
       if (selectedDirectory != null) {
         _selectedFolderPath = selectedDirectory;
+        await _loadGitIgnoreContent();
         notifyListeners();
       }
     } catch (e) {
@@ -83,6 +86,22 @@ class FileExplorerState extends ChangeNotifier {
     } catch (e) {
       // Log the error or display it to the UI
       print('Error loading files: $e');
+    }
+  }
+
+  Future<void> _loadGitIgnoreContent() async {
+    try {
+      final gitIgnorePath = '$_selectedFolderPath/.gitignore';
+      if (await File(gitIgnorePath).exists()) {
+        final gitIgnoreFile = File(gitIgnorePath);
+        _gitIgnoreContent = await gitIgnoreFile.readAsString();
+      } else {
+        _gitIgnoreContent = null;
+      }
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error loading .gitignore file: $e');
+      _gitIgnoreContent = null;
     }
   }
 

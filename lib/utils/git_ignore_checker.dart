@@ -1,5 +1,7 @@
+import 'package:path/path.dart' as path;
+
 class GitIgnoreChecker {
-  static bool isPathIgnored(String gitIgnoreContent, String path) {
+  static bool isPathIgnored(String gitIgnoreContent, String pathToCheck) {
     try {
       final lines = gitIgnoreContent.split('\n');
       bool isIgnored = false;
@@ -9,10 +11,10 @@ class GitIgnoreChecker {
         if (trimmedRule.isNotEmpty) {
           if (trimmedRule.startsWith('!')) {
             isNegated = !isNegated;
-            if (_matchesRule(trimmedRule.substring(1).trim(), path)) {
+            if (_matchesRule(trimmedRule.substring(1).trim(), pathToCheck)) {
               isIgnored = !isIgnored;
             }
-          } else if (_matchesRule(trimmedRule, path)) {
+          } else if (_matchesRule(trimmedRule, pathToCheck)) {
             isIgnored = !isNegated;
           }
         }
@@ -25,21 +27,25 @@ class GitIgnoreChecker {
     }
   }
 
-  static bool _matchesRule(String rule, String path) {
-    // Handle different types of rules (e.g., literal matches, wildcards, negation)
-    if (rule.contains('*')) {
-      final regex = rule.replaceAll('.', '\\.').replaceAll('*', '.*');
-      return RegExp(regex).hasMatch(path);
-    } else if (rule.endsWith('/')) {
-      final ruleWithoutSlash = rule.substring(0, rule.length - 1);
-      return path.startsWith(ruleWithoutSlash) &&
-          (path == ruleWithoutSlash ||
-              path.substring(ruleWithoutSlash.length).contains('/'));
+  static bool _matchesRule(String rule, String pathToCheck) {
+    var normalizedPath = path.normalize(pathToCheck);
+    normalizedPath = normalizedPath.replaceAll(r'\', '/');
+    final normalizedRule = rule;
+
+    if (normalizedRule.contains('*')) {
+      final regex = normalizedRule.replaceAll('.', '\\.').replaceAll('*', '.*');
+      return RegExp(regex).hasMatch(normalizedPath);
+    } else if (normalizedRule.endsWith("/")) {
+      final ruleWithoutSlash =
+          normalizedRule.substring(0, normalizedRule.length - 1);
+      return normalizedPath.startsWith(ruleWithoutSlash) &&
+          (normalizedPath == ruleWithoutSlash ||
+              normalizedPath.substring(ruleWithoutSlash.length).contains("/"));
     } else {
-      final pathParts = path.split('/');
-      final ruleParts = rule.split('/');
-      if (ruleParts.length == 1 && !rule.startsWith("/")) {
-        return pathParts.contains(rule);
+      final pathParts = normalizedPath.split("/");
+      final ruleParts = normalizedRule.split("/");
+      if (ruleParts.length == 1 && !normalizedRule.startsWith("/")) {
+        return pathParts.contains(normalizedRule);
       }
       if (pathParts.length >= ruleParts.length) {
         for (int i = 0; i < ruleParts.length; i++) {

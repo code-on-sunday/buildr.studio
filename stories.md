@@ -185,3 +185,7 @@ A function that accepts the content of a Git ignore file and a path, return true
 Remember that Git ignore supports a wide range of rules. A simple check (e.g. filepath.contain(rule)) is not enough. An external package to handle that still hasn't existed yet.
 
 Add some test cases to cover all possible cases.
+
+## Story 29:
+
+Grey out items that matches the rules in the `.gitignore` file in the root project dir.

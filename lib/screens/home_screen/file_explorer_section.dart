@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:volta/screens/home_screen/file_explorer_state.dart';
+import 'package:volta/utils/git_ignore_checker.dart';
 
 class FileExplorerSection extends StatelessWidget {
   const FileExplorerSection({super.key});
@@ -16,6 +18,16 @@ class FileExplorerSection extends StatelessWidget {
     final fileName = fileExplorerState.getDisplayFileName(entity.path);
     final isSelected = fileExplorerState.isSelected[entity.path] ?? false;
     final isExpanded = fileExplorerState.isExpanded[entity.path] ?? false;
+    final isIgnored = fileExplorerState.gitIgnoreContent == null
+        ? false
+        : GitIgnoreChecker.isPathIgnored(
+            fileExplorerState.gitIgnoreContent!,
+            path.relative(entity.path,
+                from: fileExplorerState.selectedFolderPath!),
+          );
+
+    print(
+        "${path.relative(entity.path, from: fileExplorerState.selectedFolderPath!)} - $isIgnored");
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -46,7 +58,9 @@ class FileExplorerSection extends StatelessWidget {
                     },
                     child: Icon(
                       isExpanded ? Icons.chevron_right : Icons.chevron_right,
-                      color: isSelected ? Colors.white : Colors.black,
+                      color: isSelected
+                          ? Colors.white
+                          : (isIgnored ? Colors.grey : Colors.black),
                     ),
                   ),
                 )
@@ -54,7 +68,9 @@ class FileExplorerSection extends StatelessWidget {
                 Icon(
                   Icons.insert_drive_file,
                   size: 12,
-                  color: isSelected ? Colors.white : Colors.black,
+                  color: isSelected
+                      ? Colors.white
+                      : (isIgnored ? Colors.grey : Colors.black),
                 ),
               const SizedBox(width: 8),
               Expanded(
@@ -63,7 +79,9 @@ class FileExplorerSection extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
-                    color: isSelected ? Colors.white : Colors.black,
+                    color: isSelected
+                        ? Colors.white
+                        : (isIgnored ? Colors.grey : Colors.black),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
