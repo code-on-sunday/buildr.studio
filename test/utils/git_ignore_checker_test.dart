@@ -13,9 +13,9 @@ void main() {
 
     test('should return true if path matches a wildcard rule', () {
       const gitIgnoreContent = '*.txt';
-      expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'), isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'dir/file.txt'),
+      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/file.txt'),
+          isTrue);
+      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/dir/file.txt'),
           isTrue);
       expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.jpg'),
           isFalse);
@@ -25,8 +25,30 @@ void main() {
         'isPathIgnored should return true if path matches a directory rule with a trailing slash',
         () {
       const gitIgnoreContent = 'build/';
-      const path = 'build/output.txt';
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, path), isTrue);
+      expect(
+          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'build/output.txt'),
+          isTrue);
+      expect(
+          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/build/'), isTrue);
+      expect(
+          GitIgnoreChecker.isPathIgnored(
+              gitIgnoreContent, 'abc/build/output.txt'),
+          isTrue);
+    });
+
+    test(
+        'isPathIgnored should return true if path matches an absolute directory rule with a trailing slash',
+        () {
+      const gitIgnoreContent = '/build/';
+      expect(
+          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/build'), isTrue);
+      expect(
+          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/build/output.txt'),
+          isTrue);
+      expect(
+          GitIgnoreChecker.isPathIgnored(
+              gitIgnoreContent, 'abc/build/output.txt'),
+          isFalse);
     });
 
     test(

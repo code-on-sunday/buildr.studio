@@ -2,6 +2,9 @@ import 'package:path/path.dart' as path;
 
 class GitIgnoreChecker {
   static bool isPathIgnored(String gitIgnoreContent, String pathToCheck) {
+    if (pathToCheck.split(path.separator).contains(".git")) {
+      return true;
+    }
     try {
       final lines = gitIgnoreContent.split('\n');
       bool isIgnored = false;
@@ -28,8 +31,7 @@ class GitIgnoreChecker {
   }
 
   static bool _matchesRule(String rule, String pathToCheck) {
-    var normalizedPath = path.normalize(pathToCheck);
-    normalizedPath = normalizedPath.replaceAll(r'\', '/');
+    var normalizedPath = pathToCheck.replaceAll(r'\', '/');
     final normalizedRule = rule;
 
     if (normalizedRule.contains('*')) {
@@ -38,9 +40,9 @@ class GitIgnoreChecker {
     } else if (normalizedRule.endsWith("/")) {
       final ruleWithoutSlash =
           normalizedRule.substring(0, normalizedRule.length - 1);
-      return normalizedPath.startsWith(ruleWithoutSlash) &&
-          (normalizedPath == ruleWithoutSlash ||
-              normalizedPath.substring(ruleWithoutSlash.length).contains("/"));
+      return normalizedPath.startsWith(ruleWithoutSlash) ||
+          normalizedPath == ruleWithoutSlash ||
+          normalizedPath.contains('/$ruleWithoutSlash/');
     } else {
       final pathParts = normalizedPath.split("/");
       final ruleParts = normalizedRule.split("/");

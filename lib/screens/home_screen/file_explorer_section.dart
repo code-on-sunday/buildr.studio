@@ -18,30 +18,34 @@ class FileExplorerSection extends StatelessWidget {
     final fileName = fileExplorerState.getDisplayFileName(entity.path);
     final isSelected = fileExplorerState.isSelected[entity.path] ?? false;
     final isExpanded = fileExplorerState.isExpanded[entity.path] ?? false;
+    var normalizedPath =
+        '${path.separator}${path.relative(entity.path, from: fileExplorerState.selectedFolderPath!)}';
+    if (entity is Directory) {
+      normalizedPath += path.separator;
+    }
     final isIgnored = fileExplorerState.gitIgnoreContent == null
         ? false
         : GitIgnoreChecker.isPathIgnored(
             fileExplorerState.gitIgnoreContent!,
-            path.relative(entity.path,
-                from: fileExplorerState.selectedFolderPath!),
+            normalizedPath,
           );
 
-    print(
-        "${path.relative(entity.path, from: fileExplorerState.selectedFolderPath!)} - $isIgnored");
-
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
+      cursor:
+          isIgnored ? SystemMouseCursors.forbidden : SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: () {
-          if (fileExplorerState.isControlPressed) {
-            fileExplorerState.toggleSelection(entity);
-          } else {
-            if (entity is Directory) {
-              fileExplorerState.toggleExpansion(entity);
-            }
-            fileExplorerState.toggleSelection(entity);
-          }
-        },
+        onTap: isIgnored
+            ? null
+            : () {
+                if (fileExplorerState.isControlPressed) {
+                  fileExplorerState.toggleSelection(entity);
+                } else {
+                  if (entity is Directory) {
+                    fileExplorerState.toggleExpansion(entity);
+                  }
+                  fileExplorerState.toggleSelection(entity);
+                }
+              },
         child: Container(
           color: isSelected ? Colors.black : Colors.transparent,
           padding: const EdgeInsets.all(4),
