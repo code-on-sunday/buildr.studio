@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
-import 'package:volta/models/prompt.dart';
 import 'package:volta/models/tool.dart';
+import 'package:volta/models/tool_details.dart';
 
 class ToolRepository {
   Future<List<Tool>> getTools() async {
@@ -17,13 +17,13 @@ class ToolRepository {
     }
   }
 
-  Future<Prompt> getPromptAndVariables(String toolId) async {
+  Future<ToolDetails> getToolDetails(String toolId) async {
     try {
       final toolDataJson =
           await rootBundle.loadString('assets/tools/$toolId.json');
       final toolData = json.decode(toolDataJson) as Map<String, dynamic>;
 
-      final prompt = Prompt.fromJson(toolData);
+      final prompt = ToolDetails.fromJson(toolData);
       return prompt;
     } catch (e) {
       // Log the error or display it to the UI
