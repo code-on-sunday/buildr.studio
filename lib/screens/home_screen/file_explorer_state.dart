@@ -138,7 +138,7 @@ class FileExplorerState extends ChangeNotifier {
         notifyListeners();
       }
     }
-    return true;
+    return false;
   }
 
   String getDisplayFileName(String path) {
