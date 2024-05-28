@@ -237,3 +237,7 @@ The getVariables function is obsoleted because the tool-specific JSON file's for
 ## Story 34:
 
 Store the input value of each field, so that when the Run button is pressed, instead of calling the getConcatenatedContent function, it prints out the values of each field.
+
+## Story 35:
+
+The selected paths of each "sources" field should be kept separated by variable name. When the submit() function is called, the getConcatenatedContent function will be called on each "sources" field to print out the content.

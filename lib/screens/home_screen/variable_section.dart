@@ -41,7 +41,9 @@ class VariableSection extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: VariableInput(
                         variable: variable,
-                        selectedPaths: variableSectionState.selectedPaths,
+                        selectedPaths:
+                            variableSectionState.selectedPaths[variable.name] ??
+                                [],
                         onPathsSelected: variableSectionState.onPathsSelected,
                         onValueChanged: variableSectionState.setInputValue,
                       ),
@@ -57,7 +59,7 @@ class VariableSection extends StatelessWidget {
 class VariableInput extends StatefulWidget {
   final Variable variable;
   final List<String> selectedPaths;
-  final void Function(List<String>) onPathsSelected;
+  final void Function(String, List<String>) onPathsSelected;
   final void Function(String, String) onValueChanged;
 
   const VariableInput({
@@ -140,7 +142,9 @@ class _VariableInputState extends State<VariableInput> {
         else if (widget.variable.inputType == 'sources')
           SourcesInput(
             selectedPaths: widget.selectedPaths,
-            onPathsSelected: widget.onPathsSelected,
+            onPathsSelected: (paths) {
+              widget.onPathsSelected(widget.variable.name, paths);
+            },
           ),
       ],
     );

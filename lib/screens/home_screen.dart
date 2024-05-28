@@ -92,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                         right: 16,
                         child: ElevatedButton(
                           onPressed: () {
-                            variableSectionState.submit();
+                            variableSectionState.submit(context);
                           },
                           child: const Text('Run'),
                         ),
