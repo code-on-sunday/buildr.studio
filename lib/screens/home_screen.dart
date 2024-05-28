@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:volta/screens/home_screen/file_explorer_section.dart';
 import 'package:volta/screens/home_screen/file_explorer_state.dart';
 import 'package:volta/screens/home_screen/output_section.dart';
+import 'package:volta/screens/home_screen/settings_section.dart';
 import 'package:volta/screens/home_screen/sidebar.dart';
 import 'package:volta/screens/home_screen/sidebar_content.dart';
 import 'package:volta/screens/home_screen/variable_section.dart';
@@ -34,14 +35,20 @@ class HomeScreen extends StatelessWidget {
                 NavigationRail(
                   selectedIndex: homeState.selectedNavRailIndex,
                   onDestinationSelected: homeState.onNavRailItemTapped,
-                  destinations: const [
-                    NavigationRailDestination(
+                  destinations: [
+                    const NavigationRailDestination(
                       icon: Icon(Icons.build),
                       label: Text('Build'),
                     ),
-                    NavigationRailDestination(
+                    const NavigationRailDestination(
                       icon: Icon(Icons.folder),
                       label: Text('File Explorer'),
+                    ),
+                    NavigationRailDestination(
+                      icon: const Icon(Icons.settings),
+                      label: Text(homeState.isSettingsVisible
+                          ? 'Close Settings'
+                          : 'Settings'),
                     ),
                   ],
                 ),
@@ -54,7 +61,9 @@ class HomeScreen extends StatelessWidget {
                             selectedTool: homeState.selectedTool,
                             onToolSelected: homeState.onToolSelected,
                           )
-                        : const FileExplorerSection(),
+                        : homeState.selectedNavRailIndex == 1
+                            ? const FileExplorerSection()
+                            : const SettingsSection(),
                   ),
                 Expanded(
                   child: Stack(
@@ -84,7 +93,9 @@ class HomeScreen extends StatelessWidget {
                                     selectedTool: homeState.selectedTool,
                                     onToolSelected: homeState.onToolSelected,
                                   )
-                                : const FileExplorerSection(),
+                                : homeState.selectedNavRailIndex == 1
+                                    ? const FileExplorerSection()
+                                    : const SettingsSection(),
                           ),
                         ),
                       Positioned(

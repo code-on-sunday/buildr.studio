@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:volta/models/tool.dart';
 import 'package:volta/models/tool_details.dart';
 import 'package:volta/repositories/tool_repository.dart';
+import 'package:volta/utils/api_key_manager.dart';
 
 class HomeScreenState extends ChangeNotifier {
   final BuildContext _context;
@@ -12,10 +13,12 @@ class HomeScreenState extends ChangeNotifier {
   ToolDetails? _prompt;
   bool _isSidebarVisible = false;
   int _selectedNavRailIndex = 0;
+  bool _isSettingsVisible = false;
 
   HomeScreenState(this._context) {
     _toolRepository = GetIt.I.get<ToolRepository>();
     _loadTools();
+    _loadApiKey();
   }
 
   List<Tool> get tools => _tools;
@@ -23,6 +26,7 @@ class HomeScreenState extends ChangeNotifier {
   ToolDetails? get prompt => _prompt;
   bool get isSidebarVisible => _isSidebarVisible;
   int get selectedNavRailIndex => _selectedNavRailIndex;
+  bool get isSettingsVisible => _isSettingsVisible;
 
   Future<void> _loadTools() async {
     try {
@@ -65,6 +69,11 @@ class HomeScreenState extends ChangeNotifier {
       }
     }
     _selectedNavRailIndex = index;
+    if (_selectedNavRailIndex == 2) {
+      _isSettingsVisible = !_isSettingsVisible;
+    } else {
+      _isSettingsVisible = false;
+    }
     notifyListeners();
   }
 
@@ -72,5 +81,31 @@ class HomeScreenState extends ChangeNotifier {
     _selectedTool = tool;
     notifyListeners();
     _loadPromptAndVariables(tool.id);
+  }
+
+  Future<void> _loadApiKey() async {
+    try {
+      final apiKey = await ApiKeyManager.getApiKey();
+      if (apiKey != null) {
+        // Set the API key in the environment variables or use it as needed
+        print('Loaded API key: $apiKey');
+      } else {
+        print('No API key found');
+      }
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error loading API key: $e');
+    }
+  }
+
+  Future<void> saveApiKey(String apiKey) async {
+    try {
+      await ApiKeyManager.saveApiKey(apiKey);
+      // Set the API key in the environment variables or use it as needed
+      print('API key saved: $apiKey');
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error saving API key: $e');
+    }
   }
 }

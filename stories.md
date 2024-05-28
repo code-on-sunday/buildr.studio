@@ -249,3 +249,7 @@ In the submit() function, create the prompt message by replacing placeholders (.
 ## Story 37:
 
 In the submit() function, call the Anthropic API to send the prompt and get the response message by using the anthropic_sdk_dart (the documentation below)
+
+## Story 38:
+
+There should be a Settings button on the navigation rail that has the UI to let users to input their Anthropic API key. The key then should be persisted on the machine.
