@@ -257,3 +257,9 @@ There should be a Settings button on the navigation rail that has the UI to let 
 ## Story 39:
 
 When submit, it should use the key read from the api key manager. Then, the response text should show in the output section. While waiting for the response, the text "Run" inside the Run button should be replaced by a circular loading indicator.
+
+## Story 40:
+
+All the content of the variable section needs to be hidden by default. The visibility of the section now is controlled by a button on top of the HomeScreen.
+
+When clicking on the Show input button, the card that contains the variable section content must slide from the outer right of the screen into the screen and align to the right of the screen.

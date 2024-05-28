@@ -68,17 +68,46 @@ class HomeScreen extends StatelessWidget {
                 Expanded(
                   child: Stack(
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (homeState.selectedTool != null)
-                            VariableSection(
-                              selectedTool: homeState.selectedTool!,
-                              variables: homeState.prompt?.variables ?? [],
-                              variableSectionState: variableSectionState,
-                            ),
-                          const OutputSection(),
-                        ],
+                      Positioned.fill(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            if (homeState.selectedTool != null)
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed:
+                                          homeState.toggleVariableSection,
+                                      child: Text(
+                                        homeState.isVariableSectionVisible
+                                            ? 'Hide Input'
+                                            : 'Show Input',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            const Expanded(child: OutputSection()),
+                          ],
+                        ),
+                      ),
+                      AnimatedPositioned(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        top: 0,
+                        bottom: 0,
+                        right: homeState.isVariableSectionVisible
+                            ? 0
+                            : -MediaQuery.of(context).size.width,
+                        child: VariableSection(
+                          selectedTool: homeState.selectedTool!,
+                          variables: homeState.prompt?.variables ?? [],
+                          variableSectionState: variableSectionState,
+                        ),
                       ),
                       if (!isLargeScreen && homeState.isSidebarVisible)
                         Positioned(

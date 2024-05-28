@@ -15,6 +15,7 @@ class HomeScreenState extends ChangeNotifier {
   int _selectedNavRailIndex = 0;
   bool _isSettingsVisible = false;
   String? _outputText;
+  bool _isVariableSectionVisible = false;
 
   HomeScreenState(this._context) {
     _toolRepository = GetIt.I.get<ToolRepository>();
@@ -28,6 +29,12 @@ class HomeScreenState extends ChangeNotifier {
   int get selectedNavRailIndex => _selectedNavRailIndex;
   bool get isSettingsVisible => _isSettingsVisible;
   String? get outputText => _outputText;
+  bool get isVariableSectionVisible => _isVariableSectionVisible;
+
+  void toggleVariableSection() {
+    _isVariableSectionVisible = !_isVariableSectionVisible;
+    notifyListeners();
+  }
 
   Future<void> _loadTools() async {
     try {

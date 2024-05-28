@@ -10,7 +10,7 @@ def concat_files(paths):
             file_name = os.path.basename(path)
             with open(path, "r") as f:
                 file_content = f.read()
-            result += f"---{file_name}---\n```dart\n{file_content}\n```\n\n"
+            result += f"---{path}---\n```dart\n{file_content}\n```\n\n"
         elif os.path.isdir(path):
             for root, _, files in os.walk(path):
                 for file in files:
@@ -18,7 +18,7 @@ def concat_files(paths):
                     file_name = os.path.basename(file_path)
                     with open(file_path, "r") as f:
                         file_content = f.read()
-                    result += f"---{file_name}---\n```dart\n{file_content}\n```\n\n"
+                    result += f"---{file_path}---\n```dart\n{file_content}\n```\n\n"
 
     return result
 
