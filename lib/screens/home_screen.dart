@@ -98,16 +98,6 @@ class HomeScreen extends StatelessWidget {
                                     : const SettingsSection(),
                           ),
                         ),
-                      Positioned(
-                        top: 16,
-                        right: 16,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            variableSectionState.submit(context);
-                          },
-                          child: const Text('Run'),
-                        ),
-                      ),
                     ],
                   ),
                 ),

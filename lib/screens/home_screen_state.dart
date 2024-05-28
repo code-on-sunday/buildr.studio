@@ -14,11 +14,11 @@ class HomeScreenState extends ChangeNotifier {
   bool _isSidebarVisible = false;
   int _selectedNavRailIndex = 0;
   bool _isSettingsVisible = false;
+  String? _outputText;
 
   HomeScreenState(this._context) {
     _toolRepository = GetIt.I.get<ToolRepository>();
     _loadTools();
-    _loadApiKey();
   }
 
   List<Tool> get tools => _tools;
@@ -27,6 +27,7 @@ class HomeScreenState extends ChangeNotifier {
   bool get isSidebarVisible => _isSidebarVisible;
   int get selectedNavRailIndex => _selectedNavRailIndex;
   bool get isSettingsVisible => _isSettingsVisible;
+  String? get outputText => _outputText;
 
   Future<void> _loadTools() async {
     try {
@@ -83,19 +84,8 @@ class HomeScreenState extends ChangeNotifier {
     _loadPromptAndVariables(tool.id);
   }
 
-  Future<void> _loadApiKey() async {
-    try {
-      final apiKey = await ApiKeyManager.getApiKey();
-      if (apiKey != null) {
-        // Set the API key in the environment variables or use it as needed
-        print('Loaded API key: $apiKey');
-      } else {
-        print('No API key found');
-      }
-    } catch (e) {
-      // Log the error or display it to the UI
-      print('Error loading API key: $e');
-    }
+  Future<String?> getApiKey() async {
+    return await ApiKeyManager.getApiKey();
   }
 
   Future<void> saveApiKey(String apiKey) async {
@@ -107,5 +97,10 @@ class HomeScreenState extends ChangeNotifier {
       // Log the error or display it to the UI
       print('Error saving API key: $e');
     }
+  }
+
+  void setOutputText(String text) {
+    _outputText = text;
+    notifyListeners();
   }
 }

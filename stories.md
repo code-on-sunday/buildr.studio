@@ -253,3 +253,7 @@ In the submit() function, call the Anthropic API to send the prompt and get the 
 ## Story 38:
 
 There should be a Settings button on the navigation rail that has the UI to let users to input their Anthropic API key. The key then should be persisted on the machine.
+
+## Story 39:
+
+When submit, it should use the key read from the api key manager. Then, the response text should show in the output section. While waiting for the response, the text "Run" inside the Run button should be replaced by a circular loading indicator.

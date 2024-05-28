@@ -12,10 +12,12 @@ class VariableSectionState extends ChangeNotifier {
   final Map<String, List<String>> _selectedPaths = {};
   final Map<String, String?> _concatenatedContents = {};
   final Map<String, String> _inputValues = {};
+  bool _isRunning = false;
 
   Map<String, List<String>> get selectedPaths => _selectedPaths;
   Map<String, String?> get concatenatedContents => _concatenatedContents;
   Map<String, String> get inputValues => _inputValues;
+  bool get isRunning => _isRunning;
 
   void onPathsSelected(String variableName, List<String> paths) {
     _selectedPaths[variableName] = paths;
@@ -81,7 +83,9 @@ class VariableSectionState extends ChangeNotifier {
   }
 
   Future<void> submit(BuildContext context) async {
-    print('Input values:');
+    _isRunning = true;
+    notifyListeners();
+
     for (final entry in _inputValues.entries) {
       print('${entry.key}: ${entry.value}');
     }
@@ -91,26 +95,16 @@ class VariableSectionState extends ChangeNotifier {
           getConcatenatedContent(context, variableName);
     }
 
-    print('Concatenated contents:');
-    for (final entry in _concatenatedContents.entries) {
-      final variableName = entry.key;
-      final content = entry.value;
-      if (content != null) {
-        print('$variableName:\n$content');
-      } else {
-        print('$variableName: No content available');
-      }
-    }
-
     final prompt = context.read<HomeScreenState>().prompt?.prompt;
     if (prompt != null) {
       final replacedPrompt = _replacePromptPlaceholders(prompt);
-      print('Prompt: $replacedPrompt');
 
       try {
-        final apiKey = Platform.environment['ANTHROPIC_API_KEY'];
+        final apiKey = await context.read<HomeScreenState>().getApiKey();
         if (apiKey == null) {
           print('Error: ANTHROPIC_API_KEY environment variable is not set.');
+          _isRunning = false;
+          notifyListeners();
           return;
         }
 
@@ -128,12 +122,18 @@ class VariableSectionState extends ChangeNotifier {
           ),
         );
 
-        print('Response: ${response.content.text}');
+        context.read<HomeScreenState>().setOutputText(response.content.text);
       } catch (e) {
         print('Error calling Anthropic API: $e');
+        context.read<HomeScreenState>().setOutputText('Error: $e');
+      } finally {
+        _isRunning = false;
+        notifyListeners();
       }
     } else {
       print('No prompt available');
+      _isRunning = false;
+      notifyListeners();
     }
   }
 
