@@ -9,12 +9,19 @@ import 'package:volta/utils/git_ignore_checker.dart';
 class VariableSectionState extends ChangeNotifier {
   List<String> _selectedPaths = [];
   String? _concatenatedContent;
+  final Map<String, String> _inputValues = {};
 
   List<String> get selectedPaths => _selectedPaths;
   String? get concatenatedContent => _concatenatedContent;
+  Map<String, dynamic> get inputValues => _inputValues;
 
   void onPathsSelected(List<String> paths) {
     _selectedPaths = paths;
+    notifyListeners();
+  }
+
+  void setInputValue(String variableName, String value) {
+    _inputValues[variableName] = value;
     notifyListeners();
   }
 
@@ -61,6 +68,13 @@ class VariableSectionState extends ChangeNotifier {
       // Log or display the error to the UI
       print('Error concatenating file contents: $e');
       return null;
+    }
+  }
+
+  void submit() {
+    print('Input values:');
+    for (final entry in _inputValues.entries) {
+      print('${entry.key}: ${entry.value}');
     }
   }
 }

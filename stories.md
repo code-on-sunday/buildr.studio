@@ -233,3 +233,7 @@ The getVariables function is obsoleted because the tool-specific JSON file's for
   ]
 }
 ````
+
+## Story 34:
+
+Store the input value of each field, so that when the Run button is pressed, instead of calling the getConcatenatedContent function, it prints out the values of each field.

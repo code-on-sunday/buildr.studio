@@ -92,15 +92,7 @@ class HomeScreen extends StatelessWidget {
                         right: 16,
                         child: ElevatedButton(
                           onPressed: () {
-                            final concatenatedContent = variableSectionState
-                                .getConcatenatedContent(context);
-                            if (concatenatedContent != null) {
-                              // Do something with the concatenated content, e.g., display it in the Output section
-                              print(concatenatedContent);
-                            } else {
-                              // Log or display the error to the UI
-                              print('Error getting concatenated content');
-                            }
+                            variableSectionState.submit();
                           },
                           child: const Text('Run'),
                         ),

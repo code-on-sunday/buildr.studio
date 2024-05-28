@@ -43,6 +43,7 @@ class VariableSection extends StatelessWidget {
                         variable: variable,
                         selectedPaths: variableSectionState.selectedPaths,
                         onPathsSelected: variableSectionState.onPathsSelected,
+                        onValueChanged: variableSectionState.setInputValue,
                       ),
                     ))
                 .toList(),
@@ -53,17 +54,38 @@ class VariableSection extends StatelessWidget {
   }
 }
 
-class VariableInput extends StatelessWidget {
+class VariableInput extends StatefulWidget {
   final Variable variable;
   final List<String> selectedPaths;
   final void Function(List<String>) onPathsSelected;
+  final void Function(String, String) onValueChanged;
 
   const VariableInput({
     super.key,
     required this.variable,
     required this.selectedPaths,
     required this.onPathsSelected,
+    required this.onValueChanged,
   });
+
+  @override
+  State<VariableInput> createState() => _VariableInputState();
+}
+
+class _VariableInputState extends State<VariableInput> {
+  late final TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,44 +95,52 @@ class VariableInput extends StatelessWidget {
         Row(
           children: [
             Text(
-              '<${variable.name.toUpperCase()}>',
+              '<${widget.variable.name.toUpperCase()}>',
               style: Theme.of(context)
                   .textTheme
                   .labelLarge!
                   .copyWith(fontWeight: FontWeight.bold),
             ),
             Tooltip(
-              message: variable.description,
+              message: widget.variable.description,
               child: const Icon(Icons.info_outline),
             )
           ],
         ),
         const SizedBox(height: 8),
-        if (variable.inputType == 'text_field')
+        if (widget.variable.inputType == 'text_field')
           TextField(
+            controller: _textController,
             decoration: InputDecoration(
-              hintText: variable.hintLabel,
+              hintText: widget.variable.hintLabel,
               border: const OutlineInputBorder(),
             ),
             maxLines: 3,
+            onChanged: (value) {
+              widget.onValueChanged(widget.variable.name, value);
+            },
           )
-        else if (variable.inputType == 'dropdown')
+        else if (widget.variable.inputType == 'dropdown')
           DropdownButtonFormField<String>(
-            hint: Text(variable.selectLabel!),
+            hint: Text(widget.variable.selectLabel!),
             items: [
-              ...?variable.sourceName
+              ...?widget.variable.sourceName
                   ?.split(',')
                   .map((option) => DropdownMenuItem(
                         value: option.trim(),
                         child: Text(option.trim()),
                       )),
             ],
-            onChanged: (value) {},
+            onChanged: (value) {
+              if (value != null) {
+                widget.onValueChanged(widget.variable.name, value);
+              }
+            },
           )
-        else if (variable.inputType == 'sources')
+        else if (widget.variable.inputType == 'sources')
           SourcesInput(
-            selectedPaths: selectedPaths,
-            onPathsSelected: onPathsSelected,
+            selectedPaths: widget.selectedPaths,
+            onPathsSelected: widget.onPathsSelected,
           ),
       ],
     );
