@@ -12,7 +12,10 @@ dependencies:
   fluent_ui: ^4.8.7
   flutter:
     sdk: flutter
+  flutter_markdown:
+    path: ./flutter_packages/packages/flutter_markdown
   get_it: ^7.7.0
+  markdown: ^7.2.2
   mockito: ^5.4.4
   path: ^1.9.0
   path_provider: ^2.1.3

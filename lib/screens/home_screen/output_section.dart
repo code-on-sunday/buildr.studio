@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:provider/provider.dart';
 import 'package:volta/screens/home_screen_state.dart';
 
@@ -28,16 +29,31 @@ class OutputSection extends StatelessWidget {
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      outputText ?? 'No output available.',
-                      style: const TextStyle(
-                        fontSize: 16,
+                child: Markdown(
+                  data: outputText ?? 'No output available.',
+                  selectable: true,
+                  onSelectionChanged: (text, selection, cause) {},
+                  buildPreWidget: (code, styleSheet, buildRichText) {
+                    return Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                    ),
-                  ),
+                      padding: const EdgeInsets.all(8.0),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: buildRichText(
+                          TextSpan(
+                            text: code,
+                            style: const TextStyle(
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),

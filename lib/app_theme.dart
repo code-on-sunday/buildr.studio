@@ -59,12 +59,10 @@ class AppTheme {
         ),
         bodyLarge: TextStyle(
           fontSize: 16.0,
-          fontWeight: FontWeight.bold,
           color: Colors.black,
         ),
         bodyMedium: TextStyle(
           fontSize: 14.0,
-          fontWeight: FontWeight.bold,
           color: Colors.black,
         ),
       ),
