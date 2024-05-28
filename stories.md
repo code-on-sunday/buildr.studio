@@ -245,3 +245,7 @@ The selected paths of each "sources" field should be kept separated by variable 
 ## Story 36:
 
 In the submit() function, create the prompt message by replacing placeholders (.e.g. "{{IMPLEMENTATION}}") by the corresponding variable value in the \_inputValues or \_concatenatedContents. The placeholder names should be generic.
+
+## Story 37:
+
+In the submit() function, call the Anthropic API to send the prompt and get the response message by using the anthropic_sdk_dart (the documentation below)

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
@@ -79,7 +80,7 @@ class VariableSectionState extends ChangeNotifier {
     }
   }
 
-  void submit(BuildContext context) {
+  Future<void> submit(BuildContext context) async {
     print('Input values:');
     for (final entry in _inputValues.entries) {
       print('${entry.key}: ${entry.value}');
@@ -105,6 +106,32 @@ class VariableSectionState extends ChangeNotifier {
     if (prompt != null) {
       final replacedPrompt = _replacePromptPlaceholders(prompt);
       print('Prompt: $replacedPrompt');
+
+      try {
+        final apiKey = Platform.environment['ANTHROPIC_API_KEY'];
+        if (apiKey == null) {
+          print('Error: ANTHROPIC_API_KEY environment variable is not set.');
+          return;
+        }
+
+        final client = AnthropicClient(apiKey: apiKey);
+        final response = await client.createMessage(
+          request: CreateMessageRequest(
+            model: const Model.model(Models.claude3Haiku20240307),
+            maxTokens: 4000,
+            messages: [
+              Message(
+                role: MessageRole.user,
+                content: MessageContent.text(replacedPrompt),
+              ),
+            ],
+          ),
+        );
+
+        print('Response: ${response.content.text}');
+      } catch (e) {
+        print('Error calling Anthropic API: $e');
+      }
     } else {
       print('No prompt available');
     }
