@@ -241,3 +241,7 @@ Store the input value of each field, so that when the Run button is pressed, ins
 ## Story 35:
 
 The selected paths of each "sources" field should be kept separated by variable name. When the submit() function is called, the getConcatenatedContent function will be called on each "sources" field to print out the content.
+
+## Story 36:
+
+In the submit() function, create the prompt message by replacing placeholders (.e.g. "{{IMPLEMENTATION}}") by the corresponding variable value in the \_inputValues or \_concatenatedContents. The placeholder names should be generic.

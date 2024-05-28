@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:volta/screens/home_screen/file_explorer_state.dart';
+import 'package:volta/screens/home_screen_state.dart';
 import 'package:volta/utils/git_ignore_checker.dart';
 
 class VariableSectionState extends ChangeNotifier {
@@ -99,5 +100,25 @@ class VariableSectionState extends ChangeNotifier {
         print('$variableName: No content available');
       }
     }
+
+    final prompt = context.read<HomeScreenState>().prompt?.prompt;
+    if (prompt != null) {
+      final replacedPrompt = _replacePromptPlaceholders(prompt);
+      print('Prompt: $replacedPrompt');
+    } else {
+      print('No prompt available');
+    }
+  }
+
+  String _replacePromptPlaceholders(String prompt) {
+    for (final entry in _inputValues.entries) {
+      prompt = prompt.replaceAll('{{${entry.key}}}', entry.value);
+    }
+
+    for (final entry in _concatenatedContents.entries) {
+      prompt = prompt.replaceAll('{{${entry.key}}}', entry.value ?? '');
+    }
+
+    return prompt;
   }
 }
