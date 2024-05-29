@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:context_menus/context_menus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:volta/screens/home_screen/file_explorer_state.dart';
@@ -30,72 +32,110 @@ class FileExplorerSection extends StatelessWidget {
             normalizedPath,
           );
 
-    return MouseRegion(
-      cursor:
-          isIgnored ? SystemMouseCursors.forbidden : SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: isIgnored
-            ? null
-            : () {
-                if (fileExplorerState.isControlPressed) {
-                  fileExplorerState.toggleSelection(entity);
-                } else {
-                  if (entity is Directory) {
-                    fileExplorerState.toggleExpansion(entity);
+    return ContextMenuRegion(
+      behavior: const [ContextMenuShowBehavior.secondaryTap],
+      contextMenu: GenericContextMenu(buttonConfigs: [
+        ContextMenuButtonConfig('Paste', onPressed: () {
+          if (!isIgnored) {
+            _pasteClipboardContent(context, entity, fileExplorerState);
+          }
+        }),
+      ]),
+      child: MouseRegion(
+        cursor:
+            isIgnored ? SystemMouseCursors.forbidden : SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: isIgnored
+              ? null
+              : () {
+                  if (fileExplorerState.isControlPressed) {
+                    fileExplorerState.toggleSelection(entity);
+                  } else {
+                    if (entity is Directory) {
+                      fileExplorerState.toggleExpansion(entity);
+                    }
+                    fileExplorerState.toggleSelection(entity);
                   }
-                  fileExplorerState.toggleSelection(entity);
-                }
-              },
-        child: Container(
-          color: isSelected ? Colors.black : Colors.transparent,
-          padding: const EdgeInsets.all(4),
-          child: Row(
-            children: [
-              if (entity is Directory)
-                RotatedBox(
-                  quarterTurns: isExpanded ? 1 : 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      if (!fileExplorerState.isControlPressed || !isSelected) {
-                        fileExplorerState.toggleExpansion(entity);
-                      }
-                    },
-                    child: Icon(
-                      isExpanded ? Icons.chevron_right : Icons.chevron_right,
-                      color: isSelected
-                          ? Colors.white
-                          : (isIgnored ? Colors.grey : Colors.black),
+                },
+          child: Container(
+            color: isSelected ? Colors.black : Colors.transparent,
+            padding: const EdgeInsets.all(4),
+            child: Row(
+              children: [
+                if (entity is Directory)
+                  RotatedBox(
+                    quarterTurns: isExpanded ? 1 : 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (!fileExplorerState.isControlPressed ||
+                            !isSelected) {
+                          fileExplorerState.toggleExpansion(entity);
+                        }
+                      },
+                      child: Icon(
+                        isExpanded ? Icons.chevron_right : Icons.chevron_right,
+                        color: isSelected
+                            ? Colors.white
+                            : (isIgnored ? Colors.grey : Colors.black),
+                      ),
                     ),
-                  ),
-                )
-              else
-                Icon(
-                  Icons.insert_drive_file,
-                  size: 12,
-                  color: isSelected
-                      ? Colors.white
-                      : (isIgnored ? Colors.grey : Colors.black),
-                ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  fileName,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
+                  )
+                else
+                  Icon(
+                    Icons.insert_drive_file,
+                    size: 12,
                     color: isSelected
                         ? Colors.white
                         : (isIgnored ? Colors.grey : Colors.black),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    fileName,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                      color: isSelected
+                          ? Colors.white
+                          : (isIgnored ? Colors.grey : Colors.black),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _pasteClipboardContent(
+    BuildContext context,
+    FileSystemEntity entity,
+    FileExplorerState fileExplorerState,
+  ) async {
+    try {
+      final clipboard = await Clipboard.getData(Clipboard.kTextPlain);
+      if (clipboard != null && clipboard.text != null) {
+        final file = File(entity.path);
+        await file.writeAsString(clipboard.text!);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Clipboard content pasted successfully.'),
+          ),
+        );
+      }
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error pasting clipboard content: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to paste clipboard content.'),
+        ),
+      );
+    }
   }
 
   Widget _buildFileSystemEntityTree(

@@ -1,3 +1,4 @@
+import 'package:context_menus/context_menus.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:re_highlight/languages/all.dart';
@@ -34,10 +35,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tool App',
-      theme: AppTheme.blackAndWhiteTheme,
-      home: const HomeScreen(),
+    return ContextMenuOverlay(
+      child: MaterialApp(
+        title: 'Tool App',
+        theme: AppTheme.blackAndWhiteTheme,
+        home: const HomeScreen(),
+      ),
     );
   }
 }

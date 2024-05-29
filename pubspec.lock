@@ -153,6 +153,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  context_menus:
+    dependency: "direct main"
+    description:
+      name: context_menus
+      sha256: "2c2002d7fd23462b1e123e2a444842645cb243aac0f0d0d3283115e4b1b750f5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0+1"
   convert:
     dependency: transitive
     description:

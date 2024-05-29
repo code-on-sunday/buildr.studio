@@ -289,3 +289,8 @@ typedef CodeWrapper = Widget Function(
 ## Story 44:
 
 Show a vertical three dots button next to the "Explorer: folder name" title in the file explorer section. Clicking on the button will show the menu that has 1 item: Change folder. Clicking on Change folder option will allow users to select other folder to replace the current one.
+
+## Story 45:
+
+Right click on a file item in the file explorer section will show a context menu that has the Paste option.
+Clicking on the Paste option will paste the clipboard content into the file at that path. The context menu must show next to the cursor.
