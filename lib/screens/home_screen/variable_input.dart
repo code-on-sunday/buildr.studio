@@ -70,7 +70,8 @@ class _VariableInputState extends State<VariableInput> {
               hintText: widget.variable.hintLabel,
               border: const OutlineInputBorder(),
             ),
-            maxLines: 3,
+            minLines: 4,
+            maxLines: 10,
             onChanged: (value) {
               widget.onValueChanged(widget.variable.name, value);
             },
