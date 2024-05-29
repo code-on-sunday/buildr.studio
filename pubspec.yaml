@@ -21,6 +21,7 @@ dependencies:
   path_provider: ^2.1.3
   provider: ^6.1.2
   shared_preferences: ^2.2.3
+  syntax_highlight: ^0.4.0
 
 dev_dependencies:
   flutter_test:

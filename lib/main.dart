@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:syntax_highlight/syntax_highlight.dart';
 import 'package:volta/app_theme.dart';
 import 'package:volta/repositories/tool_repository.dart';
 import 'package:volta/screens/home_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupDependencyInjection();
+  await setupDependencyInjection();
   runApp(const MyApp());
 }
 
-void setupDependencyInjection() {
+Future<void> setupDependencyInjection() async {
   GetIt.I.registerSingleton<ToolRepository>(ToolRepository());
+  await Highlighter.initialize(['dart', 'yaml', 'sql']);
+  var highlighterTheme = await HighlighterTheme.loadDarkTheme();
+  GetIt.I.registerSingleton(highlighterTheme);
 }
 
 class MyApp extends StatefulWidget {

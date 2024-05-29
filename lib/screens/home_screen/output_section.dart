@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
+import 'package:syntax_highlight/syntax_highlight.dart';
 import 'package:volta/screens/home_screen_state.dart';
 
 class OutputSection extends StatelessWidget {
@@ -36,19 +38,15 @@ class OutputSection extends StatelessWidget {
                   return Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: Colors.blueGrey[900],
                       borderRadius: BorderRadius.circular(4),
                     ),
                     padding: const EdgeInsets.all(8.0),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: buildRichText(
-                        TextSpan(
-                          text: code,
-                          style: const TextStyle(
-                            fontSize: 13,
-                          ),
-                        ),
+                        Highlighter(language: 'dart', theme: GetIt.I.get())
+                            .highlight(code),
                       ),
                     ),
                   );
