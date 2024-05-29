@@ -40,6 +40,9 @@ class FileExplorerSection extends StatelessWidget {
             _pasteClipboardContent(context, entity, fileExplorerState);
           }
         }),
+        ContextMenuButtonConfig('Open in VSCode', onPressed: () {
+          _openInVSCode(entity);
+        }),
       ]),
       child: MouseRegion(
         cursor:
@@ -109,6 +112,10 @@ class FileExplorerSection extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _openInVSCode(FileSystemEntity entity) {
+    Process.start("code", [entity.path], runInShell: true);
   }
 
   Future<void> _pasteClipboardContent(
