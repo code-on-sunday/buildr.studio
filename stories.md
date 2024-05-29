@@ -285,3 +285,7 @@ typedef CodeWrapper = Widget Function(
   String language,
 );
 ```
+
+## Story 44:
+
+Show a vertical three dots button next to the "Explorer: folder name" title in the file explorer section. Clicking on the button will show the menu that has 1 item: Change folder. Clicking on Change folder option will allow users to select other folder to replace the current one.
