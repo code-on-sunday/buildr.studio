@@ -269,3 +269,7 @@ When clicking on the Show input button, the card that contains the variable sect
 The "Clear values" button should clear all variables, especially the text fields.
 
 To implement, the VariableInput needs to listen to the clear event that will be emitted from a stream in the VariableSectionState to clear values in TextController
+
+## Story 42:
+
+Show another Run button next to the variables toggle button on the home screen

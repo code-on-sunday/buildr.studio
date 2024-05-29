@@ -76,16 +76,47 @@ class HomeScreen extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Tooltip(
                                       message: 'Show variables',
-                                      child: ElevatedButton(
+                                      child: OutlinedButton(
                                         onPressed:
                                             homeState.toggleVariableSection,
                                         child: const Text('{ }'),
                                       ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    SizedBox(
+                                      width: 300,
+                                      height: 40,
+                                      child: variableSectionState.isRunning
+                                          ? const FilledButton(
+                                              onPressed: null,
+                                              child: SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                            )
+                                          : FilledButton.icon(
+                                              onPressed: variableSectionState
+                                                      .isRunning
+                                                  ? null
+                                                  : () {
+                                                      try {
+                                                        variableSectionState
+                                                            .submit(context);
+                                                      } catch (e) {
+                                                        // Log the error or display it to the UI
+                                                        print('Error: $e');
+                                                      }
+                                                    },
+                                              label: const Text('Run'),
+                                              icon:
+                                                  const Icon(Icons.play_arrow),
+                                            ),
                                     ),
                                   ],
                                 ),

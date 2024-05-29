@@ -63,39 +63,43 @@ class VariableSection extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: OutlinedButton(
-                    onPressed: () {
-                      variableSectionState.clearValues();
-                    },
-                    child: Container(
-                        height: 40,
-                        alignment: Alignment.center,
-                        child: const Text('Clear values')),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: variableSectionState.isRunning
-                        ? null
-                        : () {
-                            variableSectionState.submit(context);
-                          },
-                    child: Container(
+                child: OutlinedButton(
+                  onPressed: () {
+                    variableSectionState.clearValues();
+                  },
+                  child: Container(
                       height: 40,
                       alignment: Alignment.center,
-                      child: variableSectionState.isRunning
-                          ? const CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            )
-                          : const Text('Run'),
-                    ),
-                  ),
+                      child: const Text('Clear values')),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: SizedBox(
+                  height: 56,
+                  child: variableSectionState.isRunning
+                      ? const FilledButton(
+                          onPressed: null,
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      : FilledButton.icon(
+                          onPressed: variableSectionState.isRunning
+                              ? null
+                              : () {
+                                  try {
+                                    variableSectionState.submit(context);
+                                  } catch (e) {
+                                    // Log the error or display it to the UI
+                                    print('Error: $e');
+                                  }
+                                },
+                          label: const Text('Run'),
+                          icon: const Icon(Icons.play_arrow),
+                        ),
                 ),
               ),
             ],
