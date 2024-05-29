@@ -273,3 +273,15 @@ To implement, the VariableInput needs to listen to the clear event that will be 
 ## Story 42:
 
 Show another Run button next to the variables toggle button on the home screen
+
+## Story 43:
+
+Implement a CodeWrapper that shows a Copy button on the top right of the child widget.
+
+```
+typedef CodeWrapper = Widget Function(
+  Widget child,
+  String code,
+  String language,
+);
+```

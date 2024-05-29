@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:provider/provider.dart';
@@ -31,16 +32,45 @@ class OutputSection extends StatelessWidget {
               ),
               child: MarkdownWidget(
                   data: outputText ?? 'No output available.',
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(16),
                   config: MarkdownConfig(configs: [
-                    const PreConfig(
+                    PreConfig(
                         theme: a11yLightTheme,
-                        textStyle: TextStyle(fontSize: 14)),
+                        textStyle: const TextStyle(fontSize: 14),
+                        wrapper: buildCodeWrapper(context)),
                   ])),
             ),
           ),
         ],
       ),
     );
+  }
+
+  CodeWrapper buildCodeWrapper(BuildContext context) {
+    return ((child, code, language) => Stack(
+          children: [
+            child,
+            Positioned(
+              top: 16,
+              right: 8.0,
+              child: ElevatedButton(
+                onPressed: () {
+                  try {
+                    Clipboard.setData(ClipboardData(text: code));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Code copied to clipboard'),
+                      ),
+                    );
+                  } catch (e) {
+                    // Log the error or display it to the UI
+                    print('Error copying code to clipboard: $e');
+                  }
+                },
+                child: const Text('Copy'),
+              ),
+            ),
+          ],
+        ));
   }
 }
