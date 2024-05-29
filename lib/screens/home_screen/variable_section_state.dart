@@ -131,7 +131,7 @@ class VariableSectionState extends ChangeNotifier {
         }
 
         final client = AnthropicClient(apiKey: apiKey);
-        final response = await client.createMessage(
+        final responseStream = client.createMessageStream(
           request: CreateMessageRequest(
             model: const Model.model(Models.claude3Haiku20240307),
             maxTokens: 4000,
@@ -143,8 +143,22 @@ class VariableSectionState extends ChangeNotifier {
             ],
           ),
         );
-
-        context.read<HomeScreenState>().setOutputText(response.content.text);
+        String output = '';
+        await for (final res in responseStream) {
+          res.map(
+            messageStart: (e) {},
+            messageDelta: (e) {},
+            messageStop: (e) {},
+            contentBlockStart: (e) {},
+            contentBlockDelta: (e) {
+              context
+                  .read<HomeScreenState>()
+                  .setOutputText(output += e.delta.text);
+            },
+            contentBlockStop: (e) {},
+            ping: (e) {},
+          );
+        }
       } catch (e) {
         print('Error calling Anthropic API: $e');
         context.read<HomeScreenState>().setOutputText('Error: $e');
