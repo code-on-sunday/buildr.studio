@@ -1,8 +1,8 @@
+import 'package:buildr_studio/models/tool.dart';
+import 'package:buildr_studio/models/variable.dart';
+import 'package:buildr_studio/screens/home_screen/variable_input.dart';
+import 'package:buildr_studio/screens/home_screen/variable_section_state.dart';
 import 'package:flutter/material.dart';
-import 'package:volta/models/tool.dart';
-import 'package:volta/models/variable.dart';
-import 'package:volta/screens/home_screen/variable_input.dart';
-import 'package:volta/screens/home_screen/variable_section_state.dart';
 
 class VariableSection extends StatelessWidget {
   final Tool selectedTool;

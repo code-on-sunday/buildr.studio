@@ -24,7 +24,7 @@ class Sidebar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Volta',
+                    'buildr.studio',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

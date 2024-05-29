@@ -1,5 +1,5 @@
+import 'package:buildr_studio/utils/git_ignore_checker.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:volta/utils/git_ignore_checker.dart';
 
 void main() {
   group('GitIgnoreChecker', () {

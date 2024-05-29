@@ -1,11 +1,11 @@
+import 'package:buildr_studio/app_theme.dart';
+import 'package:buildr_studio/repositories/tool_repository.dart';
+import 'package:buildr_studio/screens/home_screen.dart';
 import 'package:context_menus/context_menus.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:re_highlight/languages/all.dart';
 import 'package:re_highlight/re_highlight.dart';
-import 'package:volta/app_theme.dart';
-import 'package:volta/repositories/tool_repository.dart';
-import 'package:volta/screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

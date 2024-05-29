@@ -1,13 +1,13 @@
+import 'package:buildr_studio/screens/home_screen/file_explorer_section.dart';
+import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
+import 'package:buildr_studio/screens/home_screen/output_section.dart';
+import 'package:buildr_studio/screens/home_screen/settings_section.dart';
+import 'package:buildr_studio/screens/home_screen/sidebar.dart';
+import 'package:buildr_studio/screens/home_screen/sidebar_content.dart';
+import 'package:buildr_studio/screens/home_screen/variable_section.dart';
+import 'package:buildr_studio/screens/home_screen/variable_section_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:volta/screens/home_screen/file_explorer_section.dart';
-import 'package:volta/screens/home_screen/file_explorer_state.dart';
-import 'package:volta/screens/home_screen/output_section.dart';
-import 'package:volta/screens/home_screen/settings_section.dart';
-import 'package:volta/screens/home_screen/sidebar.dart';
-import 'package:volta/screens/home_screen/sidebar_content.dart';
-import 'package:volta/screens/home_screen/variable_section.dart';
-import 'package:volta/screens/home_screen/variable_section_state.dart';
 
 import 'home_screen_state.dart';
 

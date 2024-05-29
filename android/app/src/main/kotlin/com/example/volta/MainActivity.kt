@@ -1,4 +1,4 @@
-package com.example.volta
+package studio.buildr.app
 
 import io.flutter.embedding.android.FlutterActivity
 

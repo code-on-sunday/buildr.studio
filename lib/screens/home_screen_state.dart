@@ -1,9 +1,9 @@
+import 'package:buildr_studio/models/tool.dart';
+import 'package:buildr_studio/models/tool_details.dart';
+import 'package:buildr_studio/repositories/tool_repository.dart';
+import 'package:buildr_studio/utils/api_key_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:volta/models/tool.dart';
-import 'package:volta/models/tool_details.dart';
-import 'package:volta/repositories/tool_repository.dart';
-import 'package:volta/utils/api_key_manager.dart';
 
 class HomeScreenState extends ChangeNotifier {
   final BuildContext _context;

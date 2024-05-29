@@ -1,4 +1,4 @@
-import 'package:volta/models/variable.dart';
+import 'package:buildr_studio/models/variable.dart';
 
 class ToolDetails {
   final String prompt;

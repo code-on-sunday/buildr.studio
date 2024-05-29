@@ -1,5 +1,5 @@
+import 'package:buildr_studio/models/tool.dart';
 import 'package:flutter/material.dart';
-import 'package:volta/models/tool.dart';
 
 class SidebarContent extends StatelessWidget {
   final List<Tool> tools;

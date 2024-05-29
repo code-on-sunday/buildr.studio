@@ -5,18 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "volta",
+      "name": "buildr.studio",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "volta (profile mode)",
+      "name": "buildr.studio (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "volta (release mode)",
+      "name": "buildr.studio (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"

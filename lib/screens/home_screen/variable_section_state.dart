@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart';
+import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
+import 'package:buildr_studio/screens/home_screen_state.dart';
+import 'package:buildr_studio/utils/git_ignore_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
-import 'package:volta/screens/home_screen/file_explorer_state.dart';
-import 'package:volta/screens/home_screen_state.dart';
-import 'package:volta/utils/git_ignore_checker.dart';
 
 class VariableSectionState extends ChangeNotifier {
   final Map<String, List<String>> _selectedPaths = {};

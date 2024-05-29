@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:buildr_studio/models/tool.dart';
+import 'package:buildr_studio/models/tool_details.dart';
 import 'package:flutter/services.dart';
-import 'package:volta/models/tool.dart';
-import 'package:volta/models/tool_details.dart';
 
 class ToolRepository {
   Future<List<Tool>> getTools() async {

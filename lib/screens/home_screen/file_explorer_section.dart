@@ -1,12 +1,12 @@
 import 'dart:io';
 
+import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
+import 'package:buildr_studio/utils/git_ignore_checker.dart';
 import 'package:context_menus/context_menus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
-import 'package:volta/screens/home_screen/file_explorer_state.dart';
-import 'package:volta/utils/git_ignore_checker.dart';
 
 class FileExplorerSection extends StatelessWidget {
   const FileExplorerSection({super.key});
