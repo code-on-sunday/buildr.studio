@@ -10,7 +10,7 @@ Given this existing implementation:
 
 Applying the vanilla state management solution of Flutter, modify the implementation to satisfy the feature below:
 <feature>
-{{FEATURE}}
+{{REQUIREMENTS}}
 </feature>
 
 Some minimum requirements you MUST follow:
@@ -20,8 +20,14 @@ Some minimum requirements you MUST follow:
 
 Remember that the source code of each file in your response must be wrapped in a Markdown code block to be well formatted.
 
-The response must contains multiple parts, each part has the following format:
----<File name>---
+The implementation provided above contains multiple files, each file has the following format:
+---<Full file path>---
+```dart
+Source code
+```
+
+Those file paths will be used in the response. Your response must contains multiple parts, each part has the following format as well:
+---<Full file path>---
 ```dart
 Source code
 ```
