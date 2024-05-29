@@ -33,10 +33,10 @@ class VariableSection extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
-            'Input',
+            'Variables',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -59,26 +59,46 @@ class VariableSection extends StatelessWidget {
                     ))
                 .toList(),
           ),
-          const SizedBox(height: 16),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: variableSectionState.isRunning
-                  ? null
-                  : () {
-                      variableSectionState.submit(context);
+          const Spacer(),
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: OutlinedButton(
+                    onPressed: () {
+                      variableSectionState.clearValues();
                     },
-              child: variableSectionState.isRunning
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Text('Run'),
-            ),
+                    child: Container(
+                        height: 40,
+                        alignment: Alignment.center,
+                        child: const Text('Clear values')),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: variableSectionState.isRunning
+                        ? null
+                        : () {
+                            variableSectionState.submit(context);
+                          },
+                    child: Container(
+                      height: 40,
+                      alignment: Alignment.center,
+                      child: variableSectionState.isRunning
+                          ? const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            )
+                          : const Text('Run'),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

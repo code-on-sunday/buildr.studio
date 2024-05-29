@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart';
@@ -14,10 +15,23 @@ class VariableSectionState extends ChangeNotifier {
   final Map<String, String> _inputValues = {};
   bool _isRunning = false;
 
+  final _clearValuesStreamController = StreamController<bool>.broadcast();
+  late final Stream<bool> clearValuesStream;
+
+  VariableSectionState() {
+    clearValuesStream = _clearValuesStreamController.stream;
+  }
+
   Map<String, List<String>> get selectedPaths => _selectedPaths;
   Map<String, String?> get concatenatedContents => _concatenatedContents;
   Map<String, String> get inputValues => _inputValues;
   bool get isRunning => _isRunning;
+
+  @override
+  void dispose() {
+    _clearValuesStreamController.close();
+    super.dispose();
+  }
 
   void onPathsSelected(String variableName, List<String> paths) {
     _selectedPaths[variableName] = paths;
@@ -27,6 +41,14 @@ class VariableSectionState extends ChangeNotifier {
 
   void setInputValue(String variableName, String value) {
     _inputValues[variableName] = value;
+    notifyListeners();
+  }
+
+  void clearValues() {
+    _selectedPaths.clear();
+    _concatenatedContents.clear();
+    _inputValues.clear();
+    _clearValuesStreamController.add(true);
     notifyListeners();
   }
 

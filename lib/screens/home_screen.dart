@@ -79,13 +79,12 @@ class HomeScreen extends StatelessWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    ElevatedButton(
-                                      onPressed:
-                                          homeState.toggleVariableSection,
-                                      child: Text(
-                                        homeState.isVariableSectionVisible
-                                            ? 'Hide Input'
-                                            : 'Show Input',
+                                    Tooltip(
+                                      message: 'Show variables',
+                                      child: ElevatedButton(
+                                        onPressed:
+                                            homeState.toggleVariableSection,
+                                        child: const Text('{ }'),
                                       ),
                                     ),
                                   ],
@@ -95,20 +94,21 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      AnimatedPositioned(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        top: 0,
-                        bottom: 0,
-                        right: homeState.isVariableSectionVisible
-                            ? 0
-                            : -MediaQuery.of(context).size.width,
-                        child: VariableSection(
-                          selectedTool: homeState.selectedTool!,
-                          variables: homeState.prompt?.variables ?? [],
-                          variableSectionState: variableSectionState,
+                      if (homeState.selectedTool != null)
+                        AnimatedPositioned(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          top: 0,
+                          bottom: 0,
+                          right: homeState.isVariableSectionVisible
+                              ? 0
+                              : -MediaQuery.of(context).size.width,
+                          child: VariableSection(
+                            selectedTool: homeState.selectedTool!,
+                            variables: homeState.prompt?.variables ?? [],
+                            variableSectionState: variableSectionState,
+                          ),
                         ),
-                      ),
                       if (!isLargeScreen && homeState.isSidebarVisible)
                         Positioned(
                           top: 0,

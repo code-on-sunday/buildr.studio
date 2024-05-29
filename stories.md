@@ -263,3 +263,9 @@ When submit, it should use the key read from the api key manager. Then, the resp
 All the content of the variable section needs to be hidden by default. The visibility of the section now is controlled by a button on top of the HomeScreen.
 
 When clicking on the Show input button, the card that contains the variable section content must slide from the outer right of the screen into the screen and align to the right of the screen.
+
+## Story 41:
+
+The "Clear values" button should clear all variables, especially the text fields.
+
+To implement, the VariableInput needs to listen to the clear event that will be emitted from a stream in the VariableSectionState to clear values in TextController

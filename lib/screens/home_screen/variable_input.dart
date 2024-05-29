@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:volta/models/variable.dart';
 import 'package:volta/screens/home_screen/file_explorer_state.dart';
+import 'package:volta/screens/home_screen/variable_section_state.dart';
 
 class VariableInput extends StatefulWidget {
   final Variable variable;
@@ -30,6 +31,9 @@ class _VariableInputState extends State<VariableInput> {
   void initState() {
     super.initState();
     _textController = TextEditingController();
+    context.read<VariableSectionState>().clearValuesStream.listen((_) {
+      _textController.clear();
+    });
   }
 
   @override
