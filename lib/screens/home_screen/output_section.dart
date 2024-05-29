@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_highlight/themes/a11y-light.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:syntax_highlight/syntax_highlight.dart';
 import 'package:volta/screens/home_screen_state.dart';
 
 class OutputSection extends StatelessWidget {
@@ -30,28 +29,14 @@ class OutputSection extends StatelessWidget {
                 border: Border.all(color: Colors.grey),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Markdown(
-                data: outputText ?? 'No output available.',
-                selectable: true,
-                onSelectionChanged: (text, selection, cause) {},
-                buildPreWidget: (code, styleSheet, buildRichText) {
-                  return Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey[900],
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    padding: const EdgeInsets.all(8.0),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: buildRichText(
-                        Highlighter(language: 'dart', theme: GetIt.I.get())
-                            .highlight(code),
-                      ),
-                    ),
-                  );
-                },
-              ),
+              child: MarkdownWidget(
+                  data: outputText ?? 'No output available.',
+                  padding: const EdgeInsets.all(8),
+                  config: MarkdownConfig(configs: [
+                    const PreConfig(
+                        theme: a11yLightTheme,
+                        textStyle: TextStyle(fontSize: 14)),
+                  ])),
             ),
           ),
         ],
