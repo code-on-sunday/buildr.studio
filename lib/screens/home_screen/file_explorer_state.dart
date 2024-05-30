@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -12,11 +13,13 @@ class FileExplorerState extends ChangeNotifier {
   bool _isControlPressed = false;
   String? _selectedFolderPath;
   String? _gitIgnoreContent;
+  final DirectoryWatcher _directoryWatcher = DirectoryWatcher();
 
   FileExplorerState() {
     ServicesBinding.instance.keyboard.addHandler(
       onKeyEvent,
     );
+    _directoryWatcher.events.listen(_onDirectoryChanged);
   }
 
   @override
@@ -24,6 +27,7 @@ class FileExplorerState extends ChangeNotifier {
     ServicesBinding.instance.keyboard.removeHandler(
       onKeyEvent,
     );
+    _directoryWatcher.dispose();
     super.dispose();
   }
 
@@ -62,6 +66,7 @@ class FileExplorerState extends ChangeNotifier {
       _loadFiles(selectedDirectory);
       if (selectedDirectory != null) {
         _selectedFolderPath = selectedDirectory;
+        _directoryWatcher.folderPath = selectedDirectory;
         await _loadGitIgnoreContent();
         notifyListeners();
       }
@@ -102,6 +107,13 @@ class FileExplorerState extends ChangeNotifier {
       // Log the error or display it to the UI
       print('Error loading .gitignore file: $e');
       _gitIgnoreContent = null;
+    }
+  }
+
+  void _onDirectoryChanged(DirectoryChangeEvent event) {
+    if (event.type == ChangeType.create || event.type == ChangeType.delete) {
+      _loadFiles(_selectedFolderPath);
+      notifyListeners();
     }
   }
 
@@ -158,4 +170,61 @@ class FileExplorerState extends ChangeNotifier {
       return path.split(Platform.pathSeparator).last;
     }
   }
+}
+
+class DirectoryWatcher {
+  late Directory _directory;
+  late final StreamController<DirectoryChangeEvent> _controller;
+  StreamSubscription<FileSystemEvent>? _directorySubscription;
+
+  DirectoryWatcher() {
+    _controller = StreamController.broadcast();
+  }
+
+  String? _folderPath;
+  set folderPath(String? value) {
+    _folderPath = value;
+    _directory = Directory(_folderPath ?? '');
+    _startWatching();
+  }
+
+  Stream<DirectoryChangeEvent> get events => _controller.stream;
+  void _startWatching() {
+    _directorySubscription?.cancel();
+    _directorySubscription = _directory.watch().listen((event) {
+      _controller.sink.add(DirectoryChangeEvent(
+        type: _getChangeType(event),
+        path: event.path,
+      ));
+    });
+  }
+
+  ChangeType _getChangeType(FileSystemEvent event) {
+    switch (event) {
+      case FileSystemCreateEvent():
+        return ChangeType.create;
+      case FileSystemDeleteEvent():
+        return ChangeType.delete;
+      case FileSystemModifyEvent():
+        return ChangeType.modify;
+      case FileSystemMoveEvent():
+        return ChangeType.move;
+    }
+  }
+
+  void dispose() {
+    _directorySubscription?.cancel();
+    _controller.close();
+  }
+}
+
+enum ChangeType { create, delete, modify, move }
+
+class DirectoryChangeEvent {
+  final ChangeType type;
+  final String path;
+  DirectoryChangeEvent({
+    required this.type,
+    required this.path,
+  });
 }

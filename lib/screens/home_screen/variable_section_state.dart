@@ -73,8 +73,15 @@ class VariableSectionState extends ChangeNotifier {
           final relativePath =
               '${path.separator}${path.relative(file.path, from: context.read<FileExplorerState>().selectedFolderPath!)}';
           if (!GitIgnoreChecker.isPathIgnored(gitIgnoreContent, relativePath)) {
+            String? fileContent;
+            try {
+              fileContent = file.readAsStringSync();
+            } catch (e) {}
+            if (fileContent == null) {
+              continue;
+            }
             concatenatedContent.write('---${path.basename(p)}---\n```\n');
-            concatenatedContent.write(file.readAsStringSync());
+            concatenatedContent.write(fileContent);
             concatenatedContent.write('\n```\n');
           }
         } else if (fileInfo == FileSystemEntityType.directory) {
@@ -86,9 +93,15 @@ class VariableSectionState extends ChangeNotifier {
                 '${path.separator}${path.relative(file.path, from: context.read<FileExplorerState>().selectedFolderPath!)}';
             if (!GitIgnoreChecker.isPathIgnored(
                 gitIgnoreContent, relativePath)) {
-              concatenatedContent
-                  .write('---${path.basename(file.path)}---\n```\n');
-              concatenatedContent.write(file.readAsStringSync());
+              String? fileContent;
+              try {
+                fileContent = file.readAsStringSync();
+              } catch (e) {}
+              if (fileContent == null) {
+                continue;
+              }
+              concatenatedContent.write('---${path.basename(p)}---\n```\n');
+              concatenatedContent.write(fileContent);
               concatenatedContent.write('\n```\n');
             }
           }
@@ -146,8 +159,12 @@ class VariableSectionState extends ChangeNotifier {
         String output = '';
         await for (final res in responseStream) {
           res.map(
-            messageStart: (e) {},
-            messageDelta: (e) {},
+            messageStart: (e) {
+              print(e.message.usage);
+            },
+            messageDelta: (e) {
+              print(e.usage);
+            },
             messageStop: (e) {},
             contentBlockStart: (e) {},
             contentBlockDelta: (e) {
