@@ -8,27 +8,27 @@ Given this existing implementation:
 {{IMPLEMENTATION}}
 </implementation>
 
-Applying the vanilla state management solution of Flutter, modify the implementation to satisfy the feature below:
+Modify the implementation to satisfy the feature below:
 <feature>
 {{REQUIREMENTS}}
 </feature>
 
 Some minimum requirements you MUST follow:
 - Errors must be logged or displayed to the UI.
-- If your response mentions a file in the implementation, the file name must be in snake case.
+- If your response mentions a file in the implementation, the file name must follow the framework's convention.
 - Only include the modified files in your response.
 
 Remember that the source code of each file in your response must be wrapped in a Markdown code block to be well formatted.
 
 The implementation provided above contains multiple files, each file has the following format:
 ---<Full file path>---
-```dart
+```<proper language>
 Source code
 ```
 
 Those file paths will be used in the response. Your response must contains multiple parts, each part has the following format as well:
 ---<Full file path>---
-```dart
+```<proper language>
 Source code
 ```
 """
