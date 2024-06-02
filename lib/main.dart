@@ -1,6 +1,6 @@
 import 'package:buildr_studio/app_theme.dart';
 import 'package:buildr_studio/repositories/tool_repository.dart';
-import 'package:buildr_studio/screens/home_screen.dart';
+import 'package:buildr_studio/screens/splash_screen.dart';
 import 'package:context_menus/context_menus.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -39,7 +39,8 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'Tool App',
         theme: AppTheme.blackAndWhiteTheme,
-        home: const HomeScreen(),
+        debugShowCheckedModeBanner: false,
+        home: const SplashScreen(),
       ),
     );
   }

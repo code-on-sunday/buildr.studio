@@ -3,15 +3,5 @@
     "description": "Add new features to existing implementation",
     "id": "new_functionalities",
     "name": "Add new features"
-  },
-  {
-    "description": "This is the second tool.",
-    "id": "tool2",
-    "name": "Tool 2"
-  },
-  {
-    "description": "This is the third tool.",
-    "id": "tool3",
-    "name": "Tool 3"
   }
 ]
