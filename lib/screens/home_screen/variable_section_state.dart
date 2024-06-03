@@ -61,9 +61,6 @@ class VariableSectionState extends ChangeNotifier {
     try {
       final gitIgnoreContent =
           context.read<FileExplorerState>().gitIgnoreContent;
-      if (gitIgnoreContent == null) {
-        return null;
-      }
 
       final concatenatedContent = StringBuffer();
       for (final p in _selectedPaths[variableName]!) {
@@ -72,7 +69,8 @@ class VariableSectionState extends ChangeNotifier {
           final file = File(p);
           final relativePath =
               '${path.separator}${path.relative(file.path, from: context.read<FileExplorerState>().selectedFolderPath!)}';
-          if (!GitIgnoreChecker.isPathIgnored(gitIgnoreContent, relativePath)) {
+          if (gitIgnoreContent == null ||
+              !GitIgnoreChecker.isPathIgnored(gitIgnoreContent, relativePath)) {
             String? fileContent;
             try {
               fileContent = file.readAsStringSync();
@@ -91,8 +89,9 @@ class VariableSectionState extends ChangeNotifier {
           for (final file in files) {
             final relativePath =
                 '${path.separator}${path.relative(file.path, from: context.read<FileExplorerState>().selectedFolderPath!)}';
-            if (!GitIgnoreChecker.isPathIgnored(
-                gitIgnoreContent, relativePath)) {
+            if (gitIgnoreContent == null ||
+                !GitIgnoreChecker.isPathIgnored(
+                    gitIgnoreContent, relativePath)) {
               String? fileContent;
               try {
                 fileContent = file.readAsStringSync();
