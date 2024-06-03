@@ -1,0 +1,51 @@
+name: Build App Installer
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  windows-installer:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Get Flutter
+        uses: subosito/flutter-action@v2
+
+      - name: Create .env file
+        run: |
+          echo "WIREDASH_PROJECT_ID=${{ secrets.WIREDASH_PROJECT_ID }}" > .env
+          echo "WIREDASH_SECRET=${{ secrets.WIREDASH_SECRET }}" >> .env
+
+      - name: Build Windows App
+        run: |
+          flutter build windows
+
+      - name: Build iss script
+        run: dart run inno_bundle:build --no-app --release --no-installer
+
+      - name: Output config into github output
+        id: envs
+        run: echo $(dart run inno_bundle:build --envs --no-hf) | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Build installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: ./build/windows/x64/installer/Release/inno-script.iss
+
+      - name: Release installer
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            ./build/windows/x64/installer/Release/${{ steps.envs.outputs.APP_NAME_CAMEL_CASE }}-x86_64-${{ steps.envs.outputs.APP_VERSION }}-Installer.exe
+          name: "${{ steps.envs.outputs.APP_VERSION }}_${{ github.run_id }}"
+          target_commitish: "${{ github.sha }}"
+          tag_name: "v${{ steps.envs.outputs.APP_VERSION }}_${{ github.run_id }}"
