@@ -1,3 +1,4 @@
 *.jpg binary
 *.png binary
+*.ico binary
 *.gif filter=lfs diff=lfs merge=lfs -text
