@@ -1,7 +1,7 @@
 name: buildr_studio
 description: "A new Flutter project."
 publish_to: "none"
-version: 0.1.0
+version: 0.1.1
 
 environment:
   sdk: ">=3.3.3 <4.0.0"
@@ -13,6 +13,7 @@ dependencies:
   fluent_ui: ^4.8.7
   flutter:
     sdk: flutter
+  flutter_dotenv: ^5.1.0
   flutter_highlight: ^0.7.0
   get_it: ^7.7.0
   markdown: ^7.2.2
@@ -23,6 +24,7 @@ dependencies:
   provider: ^6.1.2
   re_highlight: ^0.0.3
   shared_preferences: ^2.2.3
+  wiredash: ^2.1.2
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +40,7 @@ flutter:
   assets:
     - assets/
     - assets/tools/
+    - .env
 
 flutter_launcher_icons:
   windows:
