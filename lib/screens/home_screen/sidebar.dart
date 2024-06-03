@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class Sidebar extends StatelessWidget {
   final VoidCallback onClose;
@@ -24,6 +27,8 @@ class Sidebar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
+                    textBaseline: TextBaseline.alphabetic,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
                     children: [
                       Image.asset(
                         'assets/logo.png',
@@ -38,6 +43,11 @@ class Sidebar extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      if (dotenv.env['WIREDASH_PROJECT_ID'] != null &&
+                          dotenv.env['WIREDASH_SECRET'] != null)
+                        Text('(v${GetIt.I<PackageInfo>().version})',
+                            style: const TextStyle(fontSize: 12)),
                     ],
                   ),
                 ],
