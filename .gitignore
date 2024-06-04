@@ -47,3 +47,4 @@ app.*.map.json
 # don't check in golden failure output
 **/failures/*.png
 .env
+macos/Podfile.lock
