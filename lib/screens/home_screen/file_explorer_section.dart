@@ -243,7 +243,7 @@ class FileExplorerSection extends StatelessWidget {
                   const SizedBox(height: 16),
                   Expanded(
                     child: SingleChildScrollView(
-                      child: LongPressDraggable<List<String>>(
+                      child: Draggable<List<String>>(
                         data: fileExplorerState.selectedPaths,
                         dragAnchorStrategy: pointerDragAnchorStrategy,
                         feedback: const CollectionIcon(),
