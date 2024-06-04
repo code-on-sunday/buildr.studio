@@ -119,9 +119,9 @@ class SourcesInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final fileExplorerState = context.watch<FileExplorerState>();
 
-    return DragTarget<List<String>>(
-      onAcceptWithDetails: (details) {
-        onPathsSelected(details.data);
+    return DragTarget<bool>(
+      onAcceptWithDetails: (_) {
+        onPathsSelected(fileExplorerState.selectedPaths);
       },
       builder: (context, candidateData, rejectedData) {
         final isHighlighted = candidateData.isNotEmpty;
