@@ -1,6 +1,7 @@
 import 'package:buildr_studio/screens/home_screen_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class SettingsSection extends StatefulWidget {
   const SettingsSection({super.key});
@@ -11,6 +12,12 @@ class SettingsSection extends StatefulWidget {
 
 class _SettingsSectionState extends State<SettingsSection> {
   final _apiKeyController = TextEditingController();
+
+  @override
+  void initState() {
+    _apiKeyController.text = context.read<HomeScreenState>().apiKey ?? '';
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -36,16 +43,29 @@ class _SettingsSectionState extends State<SettingsSection> {
           TextField(
             controller: _apiKeyController,
             decoration: const InputDecoration(
-              labelText: 'Anthropic API Key',
+              labelText: 'Claude AI\'s API Key',
               border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               final apiKey = _apiKeyController.text.trim();
               if (apiKey.isNotEmpty) {
-                context.read<HomeScreenState>().saveApiKey(apiKey);
+                try {
+                  await context.read<HomeScreenState>().saveApiKey(apiKey);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('API key saved successfully.'),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error saving API key: $e.'),
+                    ),
+                  );
+                }
               } else {
                 // Display an error message to the user
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -57,6 +77,13 @@ class _SettingsSectionState extends State<SettingsSection> {
             },
             child: const Text('Save API Key'),
           ),
+          TextButton(
+              onPressed: () async {
+                await launchUrlString(
+                    "https://www.buildr.studio/blog/cach-lay-api-key-claude-anthropic");
+              },
+              child: const Text('How to get an API key?',
+                  style: TextStyle(color: Colors.blue)))
         ],
       ),
     );

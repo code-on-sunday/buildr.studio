@@ -1,7 +1,7 @@
 name: buildr_studio
 description: "A new Flutter project."
 publish_to: "none"
-version: 0.1.1+2
+version: 0.1.2+3
 
 environment:
   sdk: ">=3.3.3 <4.0.0"
@@ -26,6 +26,7 @@ dependencies:
   provider: ^6.1.2
   re_highlight: ^0.0.3
   shared_preferences: ^2.2.3
+  url_launcher: ^6.3.0
   wiredash: ^2.1.2
 
 dev_dependencies:
@@ -54,7 +55,7 @@ inno_bundle:
   id: 5d068604-f570-5319-ae9b-46315cf5a8ef
   publisher: "Code On Sunday"
   name: "buildr.studio"
-  version: "0.1.1"
+  version: "0.1.2"
   description: "The AI Toolbox to Build More in Less Time"
   url: "https://buildr.studio"
   installer_icon: "windows/runner/resources/app_icon.ico"
