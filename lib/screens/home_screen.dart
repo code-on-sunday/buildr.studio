@@ -72,6 +72,27 @@ class HomeScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            if (homeState.apiKey == null)
+                              Container(
+                                padding: const EdgeInsets.all(8.0),
+                                color: Theme.of(context).colorScheme.error,
+                                child: Row(
+                                  children: [
+                                    const Text(
+                                      'You need to set up Claude AI\'s API key.',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    OutlinedButton(
+                                        onPressed: () {
+                                          homeState.onNavRailItemTapped(2);
+                                        },
+                                        child: const Text('Set up')),
+                                  ],
+                                ),
+                              ),
                             if (homeState.selectedTool != null)
                               Padding(
                                 padding: const EdgeInsets.all(16.0),

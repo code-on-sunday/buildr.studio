@@ -16,12 +16,15 @@ class HomeScreenState extends ChangeNotifier {
   bool _isSettingsVisible = false;
   String? _outputText;
   bool _isVariableSectionVisible = false;
+  String? _apiKey;
 
   HomeScreenState(this._context) {
     _toolRepository = GetIt.I.get<ToolRepository>();
     _loadTools();
+    _loadApiKey();
   }
 
+  String? get apiKey => _apiKey;
   List<Tool> get tools => _tools;
   Tool? get selectedTool => _selectedTool;
   ToolDetails? get prompt => _prompt;
@@ -34,6 +37,16 @@ class HomeScreenState extends ChangeNotifier {
   void toggleVariableSection() {
     _isVariableSectionVisible = !_isVariableSectionVisible;
     notifyListeners();
+  }
+
+  Future<void> _loadApiKey() async {
+    try {
+      _apiKey = await getApiKey();
+      notifyListeners();
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error loading API key: $e');
+    }
   }
 
   Future<void> _loadTools() async {
@@ -92,18 +105,18 @@ class HomeScreenState extends ChangeNotifier {
   }
 
   Future<String?> getApiKey() async {
-    return await ApiKeyManager.getApiKey();
+    final key = await ApiKeyManager.getApiKey();
+    if (key == null || key.isEmpty) {
+      return null;
+    }
+    return key;
   }
 
   Future<void> saveApiKey(String apiKey) async {
-    try {
-      await ApiKeyManager.saveApiKey(apiKey);
-      // Set the API key in the environment variables or use it as needed
-      print('API key saved: $apiKey');
-    } catch (e) {
-      // Log the error or display it to the UI
-      print('Error saving API key: $e');
-    }
+    await ApiKeyManager.saveApiKey(apiKey);
+    await _loadApiKey();
+    // Set the API key in the environment variables or use it as needed
+    print('API key saved: $apiKey');
   }
 
   void setOutputText(String text) {
