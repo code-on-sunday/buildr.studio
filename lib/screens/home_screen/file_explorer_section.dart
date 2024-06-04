@@ -65,7 +65,9 @@ class FileExplorerSection extends StatelessWidget {
             dragAnchorStrategy: pointerDragAnchorStrategy,
             feedback: const CollectionIcon(),
             onDragStarted: () {
-              if (fileExplorerState.isSelected[entity.path] == false) {
+              final isSelected =
+                  fileExplorerState.isSelected[entity.path] == true;
+              if (!isSelected) {
                 fileExplorerState.toggleSelection(entity);
               }
             },
