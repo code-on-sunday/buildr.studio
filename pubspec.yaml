@@ -10,10 +10,11 @@ dependencies:
   anthropic_sdk_dart: ^0.0.1-dev.1
   context_menus: ^2.0.0+1
   file_picker: ^8.0.3
-  fluent_ui: ^4.8.7
+  # fluent_ui: ^4.8.7
   flutter:
     sdk: flutter
   flutter_dotenv: ^5.1.0
+  flutter_gemini: ^2.0.4
   flutter_highlight: ^0.7.0
   get_it: ^7.7.0
   logger: ^2.3.0

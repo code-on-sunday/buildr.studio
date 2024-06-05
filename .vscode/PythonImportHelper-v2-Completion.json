@@ -1,0 +1,128 @@
+[
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "argparse",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
+        "documentation": {}
+    },
+    {
+        "label": "pyperclip",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pyperclip",
+        "description": "pyperclip",
+        "detail": "pyperclip",
+        "documentation": {}
+    },
+    {
+        "label": "subprocess",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "subprocess",
+        "description": "subprocess",
+        "detail": "subprocess",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "re",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "re",
+        "description": "re",
+        "detail": "re",
+        "documentation": {}
+    },
+    {
+        "label": "concat_files",
+        "kind": 2,
+        "importPath": "catai",
+        "description": "catai",
+        "peekOfCode": "def concat_files(paths):\n    result = \"\"\n    for path in paths:\n        if os.path.isfile(path):\n            file_name = os.path.basename(path)\n            with open(path, \"r\") as f:\n                file_content = f.read()\n            result += f\"---{path}---\\n```dart\\n{file_content}\\n```\\n\\n\"\n        elif os.path.isdir(path):\n            for root, _, files in os.walk(path):",
+        "detail": "catai",
+        "documentation": {}
+    },
+    {
+        "label": "write_to_file",
+        "kind": 2,
+        "importPath": "catai",
+        "description": "catai",
+        "peekOfCode": "def write_to_file(text, output_file):\n    with open(output_file, \"w\", encoding=\"utf-8\") as f:\n        f.write(text)\n    print(f\"Concatenated content written to {output_file}\")\ndef copy_to_clipboard(text):\n    pyperclip.copy(text)\n    print(\"Concatenated content copied to clipboard.\")\nif __name__ == \"__main__\":\n    parser = argparse.ArgumentParser(description=\"Concatenate files with a specific format\")\n    parser.add_argument(\"paths\", nargs=\"+\", help=\"Path(s) to file(s) or directory(ies) containing the files\")",
+        "detail": "catai",
+        "documentation": {}
+    },
+    {
+        "label": "copy_to_clipboard",
+        "kind": 2,
+        "importPath": "catai",
+        "description": "catai",
+        "peekOfCode": "def copy_to_clipboard(text):\n    pyperclip.copy(text)\n    print(\"Concatenated content copied to clipboard.\")\nif __name__ == \"__main__\":\n    parser = argparse.ArgumentParser(description=\"Concatenate files with a specific format\")\n    parser.add_argument(\"paths\", nargs=\"+\", help=\"Path(s) to file(s) or directory(ies) containing the files\")\n    output_group = parser.add_mutually_exclusive_group()\n    output_group.add_argument(\"-o\", \"--output\", help=\"Output file path\")\n    output_group.add_argument(\"-c\", \"--clipboard\", action=\"store_true\", help=\"Copy output to clipboard\")\n    args = parser.parse_args()",
+        "detail": "catai",
+        "documentation": {}
+    },
+    {
+        "label": "get_staged_diff",
+        "kind": 2,
+        "importPath": "diff",
+        "description": "diff",
+        "peekOfCode": "def get_staged_diff(paths):\n    \"\"\"\n    Returns the git diff of staged changes for the given paths.\n    \"\"\"\n    try:\n        # Construct the git diff command with the provided paths\n        cmd = ['git', 'diff', '--staged'] + paths\n        output = subprocess.check_output(cmd)\n        # Decode the output from bytes to string\n        diff = output.decode('utf-8')",
+        "detail": "diff",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "diff",
+        "description": "diff",
+        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser(description='Get git diff of staged changes for specified paths.')\n    parser.add_argument('paths', nargs='+', help='Directories or files to get git diff for')\n    args = parser.parse_args()\n    staged_diff = get_staged_diff(args.paths)\n    if staged_diff:\n        try:\n            # Copy the diff output to the clipboard\n            pyperclip.copy(staged_diff)\n            print(\"Git diff copied to clipboard.\")",
+        "detail": "diff",
+        "documentation": {}
+    },
+    {
+        "label": "convert_to_json",
+        "kind": 2,
+        "importPath": "normalize_prompt",
+        "description": "normalize_prompt",
+        "peekOfCode": "def convert_to_json(text):\n    # Escape backslashes and double quotes\n    text = text.replace('\\\\', '\\\\\\\\').replace('\"', '\\\\\"')\n    # Replace newlines with \\n\n    text = text.replace('\\n', '\\\\n')\n    # Wrap the entire string in double quotes\n    json_string = f'\"{text}\"'\n    # Validate the JSON string\n    try:\n        json.loads(json_string)",
+        "detail": "normalize_prompt",
+        "documentation": {}
+    },
+    {
+        "label": "text",
+        "kind": 5,
+        "importPath": "normalize_prompt",
+        "description": "normalize_prompt",
+        "peekOfCode": "text = \"\"\"\nGiven this existing implementation:\n<implementation>\n{{IMPLEMENTATION}}\n</implementation>\nModify the implementation to satisfy the feature below:\n<feature>\n{{REQUIREMENTS}}\n</feature>\nSome minimum requirements you MUST follow:",
+        "detail": "normalize_prompt",
+        "documentation": {}
+    },
+    {
+        "label": "json_string",
+        "kind": 5,
+        "importPath": "normalize_prompt",
+        "description": "normalize_prompt",
+        "peekOfCode": "json_string = convert_to_json(text)\npyperclip.copy(json_string)\nprint(\"Copied to clipboard.\")",
+        "detail": "normalize_prompt",
+        "documentation": {}
+    }
+]

@@ -92,6 +92,7 @@ class VariableSection extends StatelessWidget {
                               : () {
                                   try {
                                     variableSectionState.submit(context);
+                                    // Navigator.pop(context);
                                   } catch (e) {
                                     // Log the error or display it to the UI
                                     print('Error: $e');

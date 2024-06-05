@@ -1,0 +1,24 @@
+{
+  "content": {
+    "parts": [
+      {
+        "text": "---main.dart---\n```\nimport 'package:buildr_studio/app_theme.dart';\nimport 'package:buildr_studio/repositories/tool_repository.dart';\nimport 'package:buildr_studio/screens/splash_screen.dart';\nimport 'package:context_menus/context_menus.dart';\nimport 'package:flutter/material.dart';\nimport 'package:flutter_dotenv/flutter_dotenv.dart';\nimport 'package:get_it/get_it.dart';\nimport 'package:package_info_plus/package_info_plus.dart';\nimport 'package:re_highlight/languages/all.dart';\nimport 'package:re_highlight/re_highlight.dart';\nimport 'package:wiredash/wiredash.dart';\n\nFuture<void> main() async {\n  WidgetsFlutterBinding.ensureInitialized();\n  await setupDependencyInjection();\n  await dotenv.load(fileName: \".env\");\n  runApp(const MyApp());\n}\n\nFuture<void> setupDependencyInjection() async {\n  GetIt.I.registerSingleton<ToolRepository>(ToolRepository());\n  final Highlight highlight = Highlight();\n  highlight.registerLanguages(builtinAllLanguages);\n  GetIt.I.registerSingleton(highlight);\n  PackageInfo packageInfo = await PackageInfo.fromPlatform();\n  GetIt.I.registerSingleton(packageInfo);\n}\n\nclass MyApp extends StatelessWidget {\n  const MyApp({super.key});\n\n  @override\n  Widget build(BuildContext context) {\n    return ContextMenuOverlay(\n      child: Wiredash(\n        projectId: dotenv.env['WIREDASH_PROJECT_ID'] ?? '',\n        secret: dotenv.env['WIREDASH_SECRET'] ?? '',\n        child: MaterialApp(\n          title: 'buildr.studio',\n          theme: AppTheme.blackAndWhiteTheme,\n          debugShowCheckedModeBanner: false,\n          home: const SplashScreen(),\n        ),\n      ),\n    );\n  }\n}\n\n```"
+      }
+    ],
+    "role": "model"
+  },
+  "finishReason": "STOP",
+  "index": 0,
+  "safetyRatings": [
+    {
+      "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+      "probability": "NEGLIGIBLE"
+    },
+    { "category": "HARM_CATEGORY_HATE_SPEECH", "probability": "NEGLIGIBLE" },
+    { "category": "HARM_CATEGORY_HARASSMENT", "probability": "NEGLIGIBLE" },
+    {
+      "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+      "probability": "NEGLIGIBLE"
+    }
+  ]
+}

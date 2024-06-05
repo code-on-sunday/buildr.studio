@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart';
@@ -6,8 +7,11 @@ import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen_state.dart';
 import 'package:buildr_studio/utils/git_ignore_checker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+
 
 class VariableSectionState extends ChangeNotifier {
   final Map<String, List<String>> _selectedPaths = {};
@@ -116,6 +120,7 @@ class VariableSectionState extends ChangeNotifier {
     }
   }
 
+
   Future<void> submit(BuildContext context) async {
     _isRunning = true;
     notifyListeners();
@@ -130,50 +135,70 @@ class VariableSectionState extends ChangeNotifier {
     }
 
     final prompt = context.read<HomeScreenState>().prompt?.prompt;
+
     if (prompt != null) {
       final replacedPrompt = _replacePromptPlaceholders(prompt);
 
       try {
         final apiKey = await context.read<HomeScreenState>().getApiKey();
+
         if (apiKey == null) {
-          print('Error: ANTHROPIC_API_KEY environment variable is not set.');
+          print('Error: API_KEY environment variable is not set.');
           _isRunning = false;
           notifyListeners();
           return;
         }
-
-        final client = AnthropicClient(apiKey: apiKey);
-        final responseStream = client.createMessageStream(
-          request: CreateMessageRequest(
-            model: const Model.model(Models.claude3Haiku20240307),
-            maxTokens: 4000,
-            messages: [
-              Message(
-                role: MessageRole.user,
-                content: MessageContent.text(replacedPrompt),
-              ),
-            ],
-          ),
-        );
+        var responseStream;
         String output = '';
-        await for (final res in responseStream) {
-          res.map(
-            messageStart: (e) {
-              print(e.message.usage);
-            },
-            messageDelta: (e) {
-              print(e.usage);
-            },
-            messageStop: (e) {},
-            contentBlockStart: (e) {},
-            contentBlockDelta: (e) {
-              context
-                  .read<HomeScreenState>()
-                  .setOutputText(output += e.delta.text);
-            },
-            contentBlockStop: (e) {},
-            ping: (e) {},
+
+        if (context.read<HomeScreenState>().IsgeminiAI) {
+          final apiKey = await context.read<HomeScreenState>().getApiKey();
+          Gemini.init(apiKey: apiKey!);
+          final gemini = Gemini.instance;
+
+          gemini.text(replacedPrompt).then((value) {
+        
+            responseStream = value?.output;
+            context
+                .read<HomeScreenState>()
+                .setOutputText(output += responseStream);
+          });
+
+              /// or value?.content?.parts?.last.text
+        } else {
+          final client = AnthropicClient(apiKey: apiKey);
+
+          client.createMessageStream(
+            request: CreateMessageRequest(
+              model: const Model.model(Models.claude3Haiku20240307),
+              maxTokens: 4000,
+              messages: [
+                Message(
+                  role: MessageRole.user,
+                  content: MessageContent.text(replacedPrompt),
+                ),
+              ],
+            ),
           );
+          await for (final res in responseStream) {
+            res.map(
+              messageStart: (e) {
+                print(e.message.usage);
+              },
+              messageDelta: (e) {
+                print(e.usage);
+              },
+              messageStop: (e) {},
+              contentBlockStart: (e) {},
+              contentBlockDelta: (e) {
+                context
+                    .read<HomeScreenState>()
+                    .setOutputText(output += e.delta.text);
+              },
+              contentBlockStop: (e) {},
+              ping: (e) {},
+            );
+          }
         }
       } catch (e) {
         print('Error calling Anthropic API: $e');

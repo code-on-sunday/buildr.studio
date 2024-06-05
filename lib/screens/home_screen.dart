@@ -79,7 +79,7 @@ class HomeScreen extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     const Text(
-                                      'You need to set up Claude AI\'s API key.',
+                                      'You need to set up API key.',
                                       style: TextStyle(
                                         color: Colors.white,
                                       ),

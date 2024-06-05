@@ -17,11 +17,14 @@ class HomeScreenState extends ChangeNotifier {
   String? _outputText;
   bool _isVariableSectionVisible = false;
   String? _apiKey;
+  bool _IsgeminiAI = false;
 
   HomeScreenState(this._context) {
     _toolRepository = GetIt.I.get<ToolRepository>();
     _loadTools();
     _loadApiKey();
+    _loadBot();
+    // _load;
   }
 
   String? get apiKey => _apiKey;
@@ -33,6 +36,7 @@ class HomeScreenState extends ChangeNotifier {
   bool get isSettingsVisible => _isSettingsVisible;
   String? get outputText => _outputText;
   bool get isVariableSectionVisible => _isVariableSectionVisible;
+  bool get IsgeminiAI => _IsgeminiAI;
 
   void toggleVariableSection() {
     _isVariableSectionVisible = !_isVariableSectionVisible;
@@ -48,7 +52,15 @@ class HomeScreenState extends ChangeNotifier {
       print('Error loading API key: $e');
     }
   }
-
+  Future<void> _loadBot() async {
+    try {
+      _IsgeminiAI = await getBot() ?? false;
+      notifyListeners();
+    } catch (e) {
+      // Log the error or display it to the UI
+      print('Error loading API key: $e');
+    }
+  }
   Future<void> _loadTools() async {
     try {
       _tools = await _toolRepository.getTools();
@@ -106,7 +118,16 @@ class HomeScreenState extends ChangeNotifier {
 
   Future<String?> getApiKey() async {
     final key = await ApiKeyManager.getApiKey();
+    
     if (key == null || key.isEmpty) {
+      return null;
+    }
+    return key;
+  }
+  Future<bool?> getBot() async {
+    final key = await ApiKeyManager.getBot();
+    
+    if (key == null) {
       return null;
     }
     return key;
@@ -114,11 +135,15 @@ class HomeScreenState extends ChangeNotifier {
 
   Future<void> saveApiKey(String apiKey) async {
     await ApiKeyManager.saveApiKey(apiKey);
+    await ApiKeyManager.saveApiBot(_IsgeminiAI);
     await _loadApiKey();
     // Set the API key in the environment variables or use it as needed
     print('API key saved: $apiKey');
   }
-
+  void setIsgeminiAI(bool value) {
+    _IsgeminiAI = value;
+    notifyListeners();
+  }
   void setOutputText(String text) {
     _outputText = text;
     notifyListeners();
