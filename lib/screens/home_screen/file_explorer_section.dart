@@ -50,9 +50,9 @@ class FileExplorerSection extends StatelessWidget {
         cursor:
             isIgnored ? SystemMouseCursors.forbidden : SystemMouseCursors.click,
         child: GestureDetector(
-          onTap: isIgnored
+          onTapDown: isIgnored
               ? null
-              : () {
+              : (_) {
                   if (fileExplorerState.isControlPressed) {
                     fileExplorerState.toggleSelection(entity);
                   } else {
@@ -62,53 +62,67 @@ class FileExplorerSection extends StatelessWidget {
                     fileExplorerState.toggleSelection(entity);
                   }
                 },
-          child: Container(
-            color: isSelected ? Colors.black : Colors.transparent,
-            padding: const EdgeInsets.all(4),
-            child: Row(
-              children: [
-                if (entity is Directory)
-                  RotatedBox(
-                    quarterTurns: isExpanded ? 1 : 0,
-                    child: GestureDetector(
-                      onTap: () {
-                        if (!fileExplorerState.isControlPressed ||
-                            !isSelected) {
-                          fileExplorerState.toggleExpansion(entity);
-                        }
-                      },
-                      child: Icon(
-                        isExpanded ? Icons.chevron_right : Icons.chevron_right,
-                        color: isSelected
-                            ? Colors.white
-                            : (isIgnored ? Colors.grey : Colors.black),
+          child: Draggable<bool>(
+            data: true,
+            dragAnchorStrategy: pointerDragAnchorStrategy,
+            feedback: const CollectionIcon(),
+            onDragStarted: () {
+              final isSelected =
+                  fileExplorerState.isSelected[entity.path] == true;
+              if (!isSelected) {
+                fileExplorerState.toggleSelection(entity);
+              }
+            },
+            child: Container(
+              color: isSelected ? Colors.black : Colors.transparent,
+              padding: const EdgeInsets.all(4),
+              child: Row(
+                children: [
+                  if (entity is Directory)
+                    RotatedBox(
+                      quarterTurns: isExpanded ? 1 : 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (!fileExplorerState.isControlPressed ||
+                              !isSelected) {
+                            fileExplorerState.toggleExpansion(entity);
+                          }
+                        },
+                        child: Icon(
+                          isExpanded
+                              ? Icons.chevron_right
+                              : Icons.chevron_right,
+                          color: isSelected
+                              ? Colors.white
+                              : (isIgnored ? Colors.grey : Colors.black),
+                        ),
                       ),
-                    ),
-                  )
-                else
-                  Icon(
-                    Icons.insert_drive_file,
-                    size: 12,
-                    color: isSelected
-                        ? Colors.white
-                        : (isIgnored ? Colors.grey : Colors.black),
-                  ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    fileName,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
+                    )
+                  else
+                    Icon(
+                      Icons.insert_drive_file,
+                      size: 12,
                       color: isSelected
                           ? Colors.white
                           : (isIgnored ? Colors.grey : Colors.black),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      fileName,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                        color: isSelected
+                            ? Colors.white
+                            : (isIgnored ? Colors.grey : Colors.black),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -265,15 +279,10 @@ class FileExplorerSection extends StatelessWidget {
                   const SizedBox(height: 16),
                   Expanded(
                     child: SingleChildScrollView(
-                      child: Draggable<List<String>>(
-                        data: fileExplorerState.selectedPaths,
-                        dragAnchorStrategy: pointerDragAnchorStrategy,
-                        feedback: const CollectionIcon(),
-                        child: _buildFileSystemEntityTree(
-                          context,
-                          fileExplorerState.files,
-                          0,
-                        ),
+                      child: _buildFileSystemEntityTree(
+                        context,
+                        fileExplorerState.files,
+                        0,
                       ),
                     ),
                   ),
