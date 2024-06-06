@@ -132,17 +132,13 @@ class FileExplorerSection extends StatelessWidget {
 
   void _openInVSCode(FileSystemEntity entity, BuildContext context) {
     try {
-      if (Platform.isWindows) {
-        Process.start("code.exe", [entity.path], runInShell: true);
-      } else if (Platform.isMacOS) {
+      if (Platform.isMacOS) {
         Process.start(
             "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code",
             [entity.path],
             runInShell: true);
-      } else if (Platform.isLinux) {
-        Process.start("code", [entity.path], runInShell: true);
       } else {
-        print('Unsupported operating system for opening in VSCode');
+        Process.start("code", [entity.path], runInShell: true);
       }
     } catch (e) {
       print('Error opening file in VSCode: $e');

@@ -30,7 +30,7 @@ class HomeScreen extends StatelessWidget {
 
           return GestureDetector(
             onTap: () {
-              if (homeState.isVariableSectionVisible == true) {
+              if (homeState.isVariableSectionVisible) {
                 homeState.toggleVariableSection();
               }
             },
@@ -148,7 +148,17 @@ class HomeScreen extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                              const Expanded(child: OutputSection()),
+                              Expanded(
+                                child: OutputSection(
+                                  isSelectable: homeState.isVariableSectionVisible,
+                                  onTap: () {
+                                    if (homeState.isVariableSectionVisible ==
+                                        true) {
+                                      homeState.toggleVariableSection();
+                                    }
+                                  },
+                                ),
+                              ),
                             ],
                           ),
                         ),

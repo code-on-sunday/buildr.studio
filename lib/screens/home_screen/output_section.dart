@@ -6,7 +6,13 @@ import 'package:markdown_widget/markdown_widget.dart';
 import 'package:provider/provider.dart';
 
 class OutputSection extends StatelessWidget {
-  const OutputSection({super.key});
+  final Function onTap;
+  final bool isSelectable;
+  const OutputSection({
+    super.key,
+    required this.onTap,
+    required this.isSelectable,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +37,19 @@ class OutputSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: MarkdownWidget(
-                  data: outputText ?? 'No output available.',
-                  padding: const EdgeInsets.all(16),
-                  config: MarkdownConfig(configs: [
+                selectable: !isSelectable,
+                data: outputText ?? 'No output available.',
+                padding: const EdgeInsets.all(16),
+                config: MarkdownConfig(
+                  configs: [
                     PreConfig(
-                        theme: a11yLightTheme,
-                        textStyle: const TextStyle(fontSize: 14),
-                        wrapper: buildCodeWrapper(context)),
-                  ])),
+                      theme: a11yLightTheme,
+                      textStyle: const TextStyle(fontSize: 14),
+                      wrapper: buildCodeWrapper(context),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
