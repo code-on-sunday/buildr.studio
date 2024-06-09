@@ -1,7 +1,7 @@
 name: buildr_studio
 description: "The AI toolbox to build more in less time"
 publish_to: "none"
-version: 0.1.5+7
+version: 0.1.5+8
 
 environment:
   sdk: ">=3.3.3 <4.0.0"
@@ -13,7 +13,6 @@ dependencies:
   file_picker: ^8.0.3
   flutter:
     sdk: flutter
-  flutter_dotenv: ^5.1.0
   flutter_highlight: ^0.7.0
   get_it: ^7.7.0
   logger: ^2.3.0
@@ -44,7 +43,6 @@ flutter:
   assets:
     - assets/
     - assets/tools/
-    - .env
 
 flutter_launcher_icons:
   windows:
