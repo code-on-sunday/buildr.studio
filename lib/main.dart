@@ -1,6 +1,7 @@
 import 'package:buildr_studio/app_theme.dart';
 import 'package:buildr_studio/repositories/tool_repository.dart';
 import 'package:buildr_studio/screens/splash_screen.dart';
+import 'package:buildr_studio/utils/device_registration.dart';
 import 'package:context_menus/context_menus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -24,6 +25,7 @@ Future<void> setupDependencyInjection() async {
   GetIt.I.registerSingleton(highlight);
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   GetIt.I.registerSingleton(packageInfo);
+  GetIt.I.registerSingleton(DeviceRegistration());
 }
 
 class MyApp extends StatelessWidget {
