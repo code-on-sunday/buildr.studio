@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
@@ -41,7 +43,7 @@ class FileExplorerSection extends StatelessWidget {
           }
         }),
         ContextMenuButtonConfig('Open in VSCode', onPressed: () {
-          _openInVSCode(entity);
+          _openInVSCode(entity, context);
         }),
       ]),
       child: MouseRegion(
@@ -128,8 +130,24 @@ class FileExplorerSection extends StatelessWidget {
     );
   }
 
-  void _openInVSCode(FileSystemEntity entity) {
-    Process.start("code", [entity.path], runInShell: true);
+  void _openInVSCode(FileSystemEntity entity, BuildContext context) {
+    try {
+      if (Platform.isMacOS) {
+        Process.start(
+            "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code",
+            [entity.path],
+            runInShell: true);
+      } else {
+        Process.start("code", [entity.path], runInShell: true);
+      }
+    } catch (e) {
+      print('Error opening file in VSCode: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to open file in VSCode.'),
+        ),
+      );
+    }
   }
 
   Future<void> _pasteClipboardContent(
