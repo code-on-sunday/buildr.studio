@@ -1,0 +1,6 @@
+[submodule "registration"]
+	path = registration
+	url = git@github.com:code-on-sunday/buildr.studio-device-registration.git
+[submodule "backend"]
+	path = backend
+	url = git@github.com:code-on-sunday/buildr.studio-backend.git

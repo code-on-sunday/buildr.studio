@@ -1,5 +1,5 @@
+import 'package:buildr_studio/env/env.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -44,8 +44,8 @@ class Sidebar extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      if (dotenv.env['WIREDASH_PROJECT_ID'] != null &&
-                          dotenv.env['WIREDASH_SECRET'] != null)
+                      if (Env.wireDashProjectId != null &&
+                          Env.wireDashSecret != null)
                         Text('(v${GetIt.I<PackageInfo>().version})',
                             style: const TextStyle(fontSize: 12)),
                     ],

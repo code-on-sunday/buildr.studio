@@ -78,7 +78,7 @@ class VariableSectionState extends ChangeNotifier {
             if (fileContent == null) {
               continue;
             }
-            concatenatedContent.write('---${path.basename(p)}---\n```\n');
+            concatenatedContent.write('---$relativePath---\n```\n');
             concatenatedContent.write(fileContent);
             concatenatedContent.write('\n```\n');
           }
@@ -99,7 +99,7 @@ class VariableSectionState extends ChangeNotifier {
               if (fileContent == null) {
                 continue;
               }
-              concatenatedContent.write('---${path.basename(p)}---\n```\n');
+              concatenatedContent.write('---$relativePath---\n```\n');
               concatenatedContent.write(fileContent);
               concatenatedContent.write('\n```\n');
             }

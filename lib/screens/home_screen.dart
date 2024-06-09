@@ -1,3 +1,4 @@
+import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_section.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/output_section.dart';
@@ -21,11 +22,19 @@ class HomeScreen extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => HomeScreenState(context)),
         ChangeNotifierProvider(create: (context) => FileExplorerState()),
         ChangeNotifierProvider(create: (context) => VariableSectionState()),
+        ChangeNotifierProvider(
+            create: (context) => DeviceRegistrationState()..registerDevice()),
       ],
-      child:
-          Consumer3<HomeScreenState, FileExplorerState, VariableSectionState>(
-        builder: (context, homeState, fileExplorerState, variableSectionState,
-            child) {
+      child: Consumer4<HomeScreenState, FileExplorerState, VariableSectionState,
+          DeviceRegistrationState>(
+        builder: (
+          context,
+          homeState,
+          fileExplorerState,
+          variableSectionState,
+          _,
+          __,
+        ) {
           final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
 
           return Scaffold(

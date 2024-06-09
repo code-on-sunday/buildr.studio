@@ -23,6 +23,19 @@ jobs:
         run: |
           echo "WIREDASH_PROJECT_ID=${{ secrets.WIREDASH_PROJECT_ID }}" > .env
           echo "WIREDASH_SECRET=${{ secrets.WIREDASH_SECRET }}" >> .env
+          echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env
+
+      - name: Get device registration file
+        run: |
+          try {
+            $url = "${{ secrets.DEVICE_REGISTRATION }}"
+            $output = "assets/device_registration.exe"
+            Invoke-WebRequest -Uri $url -OutFile $output
+          }
+          catch {
+            Write-Output "Error downloading file: $_"
+            exit 1
+          }
 
       - name: Build Windows App
         run: |
