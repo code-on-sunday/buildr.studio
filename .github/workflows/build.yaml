@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Windows App
         run: |
-          flutter build windows
+          flutter build windows --release --obfuscate --split-debug-info=symbols
 
       - name: Build iss script
         run: dart run inno_bundle:build --no-app --release --no-installer
