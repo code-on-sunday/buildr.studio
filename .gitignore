@@ -49,3 +49,4 @@ app.*.map.json
 .env
 macos/Podfile.lock
 *.exe
+lib/env/env.g.dart
