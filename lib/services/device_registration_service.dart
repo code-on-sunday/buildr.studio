@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-class DeviceRegistration {
+class DeviceRegistrationService {
   Future<void> register() async {
     final directory = await getApplicationSupportDirectory();
     final deviceKeyPath = p.join(directory.path, 'device_key');

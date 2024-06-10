@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:buildr_studio/models/variable.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
-import 'package:buildr_studio/screens/home_screen/variable_section_state.dart';
+import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,7 +31,7 @@ class _VariableInputState extends State<VariableInput> {
   void initState() {
     super.initState();
     _textController = TextEditingController();
-    context.read<VariableSectionState>().clearValuesStream.listen((_) {
+    context.read<ToolUsageManager>().clearValuesStream.listen((_) {
       _textController.clear();
     });
   }

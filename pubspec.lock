@@ -842,6 +842,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  socket_io_client:
+    dependency: "direct main"
+    description:
+      name: socket_io_client
+      sha256: "15c9deae04e2b21065adbe864a641e0a5fc2499ff4c89e98a3877aea22ce841c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0-beta.2"
+  socket_io_common:
+    dependency: transitive
+    description:
+      name: socket_io_common
+      sha256: "5ad0f12e1b17f4300b0d6a27feaf1b7c1153ca21498ba307f0297b81449f7a44"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0-beta.0"
   source_gen:
     dependency: transitive
     description:

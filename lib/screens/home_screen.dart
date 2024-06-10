@@ -5,9 +5,11 @@ import 'package:buildr_studio/screens/home_screen/output_section.dart';
 import 'package:buildr_studio/screens/home_screen/settings_section.dart';
 import 'package:buildr_studio/screens/home_screen/sidebar.dart';
 import 'package:buildr_studio/screens/home_screen/sidebar_content.dart';
+import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:buildr_studio/screens/home_screen/variable_section.dart';
-import 'package:buildr_studio/screens/home_screen/variable_section_state.dart';
+import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 import 'home_screen_state.dart';
@@ -21,17 +23,21 @@ class HomeScreen extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => HomeScreenState(context)),
         ChangeNotifierProvider(create: (context) => FileExplorerState()),
-        ChangeNotifierProvider(create: (context) => VariableSectionState()),
+        ChangeNotifierProvider(
+            create: (context) => ToolUsageManager(
+                  context,
+                  promptService: GetIt.I.get<BuildrStudioPromptService>(),
+                )),
         ChangeNotifierProvider(
             create: (context) => DeviceRegistrationState()..registerDevice()),
       ],
-      child: Consumer4<HomeScreenState, FileExplorerState, VariableSectionState,
+      child: Consumer4<HomeScreenState, FileExplorerState, ToolUsageManager,
           DeviceRegistrationState>(
         builder: (
           context,
           homeState,
           fileExplorerState,
-          variableSectionState,
+          toolUsageManager,
           _,
           __,
         ) {
@@ -120,7 +126,8 @@ class HomeScreen extends StatelessWidget {
                                     SizedBox(
                                       width: 300,
                                       height: 40,
-                                      child: variableSectionState.isRunning
+                                      child: toolUsageManager
+                                              .isResponseStreaming
                                           ? const FilledButton(
                                               onPressed: null,
                                               child: SizedBox(
@@ -131,17 +138,13 @@ class HomeScreen extends StatelessWidget {
                                               ),
                                             )
                                           : FilledButton.icon(
-                                              onPressed: variableSectionState
-                                                      .isRunning
+                                              onPressed: toolUsageManager
+                                                      .isResponseStreaming
                                                   ? null
                                                   : () {
-                                                      try {
-                                                        variableSectionState
-                                                            .submit(context);
-                                                      } catch (e) {
-                                                        // Log the error or display it to the UI
-                                                        print('Error: $e');
-                                                      }
+                                                      toolUsageManager
+                                                          .submitPrompt(
+                                                              context);
                                                     },
                                               label: const Text('Run'),
                                               icon:
@@ -167,7 +170,7 @@ class HomeScreen extends StatelessWidget {
                           child: VariableSection(
                             selectedTool: homeState.selectedTool!,
                             variables: homeState.prompt?.variables ?? [],
-                            variableSectionState: variableSectionState,
+                            toolUsageManager: toolUsageManager,
                           ),
                         ),
                       if (!isLargeScreen && homeState.isSidebarVisible)

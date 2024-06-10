@@ -8,18 +8,19 @@ import 'package:get_it/get_it.dart';
 class HomeScreenState extends ChangeNotifier {
   final BuildContext _context;
   late final ToolRepository _toolRepository;
+  late final ApiKeyManager _apiKeyManager;
   List<Tool> _tools = [];
   Tool? _selectedTool;
   ToolDetails? _prompt;
   bool _isSidebarVisible = false;
   int _selectedNavRailIndex = 0;
   bool _isSettingsVisible = false;
-  String? _outputText;
   bool _isVariableSectionVisible = false;
   String? _apiKey;
 
   HomeScreenState(this._context) {
     _toolRepository = GetIt.I.get<ToolRepository>();
+    _apiKeyManager = GetIt.I.get<ApiKeyManager>();
     _loadTools();
     _loadApiKey();
   }
@@ -31,7 +32,6 @@ class HomeScreenState extends ChangeNotifier {
   bool get isSidebarVisible => _isSidebarVisible;
   int get selectedNavRailIndex => _selectedNavRailIndex;
   bool get isSettingsVisible => _isSettingsVisible;
-  String? get outputText => _outputText;
   bool get isVariableSectionVisible => _isVariableSectionVisible;
 
   void toggleVariableSection() {
@@ -105,7 +105,7 @@ class HomeScreenState extends ChangeNotifier {
   }
 
   Future<String?> getApiKey() async {
-    final key = await ApiKeyManager.getApiKey();
+    final key = await _apiKeyManager.getApiKey();
     if (key == null || key.isEmpty) {
       return null;
     }
@@ -113,14 +113,9 @@ class HomeScreenState extends ChangeNotifier {
   }
 
   Future<void> saveApiKey(String apiKey) async {
-    await ApiKeyManager.saveApiKey(apiKey);
+    await _apiKeyManager.saveApiKey(apiKey);
     await _loadApiKey();
     // Set the API key in the environment variables or use it as needed
     print('API key saved: $apiKey');
-  }
-
-  void setOutputText(String text) {
-    _outputText = text;
-    notifyListeners();
   }
 }

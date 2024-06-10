@@ -1,9 +1,10 @@
-import 'package:buildr_studio/utils/device_registration.dart';
+import 'package:buildr_studio/services/device_registration_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 class DeviceRegistrationState extends ChangeNotifier {
-  final DeviceRegistration _deviceRegistration = GetIt.I<DeviceRegistration>();
+  final DeviceRegistrationService _deviceRegistration =
+      GetIt.I<DeviceRegistrationService>();
   String? errorMessage;
 
   Future<void> registerDevice() async {
