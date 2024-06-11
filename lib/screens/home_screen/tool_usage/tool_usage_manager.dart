@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/prompt_submitter.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/variable_manager.dart';
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
@@ -13,7 +14,7 @@ class ToolUsageManager extends ChangeNotifier {
   String? _error;
   bool _isResponseStreaming = false;
 
-  ToolUsageManager(BuildContext context, {required PromptService promptService})
+  ToolUsageManager({required PromptService promptService})
       : _variableManager = VariableManager(),
         _promptSubmitter = PromptSubmitter(
           promptService: promptService,
@@ -58,12 +59,19 @@ class ToolUsageManager extends ChangeNotifier {
     _variableManager.clearValues();
   }
 
-  Future<void> submitPrompt(BuildContext context) async {
+  Future<void> submitPrompt(
+    String? prompt,
+    FileExplorerState fileExplorerState,
+  ) async {
     _output = '';
     _isResponseStreaming = true;
     notifyListeners();
     try {
-      await _promptSubmitter.submit(context, _variableManager);
+      await _promptSubmitter.submit(
+        prompt,
+        fileExplorerState,
+        _variableManager,
+      );
     } catch (e) {
       _isResponseStreaming = false;
       _output = '';

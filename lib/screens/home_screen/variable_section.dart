@@ -1,26 +1,28 @@
 import 'package:buildr_studio/models/tool.dart';
 import 'package:buildr_studio/models/variable.dart';
+import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:buildr_studio/screens/home_screen/variable_input.dart';
 import 'package:buildr_studio/screens/home_screen_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class VariableSection extends StatelessWidget {
   final Tool selectedTool;
   final List<Variable> variables;
-  final ToolUsageManager toolUsageManager;
-  final HomeScreenState homeState;
 
   const VariableSection({
     super.key,
     required this.selectedTool,
     required this.variables,
-    required this.toolUsageManager,
-    required this.homeState,
   });
 
   @override
   Widget build(BuildContext context) {
+    final homeState = context.watch<HomeScreenState>();
+    final fileExplorerState = context.watch<FileExplorerState>();
+    final toolUsageManager = context.watch<ToolUsageManager>();
+
     return Container(
       width: MediaQuery.of(context).size.width * 0.6,
       padding: const EdgeInsets.all(16.0),
@@ -92,7 +94,10 @@ class VariableSection extends StatelessWidget {
                           onPressed: toolUsageManager.isResponseStreaming
                               ? null
                               : () {
-                                  toolUsageManager.submitPrompt(context);
+                                  toolUsageManager.submitPrompt(
+                                    homeState.prompt?.prompt,
+                                    fileExplorerState,
+                                  );
                                   homeState.toggleVariableSection();
                                 },
                           label: const Text('Run'),

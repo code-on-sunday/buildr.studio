@@ -38,8 +38,9 @@ class BuildrStudioPromptService implements PromptService {
 
     _socket.onDisconnect((_) {
       _streaming = false;
-      _endController.sink.add(null);
       print('Disconnected from server');
+      if (_endController.isClosed) return;
+      _endController.sink.add(null);
     });
 
     print('Listening to server events');
