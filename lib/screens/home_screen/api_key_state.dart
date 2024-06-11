@@ -16,6 +16,7 @@ class ApiKeyState extends ChangeNotifier {
     try {
       _apiKey = await _getApiKey();
     } catch (e) {
+      print('Error loading API key: $e');
       _apiKey = null;
     }
     notifyListeners();

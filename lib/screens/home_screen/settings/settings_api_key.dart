@@ -15,18 +15,25 @@ class SettingsApiKey extends StatefulWidget {
 
 class _SettingsApiKeyState extends State<SettingsApiKey> {
   final _apiKeyController = TextEditingController();
+  late final _apiKeyState = context.read<ApiKeyState>();
+
+  void _changeApiKey() {
+    setState(() {
+      _apiKeyController.text = _apiKeyState.apiKey ?? '';
+    });
+  }
 
   @override
   void initState() {
-    context.read<ApiKeyState>().addListener(() {
-      _apiKeyController.text = context.read<ApiKeyState>().apiKey ?? '';
-    });
+    _apiKeyController.text = _apiKeyState.apiKey ?? '';
+    _apiKeyState.addListener(_changeApiKey);
     super.initState();
   }
 
   @override
   void dispose() {
     _apiKeyController.dispose();
+    _apiKeyState.removeListener(_changeApiKey);
     super.dispose();
   }
 
