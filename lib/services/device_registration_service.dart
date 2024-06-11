@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:buildr_studio/env/env.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -17,13 +18,8 @@ class DeviceRegistrationService {
 
     final String appExePath = Platform.resolvedExecutable;
     final String appPath = p.dirname(appExePath);
-    final String exePath = p.joinAll([
-      appPath,
-      'data',
-      'flutter_assets',
-      'assets',
-      'device_registration.exe'
-    ]);
+    final String exePath =
+        p.joinAll([appPath, ...Env.deviceRegistrationExePath.split(",")]);
     final process = await Process.start(
       exePath,
       [deviceKeyPath, deviceRegistrationPath],
