@@ -171,6 +171,7 @@ class HomeScreen extends StatelessWidget {
                             selectedTool: homeState.selectedTool!,
                             variables: homeState.prompt?.variables ?? [],
                             toolUsageManager: toolUsageManager,
+                            homeState: homeState,
                           ),
                         ),
                       if (!isLargeScreen && homeState.isSidebarVisible)

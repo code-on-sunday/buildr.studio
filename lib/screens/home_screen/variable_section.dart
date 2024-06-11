@@ -2,18 +2,21 @@ import 'package:buildr_studio/models/tool.dart';
 import 'package:buildr_studio/models/variable.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:buildr_studio/screens/home_screen/variable_input.dart';
+import 'package:buildr_studio/screens/home_screen_state.dart';
 import 'package:flutter/material.dart';
 
 class VariableSection extends StatelessWidget {
   final Tool selectedTool;
   final List<Variable> variables;
   final ToolUsageManager toolUsageManager;
+  final HomeScreenState homeState;
 
   const VariableSection({
     super.key,
     required this.selectedTool,
     required this.variables,
     required this.toolUsageManager,
+    required this.homeState,
   });
 
   @override
@@ -90,6 +93,7 @@ class VariableSection extends StatelessWidget {
                               ? null
                               : () {
                                   toolUsageManager.submitPrompt(context);
+                                  homeState.toggleVariableSection();
                                 },
                           label: const Text('Run'),
                           icon: const Icon(Icons.play_arrow),

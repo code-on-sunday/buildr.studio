@@ -31,7 +31,7 @@ class OutputSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: MarkdownWidget(
-                  data: outputText ?? 'No output available.',
+                  data: outputText,
                   padding: const EdgeInsets.all(16),
                   config: MarkdownConfig(configs: [
                     PreConfig(
