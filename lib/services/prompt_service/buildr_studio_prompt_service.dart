@@ -1,10 +1,16 @@
 import 'dart:async';
 
 import 'package:buildr_studio/env/env.dart';
+import 'package:buildr_studio/services/prompt_service/authenticated_buildr_studio_request_builder.dart';
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class BuildrStudioPromptService implements PromptService {
+  BuildrStudioPromptService(
+      {required AuthenticatedBuildrStudioRequestBuilder requestBuilder})
+      : _requestBuilder = requestBuilder;
+
+  final AuthenticatedBuildrStudioRequestBuilder _requestBuilder;
   late final Socket _socket =
       io(Env.apiBaseUrl, OptionBuilder().setTransports(['websocket']).build());
   final _responseController = StreamController<String>.broadcast();
@@ -57,11 +63,17 @@ class BuildrStudioPromptService implements PromptService {
   }
 
   @override
-  void sendPrompt(String prompt) {
-    if (_streaming) {
-      _socket.emit('cancel');
+  void sendPrompt(String prompt) async {
+    try {
+      if (_streaming) {
+        _socket.emit('cancel');
+      }
+      _socket.emit('prompt', await _buildAuthenticatedRequest(prompt));
+    } catch (e) {
+      print('Error sending prompt: $e');
+      _streaming = false;
+      _errorController.sink.add(e.toString());
     }
-    _socket.emit('prompt', prompt);
   }
 
   @override
@@ -71,10 +83,20 @@ class BuildrStudioPromptService implements PromptService {
   @override
   Stream<void> get endStream => _endController.stream;
 
+  @override
   void dispose() {
     _responseController.close();
     _errorController.close();
     _endController.close();
     _socket.disconnect();
+  }
+
+  Future<Map<String, dynamic>> _buildAuthenticatedRequest(String prompt) async {
+    final request = await _requestBuilder.build(prompt);
+    return {
+      'prompt': request.data,
+      'signature': request.signature,
+      'privateKeyHash': request.deviceKeyHash,
+    };
   }
 }

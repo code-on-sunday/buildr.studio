@@ -76,6 +76,7 @@ class AnthropicPromptService implements PromptService {
   @override
   Stream<void> get endStream => _endController.stream;
 
+  @override
   void dispose() {
     _responseController.close();
     _errorController.close();

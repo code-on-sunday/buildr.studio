@@ -4,9 +4,14 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 class DeviceRegistrationService {
-  Future<void> register() async {
+  Future<String> loadDeviceKey() async {
     final directory = await getApplicationSupportDirectory();
     final deviceKeyPath = p.join(directory.path, 'device_key');
+
+    if (File(deviceKeyPath).existsSync()) {
+      return await File(deviceKeyPath).readAsString();
+    }
+
     final deviceRegistrationPath =
         p.join(directory.path, 'device_registration.log');
 
@@ -35,5 +40,7 @@ class DeviceRegistrationService {
           'Registration process failed with exit code $exitCode\n$err';
       throw Exception(errorMessage);
     }
+
+    return await File(deviceKeyPath).readAsString();
   }
 }

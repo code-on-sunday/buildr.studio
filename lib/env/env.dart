@@ -10,4 +10,6 @@ abstract class Env {
   static final String? wireDashProjectId = _Env.wireDashProjectId;
   @EnviedField(varName: 'API_BASE_URL', obfuscate: true)
   static final String apiBaseUrl = _Env.apiBaseUrl;
+  @EnviedField(varName: 'DEVICE_KEY_HASH_SALT', obfuscate: true)
+  static final String deviceHashSalt = _Env.deviceHashSalt;
 }

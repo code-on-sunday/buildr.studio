@@ -42,6 +42,7 @@ class ToolUsageManager extends ChangeNotifier {
   @override
   void dispose() {
     _variableManager.dispose();
+    _promptService.dispose();
     super.dispose();
   }
 

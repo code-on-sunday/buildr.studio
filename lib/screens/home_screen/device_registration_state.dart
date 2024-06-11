@@ -9,7 +9,7 @@ class DeviceRegistrationState extends ChangeNotifier {
 
   Future<void> registerDevice() async {
     try {
-      await _deviceRegistration.register();
+      await _deviceRegistration.loadDeviceKey();
     } catch (e) {
       print('Error registering device: $e');
       errorMessage = e.toString();

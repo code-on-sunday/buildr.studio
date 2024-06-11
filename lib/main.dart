@@ -4,6 +4,7 @@ import 'package:buildr_studio/repositories/tool_repository.dart';
 import 'package:buildr_studio/screens/splash_screen.dart';
 import 'package:buildr_studio/services/device_registration_service.dart';
 import 'package:buildr_studio/services/prompt_service/anthropic_prompt_service.dart';
+import 'package:buildr_studio/services/prompt_service/authenticated_buildr_studio_request_builder.dart';
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:buildr_studio/utils/api_key_manager.dart';
 import 'package:buildr_studio/utils/file_utils.dart';
@@ -31,10 +32,12 @@ Future<void> setupDependencyInjection() async {
   GetIt.I.registerSingleton(FileUtils());
   GetIt.I.registerSingleton(ApiKeyManager());
   GetIt.I.registerSingleton(DeviceRegistrationService());
-  GetIt.I.registerFactory(() => BuildrStudioPromptService());
-  GetIt.I.registerFactory(() => AnthropicPromptService(
-        apiKeyManager: GetIt.I.get(),
-      ));
+  GetIt.I.registerSingleton(
+      AuthenticatedBuildrStudioRequestBuilder(GetIt.I.get()));
+  GetIt.I.registerFactory(
+      () => BuildrStudioPromptService(requestBuilder: GetIt.I.get()));
+  GetIt.I.registerFactory(
+      () => AnthropicPromptService(apiKeyManager: GetIt.I.get()));
 }
 
 class MyApp extends StatelessWidget {
