@@ -48,9 +48,9 @@ class FileExplorerSection extends StatelessWidget {
         cursor:
             isIgnored ? SystemMouseCursors.forbidden : SystemMouseCursors.click,
         child: GestureDetector(
-          onTapDown: isIgnored
+          onTap: isIgnored
               ? null
-              : (_) {
+              : () {
                   if (fileExplorerState.isControlPressed) {
                     fileExplorerState.toggleSelection(entity);
                   } else {
