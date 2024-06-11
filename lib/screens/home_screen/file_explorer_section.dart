@@ -164,7 +164,7 @@ class FileExplorerSection extends StatelessWidget {
     List<FileSystemEntity> entities,
     int level,
   ) {
-    final fileExplorerState = context.read<FileExplorerState>();
+    final fileExplorerState = context.watch<FileExplorerState>();
     final folders = <Directory>[];
     final files = <File>[];
 

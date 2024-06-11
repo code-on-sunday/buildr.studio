@@ -1,4 +1,4 @@
-import 'package:buildr_studio/screens/home_screen_state.dart';
+import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
@@ -10,7 +10,7 @@ class OutputSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final outputText = context.watch<HomeScreenState>().outputText;
+    final outputText = context.watch<ToolUsageManager>().output;
     return Container(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -31,7 +31,7 @@ class OutputSection extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: MarkdownWidget(
-                  data: outputText ?? 'No output available.',
+                  data: outputText,
                   padding: const EdgeInsets.all(16),
                   config: MarkdownConfig(configs: [
                     PreConfig(

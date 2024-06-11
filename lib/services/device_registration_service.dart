@@ -1,24 +1,25 @@
 import 'dart:io';
 
+import 'package:buildr_studio/env/env.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-class DeviceRegistration {
-  Future<void> register() async {
+class DeviceRegistrationService {
+  Future<String> loadDeviceKey() async {
     final directory = await getApplicationSupportDirectory();
     final deviceKeyPath = p.join(directory.path, 'device_key');
+
+    if (File(deviceKeyPath).existsSync()) {
+      return await File(deviceKeyPath).readAsString();
+    }
+
     final deviceRegistrationPath =
         p.join(directory.path, 'device_registration.log');
 
     final String appExePath = Platform.resolvedExecutable;
     final String appPath = p.dirname(appExePath);
-    final String exePath = p.joinAll([
-      appPath,
-      'data',
-      'flutter_assets',
-      'assets',
-      'device_registration.exe'
-    ]);
+    final String exePath =
+        p.joinAll([appPath, ...Env.deviceRegistrationExePath.split(",")]);
     final process = await Process.start(
       exePath,
       [deviceKeyPath, deviceRegistrationPath],
@@ -35,5 +36,7 @@ class DeviceRegistration {
           'Registration process failed with exit code $exitCode\n$err';
       throw Exception(errorMessage);
     }
+
+    return await File(deviceKeyPath).readAsString();
   }
 }

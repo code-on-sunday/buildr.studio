@@ -1,23 +1,28 @@
 import 'package:buildr_studio/models/tool.dart';
 import 'package:buildr_studio/models/variable.dart';
+import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
+import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:buildr_studio/screens/home_screen/variable_input.dart';
-import 'package:buildr_studio/screens/home_screen/variable_section_state.dart';
+import 'package:buildr_studio/screens/home_screen_state.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class VariableSection extends StatelessWidget {
   final Tool selectedTool;
   final List<Variable> variables;
-  final VariableSectionState variableSectionState;
 
   const VariableSection({
     super.key,
     required this.selectedTool,
     required this.variables,
-    required this.variableSectionState,
   });
 
   @override
   Widget build(BuildContext context) {
+    final homeState = context.watch<HomeScreenState>();
+    final fileExplorerState = context.watch<FileExplorerState>();
+    final toolUsageManager = context.watch<ToolUsageManager>();
+
     return Container(
       width: MediaQuery.of(context).size.width * 0.6,
       padding: const EdgeInsets.all(16.0),
@@ -51,10 +56,9 @@ class VariableSection extends StatelessWidget {
                       child: VariableInput(
                         variable: variable,
                         selectedPaths:
-                            variableSectionState.selectedPaths[variable.name] ??
-                                [],
-                        onPathsSelected: variableSectionState.onPathsSelected,
-                        onValueChanged: variableSectionState.setInputValue,
+                            toolUsageManager.selectedPaths[variable.name] ?? [],
+                        onPathsSelected: toolUsageManager.onPathsSelected,
+                        onValueChanged: toolUsageManager.setInputValue,
                       ),
                     ))
                 .toList(),
@@ -65,7 +69,7 @@ class VariableSection extends StatelessWidget {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () {
-                    variableSectionState.clearValues();
+                    toolUsageManager.clearValues();
                   },
                   child: Container(
                       height: 40,
@@ -77,7 +81,7 @@ class VariableSection extends StatelessWidget {
               Expanded(
                 child: SizedBox(
                   height: 56,
-                  child: variableSectionState.isRunning
+                  child: toolUsageManager.isResponseStreaming
                       ? const FilledButton(
                           onPressed: null,
                           child: SizedBox(
@@ -87,15 +91,14 @@ class VariableSection extends StatelessWidget {
                           ),
                         )
                       : FilledButton.icon(
-                          onPressed: variableSectionState.isRunning
+                          onPressed: toolUsageManager.isResponseStreaming
                               ? null
                               : () {
-                                  try {
-                                    variableSectionState.submit(context);
-                                  } catch (e) {
-                                    // Log the error or display it to the UI
-                                    print('Error: $e');
-                                  }
+                                  toolUsageManager.submitPrompt(
+                                    homeState.prompt?.prompt,
+                                    fileExplorerState,
+                                  );
+                                  homeState.toggleVariableSection();
                                 },
                           label: const Text('Run'),
                           icon: const Icon(Icons.play_arrow),

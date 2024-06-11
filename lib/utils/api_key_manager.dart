@@ -1,15 +1,16 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiKeyManager {
+  ApiKeyManager({required SharedPreferences prefs}) : _prefs = prefs;
+
+  final SharedPreferences _prefs;
   static const _apiKeyKey = 'anthropic_api_key';
 
-  static Future<String?> getApiKey() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_apiKeyKey);
+  Future<String?> getApiKey() async {
+    return _prefs.getString(_apiKeyKey);
   }
 
-  static Future<void> saveApiKey(String apiKey) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_apiKeyKey, apiKey);
+  Future<void> saveApiKey(String apiKey) async {
+    await _prefs.setString(_apiKeyKey, apiKey);
   }
 }

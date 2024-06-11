@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:buildr_studio/repositories/user_preferences_repository.dart';
+import 'package:buildr_studio/utils/directory_watcher.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileExplorerState extends ChangeNotifier {
+  final UserPreferencesRepository _userPreferencesRepository;
   List<FileSystemEntity> _files = [];
   Map<String, bool> _isExpanded = {};
   Map<String, bool> _isSelected = {};
@@ -15,11 +18,14 @@ class FileExplorerState extends ChangeNotifier {
   String? _gitIgnoreContent;
   final DirectoryWatcher _directoryWatcher = DirectoryWatcher();
 
-  FileExplorerState() {
+  FileExplorerState({
+    required UserPreferencesRepository userPreferencesRepository,
+  }) : _userPreferencesRepository = userPreferencesRepository {
     ServicesBinding.instance.keyboard.addHandler(
       onKeyEvent,
     );
-    _directoryWatcher.events.listen(_onDirectoryChanged);
+    _directoryWatcher.events.listen(_onContentChanged);
+    _loadStoredLastWorkingDir();
   }
 
   @override
@@ -58,22 +64,29 @@ class FileExplorerState extends ChangeNotifier {
   }
 
   Future<void> openFolder() async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final selectedDirectory = await FilePicker.platform.getDirectoryPath(
-        initialDirectory: directory.path,
-      );
-      _loadFiles(selectedDirectory);
-      if (selectedDirectory != null) {
-        _selectedFolderPath = selectedDirectory;
-        _directoryWatcher.folderPath = selectedDirectory;
-        await _loadGitIgnoreContent();
-        notifyListeners();
-      }
-    } catch (e) {
-      // Log the error or display it to the UI
-      print('Error selecting folder: $e');
-    }
+    final directory = await getApplicationDocumentsDirectory();
+    final selectedDirectory = await FilePicker.platform.getDirectoryPath(
+      initialDirectory: directory.path,
+    );
+    if (selectedDirectory == null) return;
+    await _inflateSelectedWorkingDir(selectedDirectory);
+    _userPreferencesRepository.setLastWorkingDir(selectedDirectory);
+  }
+
+  void _loadStoredLastWorkingDir() async {
+    final lastWorkingDir = _userPreferencesRepository.getLastWorkingDir();
+    if (lastWorkingDir == null) return;
+    await _inflateSelectedWorkingDir(lastWorkingDir);
+  }
+
+  Future<void> _inflateSelectedWorkingDir(String path) async {
+    _isExpanded.clear();
+    _isSelected.clear();
+    _loadFiles(path);
+    _selectedFolderPath = path;
+    _directoryWatcher.folderPath = path;
+    await _loadGitIgnoreContent();
+    notifyListeners();
   }
 
   Future<void> _loadFiles(String? folderPath) async {
@@ -82,11 +95,15 @@ class FileExplorerState extends ChangeNotifier {
       final directory = Directory(folderPath);
       final files = await directory.list().toList();
       _files = files;
-      _isExpanded = {
-        for (final entity in files)
-          if (entity is Directory) entity.path: false
-      };
-      _isSelected = {for (final entity in files) entity.path: false};
+      if (_isExpanded.isEmpty) {
+        _isExpanded = {
+          for (final entity in files)
+            if (entity is Directory) entity.path: false
+        };
+      }
+      if (_isSelected.isEmpty) {
+        _isSelected = {for (final entity in files) entity.path: false};
+      }
       notifyListeners();
     } catch (e) {
       // Log the error or display it to the UI
@@ -110,11 +127,9 @@ class FileExplorerState extends ChangeNotifier {
     }
   }
 
-  void _onDirectoryChanged(DirectoryChangeEvent event) {
-    if (event.type == ChangeType.create || event.type == ChangeType.delete) {
-      _loadFiles(_selectedFolderPath);
-      notifyListeners();
-    }
+  void _onContentChanged(DirectoryChangeEvent event) async {
+    await _loadFiles(_selectedFolderPath);
+    notifyListeners();
   }
 
   void toggleExpansion(FileSystemEntity entity) {
@@ -170,61 +185,4 @@ class FileExplorerState extends ChangeNotifier {
       return path.split(Platform.pathSeparator).last;
     }
   }
-}
-
-class DirectoryWatcher {
-  late Directory _directory;
-  late final StreamController<DirectoryChangeEvent> _controller;
-  StreamSubscription<FileSystemEvent>? _directorySubscription;
-
-  DirectoryWatcher() {
-    _controller = StreamController.broadcast();
-  }
-
-  String? _folderPath;
-  set folderPath(String? value) {
-    _folderPath = value;
-    _directory = Directory(_folderPath ?? '');
-    _startWatching();
-  }
-
-  Stream<DirectoryChangeEvent> get events => _controller.stream;
-  void _startWatching() {
-    _directorySubscription?.cancel();
-    _directorySubscription = _directory.watch().listen((event) {
-      _controller.sink.add(DirectoryChangeEvent(
-        type: _getChangeType(event),
-        path: event.path,
-      ));
-    });
-  }
-
-  ChangeType _getChangeType(FileSystemEvent event) {
-    switch (event) {
-      case FileSystemCreateEvent():
-        return ChangeType.create;
-      case FileSystemDeleteEvent():
-        return ChangeType.delete;
-      case FileSystemModifyEvent():
-        return ChangeType.modify;
-      case FileSystemMoveEvent():
-        return ChangeType.move;
-    }
-  }
-
-  void dispose() {
-    _directorySubscription?.cancel();
-    _controller.close();
-  }
-}
-
-enum ChangeType { create, delete, modify, move }
-
-class DirectoryChangeEvent {
-  final ChangeType type;
-  final String path;
-  DirectoryChangeEvent({
-    required this.type,
-    required this.path,
-  });
 }

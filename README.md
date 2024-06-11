@@ -7,4 +7,5 @@
 
 1. Ensure you have Flutter SDK installed and configured on your system.
 2. Create a `.env` file in the root directory of the project and copy the content from the `.env.example` file.
-3. Run `flutter run`.
+3. Run `dart run build_runner build`.
+4. Run `flutter run`.
