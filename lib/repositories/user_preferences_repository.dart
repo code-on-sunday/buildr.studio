@@ -9,6 +9,8 @@ class UserPreferencesRepository {
 
   static const _keyAiService = 'ai_service';
 
+  static const _keyLastWorkingDir = 'last_working_dir';
+
   Future<void> setAiService(AIService aiService) async {
     await _prefs.setString(_keyAiService, aiService.name);
   }
@@ -19,5 +21,13 @@ class UserPreferencesRepository {
       (element) => element.name == aiServiceName,
       orElse: () => AIService.buildrStudio,
     );
+  }
+
+  Future<void> setLastWorkingDir(String path) async {
+    await _prefs.setString(_keyLastWorkingDir, path);
+  }
+
+  String? getLastWorkingDir() {
+    return _prefs.getString(_keyLastWorkingDir);
   }
 }

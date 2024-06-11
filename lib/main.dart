@@ -78,7 +78,9 @@ class MyApp extends StatelessWidget {
                   providers: [
                     ChangeNotifierProvider(
                         create: (context) => HomeScreenState(context)),
-                    ChangeNotifierProvider(create: (_) => FileExplorerState()),
+                    ChangeNotifierProvider(
+                        create: (_) => FileExplorerState(
+                            userPreferencesRepository: GetIt.I.get())),
                     ChangeNotifierProvider(
                         create: (_) => ChooseAIServiceState(
                             userPreferencesRepository: GetIt.I.get())),
