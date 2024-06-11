@@ -90,6 +90,7 @@ class BuildrStudioPromptService implements PromptService {
     _errorController.close();
     _endController.close();
     _socket.disconnect();
+    _socket.clearListeners();
   }
 
   Future<Map<String, dynamic>> _buildAuthenticatedRequest(String prompt) async {
