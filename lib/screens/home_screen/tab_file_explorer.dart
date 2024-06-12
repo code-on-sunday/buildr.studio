@@ -8,8 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
-class FileExplorerSection extends StatelessWidget {
-  const FileExplorerSection({super.key});
+class FileExplorerTab extends StatelessWidget {
+  const FileExplorerTab({super.key});
 
   Widget _buildFileSystemEntityTile(
     BuildContext context,

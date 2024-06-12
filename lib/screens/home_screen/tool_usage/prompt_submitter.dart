@@ -23,4 +23,19 @@ class PromptSubmitter {
 
     _promptService.sendPrompt(inflatedPrompt);
   }
+
+  Future<String> exportPrompt(
+    String? prompt,
+    FileExplorerState fileExplorerState,
+    VariableManager variableManager,
+  ) async {
+    if (prompt == null) return '';
+
+    final inflatedPrompt = variableManager.inflatePrompt(
+        fileExplorerState.selectedFolderPath,
+        fileExplorerState.gitIgnoreContent,
+        prompt);
+
+    return inflatedPrompt;
+  }
 }

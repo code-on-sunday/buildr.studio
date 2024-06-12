@@ -1,4 +1,4 @@
-import 'package:buildr_studio/screens/home_screen/api_key_state.dart';
+import 'package:buildr_studio/screens/home_screen/settings/api_key_state.dart';
 import 'package:buildr_studio/screens/home_screen/settings/choose_ai_service_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:flutter/material.dart';

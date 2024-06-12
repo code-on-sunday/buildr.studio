@@ -23,7 +23,7 @@ class AuthenticatedBuildrStudioRequestBuilder {
   Future<AuthenticatedBuildrStudioRequest> build(String data) async {
     final deviceKey = await _getDeviceKey();
     final signature = await _signWithDeviceKey(data, deviceKey);
-    final deviceKeyHash = _getDeviceKeyHash(deviceKey);
+    final deviceKeyHash = getDeviceKeyHash(deviceKey);
 
     return AuthenticatedBuildrStudioRequest(data, signature, deviceKeyHash);
   }
@@ -39,7 +39,7 @@ class AuthenticatedBuildrStudioRequestBuilder {
     return signer.sign(data).base64;
   }
 
-  String _getDeviceKeyHash(String deviceKey) {
+  String getDeviceKeyHash(String deviceKey) {
     final salt = Env.deviceHashSalt;
     final bytes = utf8.encode('$deviceKey:$salt');
     final hash = sha256.convert(bytes).toString();

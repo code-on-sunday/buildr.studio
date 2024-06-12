@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart';
+import 'package:buildr_studio/models/prompt_service_connection_status.dart';
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:buildr_studio/utils/api_key_manager.dart';
 
@@ -75,6 +76,10 @@ class AnthropicPromptService implements PromptService {
 
   @override
   Stream<void> get endStream => _endController.stream;
+
+  @override
+  Stream<PromptServiceConnectionStatus> get connectionStatusStream =>
+      const Stream<PromptServiceConnectionStatus>.empty();
 
   @override
   void dispose() {

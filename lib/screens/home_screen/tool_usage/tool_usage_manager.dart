@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:buildr_studio/models/prompt_service_connection_status.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/prompt_submitter.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/variable_manager.dart';
@@ -13,6 +14,9 @@ class ToolUsageManager extends ChangeNotifier {
   String _output = '';
   String? _error;
   bool _isResponseStreaming = false;
+  PromptServiceConnectionStatus _promptServiceConnectionStatus =
+      const PromptServiceConnectionStatus.connected();
+  final List<StreamSubscription> _promptServiceSubscriptions = [];
 
   ToolUsageManager({required PromptService promptService})
       : _variableManager = VariableManager(),
@@ -20,11 +24,8 @@ class ToolUsageManager extends ChangeNotifier {
           promptService: promptService,
         ),
         _promptService = promptService {
-    //TODO: Wait for the device to be registered before connecting to the prompt service
-    Future.delayed(const Duration(seconds: 3), () {
-      _listenForOutput();
-    });
-
+    _listenForOutput();
+    _promptService.connect();
     _variableManager.addListener(() {
       notifyListeners();
     });
@@ -39,11 +40,18 @@ class ToolUsageManager extends ChangeNotifier {
   bool get isResponseStreaming => _isResponseStreaming;
   String get output => _output;
   String? get error => _error;
+  PromptServiceConnectionStatus get connectionStatus =>
+      _promptServiceConnectionStatus;
+  Stream<String> get errorStream => _promptService.errorStream;
+  Stream<void> get endStream => _promptService.endStream;
 
   @override
   void dispose() {
     _variableManager.dispose();
     _promptService.dispose();
+    for (var subscription in _promptServiceSubscriptions) {
+      subscription.cancel();
+    }
     super.dispose();
   }
 
@@ -65,6 +73,7 @@ class ToolUsageManager extends ChangeNotifier {
   ) async {
     _output = '';
     _isResponseStreaming = true;
+    _error = null;
     notifyListeners();
     try {
       await _promptSubmitter.submit(
@@ -80,24 +89,41 @@ class ToolUsageManager extends ChangeNotifier {
     }
   }
 
+  Future<String> exportPrompt(
+    String? prompt,
+    FileExplorerState fileExplorerState,
+  ) async {
+    return _promptSubmitter.exportPrompt(
+      prompt,
+      fileExplorerState,
+      _variableManager,
+    );
+  }
+
   void _listenForOutput() {
-    _promptService.connect();
-
-    _promptService.responseStream.listen((chunk) {
-      _output += chunk;
-      notifyListeners();
-    });
-
-    _promptService.errorStream.listen((error) {
-      _isResponseStreaming = false;
-      _output = '';
-      _error = error;
-      notifyListeners();
-    });
-
-    _promptService.endStream.listen((_) {
-      _isResponseStreaming = false;
-      notifyListeners();
-    });
+    _promptServiceSubscriptions.addAll([
+      _promptService.responseStream.listen((chunk) {
+        _output += chunk;
+        notifyListeners();
+      }),
+      _promptService.errorStream.listen((error) {
+        _isResponseStreaming = false;
+        _output = '';
+        _error = error;
+        notifyListeners();
+      }),
+      _promptService.endStream.listen((_) {
+        _isResponseStreaming = false;
+        notifyListeners();
+      }),
+      _promptService.connectionStatusStream.listen((status) {
+        if (status is Error) {
+          _isResponseStreaming = false;
+          _output = '';
+        }
+        _promptServiceConnectionStatus = status;
+        notifyListeners();
+      }),
+    ]);
   }
 }

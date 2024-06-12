@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:buildr_studio/env/env.dart';
+import 'package:buildr_studio/models/prompt_service_connection_status.dart';
 import 'package:buildr_studio/services/prompt_service/authenticated_buildr_studio_request_builder.dart';
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:socket_io_client/socket_io_client.dart';
@@ -16,32 +18,72 @@ class BuildrStudioPromptService implements PromptService {
   final _responseController = StreamController<String>.broadcast();
   final _errorController = StreamController<String>.broadcast();
   final _endController = StreamController<void>.broadcast();
+  final _connectionStatusController =
+      StreamController<PromptServiceConnectionStatus>.broadcast();
   bool _streaming = false;
+
+  final List<dynamic Function()> _connectionStatusListeners = [];
 
   @override
   void connect() {
     print('Connecting to server');
 
+    _connectionStatusController.sink
+        .add(const PromptServiceConnectionStatus.connecting());
+
     if (_socket.connected) {
       print('Already connected to server');
+      _connectionStatusController.sink
+          .add(const PromptServiceConnectionStatus.connected());
       return;
     }
-    _socket.onConnect((_) {
-      print('Connected to server');
-    });
 
-    _socket.onConnectError((data) => print('Connect error: $data'));
+    _connectionStatusListeners.addAll([
+      _socket.onConnect((_) {
+        print('Connected to server');
+        _connectionStatusController.sink
+            .add(const PromptServiceConnectionStatus.connected());
+      }),
+      _socket.onConnectError((data) {
+        print('Connect error: $data');
+        if (data is SocketException) {
+          _connectionStatusController.sink
+              .add(PromptServiceConnectionStatus.error(data.message));
+        } else {
+          _connectionStatusController.sink
+              .add(PromptServiceConnectionStatus.error('$data'));
+        }
+      }),
+      _socket.onReconnect((data) {
+        print('Reconnected to server');
+        _connectionStatusController.sink
+            .add(const PromptServiceConnectionStatus.connected());
+      }),
+      _socket.onReconnectError((data) {
+        print('Reconnect error: $data');
+        if (_connectionStatusController.isClosed) return;
+        if (data is SocketException) {
+          _connectionStatusController.sink
+              .add(PromptServiceConnectionStatus.error(data.message));
+        } else {
+          _connectionStatusController.sink
+              .add(PromptServiceConnectionStatus.error('$data'));
+        }
+      }),
+      _socket.onDisconnect((_) {
+        _streaming = false;
+        print('Disconnected from server');
 
-    _socket.onReconnect((data) => print('Reconnected to server'));
+        if (!_endController.isClosed) {
+          _endController.sink.add(null);
+        }
 
-    _socket.onReconnectError((data) => print('Reconnect error: $data'));
-
-    _socket.onDisconnect((_) {
-      _streaming = false;
-      print('Disconnected from server');
-      if (_endController.isClosed) return;
-      _endController.sink.add(null);
-    });
+        if (!_connectionStatusController.isClosed) {
+          _connectionStatusController.sink
+              .add(const PromptServiceConnectionStatus.disconnected());
+        }
+      })
+    ]);
 
     print('Listening to server events');
 
@@ -59,7 +101,12 @@ class BuildrStudioPromptService implements PromptService {
     _socket.on('error', (error) {
       print('Received error: $error');
       _streaming = false;
-      _errorController.sink.add(error.toString());
+
+      if (error is Map && error.containsKey('message')) {
+        _errorController.sink.add(error['message']);
+      } else {
+        _errorController.sink.add(error.toString());
+      }
     });
   }
 
@@ -85,12 +132,20 @@ class BuildrStudioPromptService implements PromptService {
   Stream<void> get endStream => _endController.stream;
 
   @override
+  Stream<PromptServiceConnectionStatus> get connectionStatusStream =>
+      _connectionStatusController.stream;
+
+  @override
   void dispose() {
     _responseController.close();
     _errorController.close();
     _endController.close();
-    _socket.disconnect();
+    _connectionStatusController.close();
     _socket.clearListeners();
+    _socket.disconnect();
+    for (var listener in _connectionStatusListeners) {
+      listener();
+    }
   }
 
   Future<Map<String, dynamic>> _buildAuthenticatedRequest(String prompt) async {

@@ -1,10 +1,11 @@
 import 'package:buildr_studio/screens/home_screen/settings/choose_ai_service_state.dart';
+import 'package:buildr_studio/screens/home_screen/settings/settings_ai_service_buildr_studio.dart';
 import 'package:buildr_studio/screens/home_screen/settings/settings_api_key.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SettingsChooseAiService extends StatelessWidget {
-  const SettingsChooseAiService({super.key});
+class SettingsAiService extends StatelessWidget {
+  const SettingsAiService({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,7 @@ class SettingsChooseAiService extends StatelessWidget {
                 SizedBox(height: 24),
               ],
             ),
-          AIService.buildrStudio => const SizedBox.shrink(),
+          AIService.buildrStudio => const SettingsAiServiceBuildrStudio(),
         },
       ],
     );

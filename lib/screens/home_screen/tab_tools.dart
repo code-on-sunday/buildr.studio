@@ -1,12 +1,12 @@
 import 'package:buildr_studio/models/tool.dart';
 import 'package:flutter/material.dart';
 
-class SidebarContent extends StatelessWidget {
+class ToolsTab extends StatelessWidget {
   final List<Tool> tools;
   final Tool? selectedTool;
   final Function(Tool) onToolSelected;
 
-  const SidebarContent({
+  const ToolsTab({
     super.key,
     required this.tools,
     required this.selectedTool,

@@ -2,9 +2,10 @@ import 'package:buildr_studio/models/tool.dart';
 import 'package:buildr_studio/models/variable.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
-import 'package:buildr_studio/screens/home_screen/variable_input.dart';
+import 'package:buildr_studio/screens/home_screen/tool_usage/variable_input.dart';
 import 'package:buildr_studio/screens/home_screen_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class VariableSection extends StatelessWidget {
@@ -40,12 +41,35 @@ class VariableSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'Variables',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              const Text(
+                'Variables',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                onPressed: () async {
+                  await Clipboard.setData(
+                    ClipboardData(
+                      text: await toolUsageManager.exportPrompt(
+                        homeState.prompt?.prompt,
+                        fileExplorerState,
+                      ),
+                    ),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Prompt copied to clipboard'),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.copy),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           Column(
