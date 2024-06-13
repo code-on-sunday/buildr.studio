@@ -58,7 +58,7 @@ class HomeScreen extends StatelessWidget {
                             onToolSelected: homeState.onToolSelected,
                           )
                         : homeState.selectedNavRailIndex == 1
-                            ? const FileExplorerTab()
+                            ? FileExplorerTab()
                             : const SettingsTab(),
                   ),
                 Expanded(
@@ -103,7 +103,7 @@ class HomeScreen extends StatelessWidget {
                                     onToolSelected: homeState.onToolSelected,
                                   )
                                 : homeState.selectedNavRailIndex == 1
-                                    ? const FileExplorerTab()
+                                    ? FileExplorerTab()
                                     : const SettingsTab(),
                           ),
                         ),

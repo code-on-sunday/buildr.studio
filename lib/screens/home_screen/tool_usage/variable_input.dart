@@ -157,8 +157,6 @@ class SourcesInput extends StatelessWidget {
                         ),
                       );
                     } catch (e) {
-                      // Log the error or display it to the UI
-                      print('Error checking file type: $e');
                       return const SizedBox.shrink();
                     }
                   }).toList(),

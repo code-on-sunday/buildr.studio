@@ -55,17 +55,12 @@ class OutputSection extends StatelessWidget {
               right: 8.0,
               child: ElevatedButton(
                 onPressed: () {
-                  try {
-                    Clipboard.setData(ClipboardData(text: code));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Code copied to clipboard'),
-                      ),
-                    );
-                  } catch (e) {
-                    // Log the error or display it to the UI
-                    print('Error copying code to clipboard: $e');
-                  }
+                  Clipboard.setData(ClipboardData(text: code));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Code copied to clipboard'),
+                    ),
+                  );
                 },
                 child: const Text('Copy'),
               ),

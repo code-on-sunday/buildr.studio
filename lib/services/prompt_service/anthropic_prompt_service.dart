@@ -4,12 +4,15 @@ import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart';
 import 'package:buildr_studio/models/prompt_service_connection_status.dart';
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:buildr_studio/utils/api_key_manager.dart';
+import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 
 class AnthropicPromptService implements PromptService {
   AnthropicPromptService({
     required ApiKeyManager apiKeyManager,
   }) : _apiKeyManager = apiKeyManager;
 
+  final _logger = GetIt.I.get<Logger>();
   final ApiKeyManager _apiKeyManager;
   late final AnthropicClient _client;
   final _responseController = StreamController<String>.broadcast();
@@ -20,7 +23,6 @@ class AnthropicPromptService implements PromptService {
   Future<void> connect() async {
     final apiKey = await _apiKeyManager.getApiKey();
     if (apiKey == null) {
-      print('Error: Anthropic API Key is not set.');
       _errorController.sink.add('Anthropic API Key is not set.');
       return;
     }
@@ -47,10 +49,10 @@ class AnthropicPromptService implements PromptService {
       await for (final res in responseStream) {
         res.map(
           messageStart: (e) {
-            print(e.message.usage);
+            _logger.d(e.message.usage);
           },
           messageDelta: (e) {
-            print(e.usage);
+            _logger.d(e.usage);
           },
           messageStop: (e) {},
           contentBlockStart: (e) {},

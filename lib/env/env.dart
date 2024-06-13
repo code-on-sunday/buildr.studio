@@ -15,4 +15,8 @@ abstract class Env {
   @EnviedField(varName: 'DEVICE_REGISTRATION_EXE_PATH', obfuscate: true)
   static final String deviceRegistrationExePath =
       _Env.deviceRegistrationExePath;
+  @EnviedField(varName: 'LOG_AES_KEY', obfuscate: true)
+  static final String logAesKey = _Env.logAesKey;
+  @EnviedField(varName: 'LOG_AES_NONCE', obfuscate: true)
+  static final String logAesNonce = _Env.logAesNonce;
 }

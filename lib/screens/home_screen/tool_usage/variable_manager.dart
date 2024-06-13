@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:buildr_studio/utils/file_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 
 class VariableManager extends ChangeNotifier {
+  final _logger = GetIt.I.get<Logger>();
+
   final Map<String, List<String>> _selectedPaths = {};
   final Map<String, String?> _concatenatedContents = {};
   final Map<String, String> _inputValues = {};
@@ -61,8 +64,8 @@ class VariableManager extends ChangeNotifier {
             rootDir,
           );
     } catch (e) {
-      // Log or display the error to the UI
-      print('Error concatenating file contents for variable $variableName: $e');
+      _logger.e(
+          'Error concatenating file contents for variable $variableName: $e');
       return null;
     }
   }

@@ -6,9 +6,13 @@ import 'package:buildr_studio/utils/directory_watcher.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileExplorerState extends ChangeNotifier {
+  final _logger = GetIt.I.get<Logger>();
+
   final UserPreferencesRepository _userPreferencesRepository;
   List<FileSystemEntity> _files = [];
   Map<String, bool> _isExpanded = {};
@@ -106,8 +110,7 @@ class FileExplorerState extends ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
-      // Log the error or display it to the UI
-      print('Error loading files: $e');
+      _logger.e('Error loading files: $e');
     }
   }
 
@@ -122,7 +125,7 @@ class FileExplorerState extends ChangeNotifier {
       }
     } catch (e) {
       // Log the error or display it to the UI
-      print('Error loading .gitignore file: $e');
+      _logger.e('Error loading .gitignore file: $e');
       _gitIgnoreContent = null;
     }
   }
@@ -180,8 +183,7 @@ class FileExplorerState extends ChangeNotifier {
         return parts.last;
       }
     } catch (e) {
-      // Log the error or display it to the UI
-      print('Error getting display file name: $e');
+      _logger.e('Error getting display file name: $e');
       return path.split(Platform.pathSeparator).last;
     }
   }

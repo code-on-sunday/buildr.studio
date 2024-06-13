@@ -3,8 +3,12 @@ import 'dart:convert';
 import 'package:buildr_studio/models/tool.dart';
 import 'package:buildr_studio/models/tool_details.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 
 class ToolRepository {
+  final _logger = GetIt.I.get<Logger>();
+
   Future<List<Tool>> getTools() async {
     try {
       final toolsJson = await rootBundle.loadString('assets/tools.json');
@@ -12,7 +16,7 @@ class ToolRepository {
       return toolsData.map((data) => Tool.fromJson(data)).toList();
     } catch (e) {
       // Log the error or display it to the UI
-      print('Error loading tools: $e');
+      _logger.e('Error loading tools: $e');
       rethrow;
     }
   }
@@ -27,7 +31,7 @@ class ToolRepository {
       return prompt;
     } catch (e) {
       // Log the error or display it to the UI
-      print('Error loading prompt and variables for tool $toolId: $e');
+      _logger.e('Error loading prompt and variables for tool $toolId: $e');
       rethrow;
     }
   }

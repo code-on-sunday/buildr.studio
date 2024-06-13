@@ -3,8 +3,11 @@ import 'package:buildr_studio/models/tool_details.dart';
 import 'package:buildr_studio/repositories/tool_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 
 class HomeScreenState extends ChangeNotifier {
+  final _logger = GetIt.I.get<Logger>();
+
   final BuildContext _context;
   late final ToolRepository _toolRepository;
   List<Tool> _tools = [];
@@ -42,8 +45,7 @@ class HomeScreenState extends ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
-      // Log the error or display it to the UI
-      print('Error loading tools: $e');
+      _logger.e('Error loading tools: $e');
     }
   }
 
@@ -52,8 +54,7 @@ class HomeScreenState extends ChangeNotifier {
       _prompt = await _toolRepository.getToolDetails(toolId);
       notifyListeners();
     } catch (e) {
-      // Log the error or display it to the UI
-      print('Error loading prompt and variables for tool $toolId: $e');
+      _logger.e('Error loading prompt and variables for tool $toolId: $e');
       _prompt = null;
       notifyListeners();
     }

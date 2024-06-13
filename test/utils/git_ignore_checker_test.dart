@@ -3,21 +3,27 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('GitIgnoreChecker', () {
+    late GitIgnoreChecker gitIgnoreChecker;
+
+    setUp(() {
+      gitIgnoreChecker = GitIgnoreChecker();
+    });
+
     test('should return true if path matches a literal rule', () {
       const gitIgnoreContent = 'file.txt';
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'), isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'dir/file.txt'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'), isTrue);
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'dir/file.txt'),
           isTrue);
     });
 
     test('should return true if path matches a wildcard rule', () {
       const gitIgnoreContent = '*.txt';
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/file.txt'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/dir/file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/dir/file.txt'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.jpg'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.jpg'),
           isFalse);
     });
 
@@ -26,12 +32,12 @@ void main() {
         () {
       const gitIgnoreContent = 'build/';
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'build/output.txt'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'build/output.txt'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/build/'), isTrue);
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/build/'), isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, 'abc/build/output.txt'),
           isTrue);
     });
@@ -41,12 +47,12 @@ void main() {
         () {
       const gitIgnoreContent = '/build/';
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/build'), isTrue);
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/build'), isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/build/output.txt'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '/build/output.txt'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, 'abc/build/output.txt'),
           isFalse);
     });
@@ -56,7 +62,7 @@ void main() {
         () {
       const gitIgnoreContent = 'build/';
       const path = 'lib/main.dart';
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, path), isFalse);
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, path), isFalse);
     });
 
     test('should return false if path matches a negated rule', () {
@@ -64,134 +70,134 @@ void main() {
         *.txt
         !important.txt
       ''';
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'important.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'important.txt'),
           isFalse);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'), isTrue);
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'), isTrue);
     });
 
     test('should handle errors gracefully', () {
-      expect(GitIgnoreChecker.isPathIgnored('invalid content', 'file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored('invalid content', 'file.txt'),
           isFalse);
     });
 
     test('should ignore .class files', () {
       const gitIgnoreContent = '*.class';
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'MyClass.class'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'MyClass.class'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, 'package/MyClass.class'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'MyClass.java'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'MyClass.java'),
           isFalse);
     });
 
     test('should ignore .log files', () {
       const gitIgnoreContent = '*.log';
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.log'), isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'logs/app.log'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.log'), isTrue);
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'logs/app.log'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.txt'), isFalse);
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.txt'), isFalse);
     });
 
     test('should ignore .pyc files', () {
       const gitIgnoreContent = '*.pyc';
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'module.pyc'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'module.pyc'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, 'package/module.pyc'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'module.py'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'module.py'),
           isFalse);
     });
 
     test('should ignore .swp files', () {
       const gitIgnoreContent = '*.swp';
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.swp'), isTrue);
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.swp'), isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'folder/file.swp'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'folder/file.swp'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
           isFalse);
     });
 
     test('should ignore files that matches the name', () {
       const gitIgnoreContent = 'DS_Store';
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'DS_Store'), isTrue);
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'DS_Store'), isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'folder/DS_Store'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'folder/DS_Store'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
           isFalse);
     });
 
     test('should ignore .atom/ directory', () {
       const gitIgnoreContent = '.atom/';
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.atom/config.cson'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.atom/config.cson'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '.atom/packages/my-package'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
           isFalse);
     });
 
     test('should ignore .buildlog/ directory', () {
       const gitIgnoreContent = '.buildlog/';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '.buildlog/output.log'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.buildlog/debug/'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.buildlog/debug/'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
           isFalse);
     });
 
     test('should ignore .history directory', () {
       const gitIgnoreContent = '.history';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '.history/file_changes.txt'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '.history/folder/file.txt'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
           isFalse);
     });
 
     test('should ignore .svn/ directory', () {
       const gitIgnoreContent = '.svn/';
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.svn/entries'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.svn/entries'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.svn/wc.db'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.svn/wc.db'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
           isFalse);
     });
 
     test('should ignore migrate_working_dir/ directory', () {
       const gitIgnoreContent = 'migrate_working_dir/';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, 'migrate_working_dir/changes.txt'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, 'migrate_working_dir/scripts/'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
           isFalse);
     });
 
@@ -201,54 +207,54 @@ void main() {
     *.ipr
     *.iws
   ''';
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'project.iml'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'project.iml'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'project.ipr'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'project.ipr'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'project.iws'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'project.iws'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'project.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'project.txt'),
           isFalse);
     });
 
     test('should ignore .idea/ directory', () {
       const gitIgnoreContent = '.idea/';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '.idea/workspace.xml'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.idea/modules.xml'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.idea/modules.xml'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'file.txt'),
           isFalse);
     });
 
     test('should ignore **/doc/api/ directory', () {
       const gitIgnoreContent = '**/doc/api/';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, 'lib/doc/api/index.html'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, 'packages/my_package/doc/api/reference.html'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'lib/main.dart'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'lib/main.dart'),
           isFalse);
     });
 
     test('should ignore .dart_tool/ directory', () {
       const gitIgnoreContent = '.dart_tool/';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '.dart_tool/package_config.json'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '.dart_tool/flutter_build/'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'lib/main.dart'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'lib/main.dart'),
           isFalse);
     });
 
@@ -260,65 +266,65 @@ void main() {
     .flutter-plugins-dependencies
   ''';
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.flutter-plugins'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, '.flutter-plugins'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '.flutter-plugins-dependencies'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'pubspec.yaml'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'pubspec.yaml'),
           isFalse);
     });
 
     test('should ignore .pub-cache/ directory', () {
       const gitIgnoreContent = '.pub-cache/';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '.pub-cache/hosted/pub.dartlang.org'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '.pub-cache/packages/'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'pubspec.yaml'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'pubspec.yaml'),
           isFalse);
     });
 
     test('should ignore /build/ directory', () {
       const gitIgnoreContent = '/build/';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '/build/outputs/apk/release/app-release.apk'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '/build/ios/Runner.app'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'lib/main.dart'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'lib/main.dart'),
           isFalse);
     });
 
     test('should ignore app.*.symbols files', () {
       const gitIgnoreContent = 'app.*.symbols';
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.1234.symbols'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.1234.symbols'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.abcd.symbols'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.abcd.symbols'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.txt'), isFalse);
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.txt'), isFalse);
     });
 
     test('should ignore app.*.map.json files', () {
       const gitIgnoreContent = 'app.*.map.json';
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.1234.map.json'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.1234.map.json'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.abcd.map.json'),
+          gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.abcd.map.json'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.map.json'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'app.map.json'),
           isFalse);
     });
 
@@ -331,19 +337,19 @@ void main() {
     /android/app/release
   ''';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '/android/app/debug/app-debug.apk'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '/android/app/profile/app-profile.apk'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '/android/app/release/app-release.apk'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '/android/build.gradle'),
           isFalse);
     });
@@ -351,28 +357,28 @@ void main() {
     test('should ignore /.venv/ directory', () {
       const gitIgnoreContent = '/.venv/';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '/.venv/bin/activate'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, '/.venv/lib/python3.9/site-packages'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'lib/main.dart'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'lib/main.dart'),
           isFalse);
     });
 
     test('should ignore **/failures/*.png files', () {
       const gitIgnoreContent = '**/failures/*.png';
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, 'test/failures/test_failure.png'),
           isTrue);
       expect(
-          GitIgnoreChecker.isPathIgnored(
+          gitIgnoreChecker.isPathIgnored(
               gitIgnoreContent, 'integration_test/failures/screenshot.png'),
           isTrue);
-      expect(GitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'lib/main.dart'),
+      expect(gitIgnoreChecker.isPathIgnored(gitIgnoreContent, 'lib/main.dart'),
           isFalse);
     });
   });

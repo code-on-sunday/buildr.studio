@@ -5,11 +5,14 @@ import 'package:buildr_studio/utils/git_ignore_checker.dart';
 import 'package:context_menus/context_menus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
 class FileExplorerTab extends StatelessWidget {
-  const FileExplorerTab({super.key});
+  FileExplorerTab({super.key});
+
+  final _gitIgnoreChecker = GetIt.I.get<GitIgnoreChecker>();
 
   Widget _buildFileSystemEntityTile(
     BuildContext context,
@@ -27,7 +30,7 @@ class FileExplorerTab extends StatelessWidget {
     }
     final isIgnored = fileExplorerState.gitIgnoreContent == null
         ? false
-        : GitIgnoreChecker.isPathIgnored(
+        : _gitIgnoreChecker.isPathIgnored(
             fileExplorerState.gitIgnoreContent!,
             normalizedPath,
           );
@@ -149,8 +152,6 @@ class FileExplorerTab extends StatelessWidget {
         );
       }
     } catch (e) {
-      // Log the error or display it to the UI
-      print('Error pasting clipboard content: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to paste clipboard content.'),

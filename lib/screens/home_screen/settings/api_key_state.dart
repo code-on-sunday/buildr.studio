@@ -1,11 +1,15 @@
 import 'package:buildr_studio/utils/api_key_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 
 class ApiKeyState extends ChangeNotifier {
   ApiKeyState({required ApiKeyManager apiKeyManager})
       : _apiKeyManager = apiKeyManager {
     _loadApiKey();
   }
+
+  final _logger = GetIt.I.get<Logger>();
 
   final ApiKeyManager _apiKeyManager;
   String? _apiKey = '';
@@ -16,7 +20,7 @@ class ApiKeyState extends ChangeNotifier {
     try {
       _apiKey = await _getApiKey();
     } catch (e) {
-      print('Error loading API key: $e');
+      _logger.e('Error loading API key: $e');
       _apiKey = null;
     }
     notifyListeners();
@@ -36,10 +40,10 @@ class ApiKeyState extends ChangeNotifier {
       _apiKey = apiKey;
       notifyListeners();
       // Set the API key in the environment variables or use it as needed
-      print('API key saved: $apiKey');
+      _logger.d('API key saved: $apiKey');
     } catch (e) {
       // Log the error or display it to the UI
-      print('Error saving API key: $e');
+      _logger.e('Error saving API key: $e');
     }
   }
 }

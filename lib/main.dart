@@ -13,16 +13,20 @@ import 'package:buildr_studio/screens/home_screen/settings/token_usage_state.dar
 import 'package:buildr_studio/screens/home_screen/tool_usage/prompt_error_notification.dart';
 import 'package:buildr_studio/screens/home_screen_state.dart';
 import 'package:buildr_studio/screens/splash_screen.dart';
+import 'package:buildr_studio/services/custom_logger_output.dart';
 import 'package:buildr_studio/services/device_registration_service.dart';
 import 'package:buildr_studio/services/prompt_service/anthropic_prompt_service.dart';
 import 'package:buildr_studio/services/prompt_service/authenticated_buildr_studio_request_builder.dart';
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:buildr_studio/utils/api_key_manager.dart';
 import 'package:buildr_studio/utils/file_utils.dart';
+import 'package:buildr_studio/utils/git_ignore_checker.dart';
 import 'package:context_menus/context_menus.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:re_highlight/languages/all.dart';
@@ -37,6 +41,20 @@ Future<void> main() async {
 }
 
 Future<void> setupDependencyInjection() async {
+  GetIt.I.registerSingleton(LogMemoryStorage());
+  GetIt.I.registerSingleton(Logger(
+    level: Level.all,
+    filter: kDebugMode ? DevelopmentFilter() : ProductionFilter(),
+    output: CustomLoggerOutput(
+      logMemoryStorage: GetIt.I.get(),
+    ),
+  ));
+  final logDumpScheduler = LogDumpScheduler(logMemoryStorage: GetIt.I.get());
+  GetIt.I.registerSingleton(logDumpScheduler, dispose: (_) {
+    logDumpScheduler.stop();
+  });
+  logDumpScheduler.start();
+
   final Highlight highlight = Highlight();
   highlight.registerLanguages(builtinAllLanguages);
   GetIt.I.registerSingleton(highlight);
@@ -48,6 +66,7 @@ Future<void> setupDependencyInjection() async {
   GetIt.I.registerSingleton(Dio(BaseOptions(
     baseUrl: Env.apiBaseUrl,
   )));
+  GetIt.I.registerSingleton(GitIgnoreChecker());
 
   GetIt.I.registerSingleton(DeviceRegistrationService());
   GetIt.I.registerSingleton(

@@ -1,7 +1,11 @@
+import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart' as path;
 
 class GitIgnoreChecker {
-  static bool isPathIgnored(String gitIgnoreContent, String pathToCheck) {
+  final _logger = GetIt.I.get<Logger>();
+
+  bool isPathIgnored(String gitIgnoreContent, String pathToCheck) {
     if (pathToCheck.split(path.separator).contains(".git")) {
       return true;
     }
@@ -24,13 +28,12 @@ class GitIgnoreChecker {
       }
       return isIgnored;
     } catch (e) {
-      // Log or display the error to the UI
-      print('Error checking Git ignore: $e');
+      _logger.e('Error checking Git ignore: $e');
       return false;
     }
   }
 
-  static bool _matchesRule(String rule, String pathToCheck) {
+  bool _matchesRule(String rule, String pathToCheck) {
     var normalizedPath = pathToCheck.replaceAll(r'\', '/');
     final normalizedRule = rule;
 

@@ -1,9 +1,17 @@
 import 'dart:io';
 
 import 'package:buildr_studio/utils/git_ignore_checker.dart';
+import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart' as path;
 
 class FileUtils {
+  FileUtils({GitIgnoreChecker? gitIgnoreChecker})
+      : _gitIgnoreChecker = gitIgnoreChecker ?? GitIgnoreChecker();
+
+  final _logger = GetIt.I.get<Logger>();
+  final GitIgnoreChecker _gitIgnoreChecker;
+
   String? getConcatenatedContent(
     List<String> selectedPaths,
     String? gitIgnoreContent,
@@ -18,7 +26,8 @@ class FileUtils {
           final relativePath =
               '${path.separator}${path.relative(file.path, from: rootDir)}';
           if (gitIgnoreContent == null ||
-              !GitIgnoreChecker.isPathIgnored(gitIgnoreContent, relativePath)) {
+              !_gitIgnoreChecker.isPathIgnored(
+                  gitIgnoreContent, relativePath)) {
             String? fileContent;
             try {
               fileContent = file.readAsStringSync();
@@ -38,7 +47,7 @@ class FileUtils {
             final relativePath =
                 '${path.separator}${path.relative(file.path, from: rootDir)}';
             if (gitIgnoreContent == null ||
-                !GitIgnoreChecker.isPathIgnored(
+                !_gitIgnoreChecker.isPathIgnored(
                     gitIgnoreContent, relativePath)) {
               String? fileContent;
               try {
@@ -57,8 +66,7 @@ class FileUtils {
       final content = concatenatedContent.toString().trim();
       return content;
     } catch (e) {
-      // Log or display the error to the UI
-      print('Error concatenating file contents: $e');
+      _logger.e('Error concatenating file contents: $e');
       return null;
     }
   }

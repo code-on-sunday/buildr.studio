@@ -5,6 +5,8 @@ import 'package:buildr_studio/env/env.dart';
 import 'package:buildr_studio/models/prompt_service_connection_status.dart';
 import 'package:buildr_studio/services/prompt_service/authenticated_buildr_studio_request_builder.dart';
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
+import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class BuildrStudioPromptService implements PromptService {
@@ -12,6 +14,7 @@ class BuildrStudioPromptService implements PromptService {
       {required AuthenticatedBuildrStudioRequestBuilder requestBuilder})
       : _requestBuilder = requestBuilder;
 
+  final _logger = GetIt.I.get<Logger>();
   final AuthenticatedBuildrStudioRequestBuilder _requestBuilder;
   late final Socket _socket =
       io(Env.apiBaseUrl, OptionBuilder().setTransports(['websocket']).build());
@@ -26,13 +29,13 @@ class BuildrStudioPromptService implements PromptService {
 
   @override
   void connect() {
-    print('Connecting to server');
+    _logger.d('Connecting to server');
 
     _connectionStatusController.sink
         .add(const PromptServiceConnectionStatus.connecting());
 
     if (_socket.connected) {
-      print('Already connected to server');
+      _logger.d('Already connected to server');
       _connectionStatusController.sink
           .add(const PromptServiceConnectionStatus.connected());
       return;
@@ -40,12 +43,12 @@ class BuildrStudioPromptService implements PromptService {
 
     _connectionStatusListeners.addAll([
       _socket.onConnect((_) {
-        print('Connected to server');
+        _logger.d('Connected to server');
         _connectionStatusController.sink
             .add(const PromptServiceConnectionStatus.connected());
       }),
       _socket.onConnectError((data) {
-        print('Connect error: $data');
+        _logger.e('Connect error: $data');
         if (data is SocketException) {
           _connectionStatusController.sink
               .add(PromptServiceConnectionStatus.error(data.message));
@@ -55,12 +58,12 @@ class BuildrStudioPromptService implements PromptService {
         }
       }),
       _socket.onReconnect((data) {
-        print('Reconnected to server');
+        _logger.d('Reconnected to server');
         _connectionStatusController.sink
             .add(const PromptServiceConnectionStatus.connected());
       }),
       _socket.onReconnectError((data) {
-        print('Reconnect error: $data');
+        _logger.e('Reconnect error: $data');
         if (_connectionStatusController.isClosed) return;
         if (data is SocketException) {
           _connectionStatusController.sink
@@ -72,7 +75,7 @@ class BuildrStudioPromptService implements PromptService {
       }),
       _socket.onDisconnect((_) {
         _streaming = false;
-        print('Disconnected from server');
+        _logger.d('Disconnected from server');
 
         if (!_endController.isClosed) {
           _endController.sink.add(null);
@@ -85,7 +88,7 @@ class BuildrStudioPromptService implements PromptService {
       })
     ]);
 
-    print('Listening to server events');
+    _logger.d('Listening to server events');
 
     _socket.on('chunk', (data) {
       _streaming = true;
@@ -93,13 +96,13 @@ class BuildrStudioPromptService implements PromptService {
     });
 
     _socket.on('end', (_) {
-      print('Received end event');
+      _logger.d('Received end event');
       _streaming = false;
       _endController.sink.add(null);
     });
 
     _socket.on('error', (error) {
-      print('Received error: $error');
+      _logger.e('Received error: $error');
       _streaming = false;
 
       if (error is Map && error.containsKey('message')) {
@@ -118,7 +121,7 @@ class BuildrStudioPromptService implements PromptService {
       }
       _socket.emit('prompt', await _buildAuthenticatedRequest(prompt));
     } catch (e) {
-      print('Error sending prompt: $e');
+      _logger.e('Error sending prompt: $e');
       _streaming = false;
       _errorController.sink.add(e.toString());
     }
