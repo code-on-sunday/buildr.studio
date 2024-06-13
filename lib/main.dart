@@ -17,6 +17,7 @@ import 'package:buildr_studio/services/custom_logger_output.dart';
 import 'package:buildr_studio/services/device_registration_service.dart';
 import 'package:buildr_studio/services/prompt_service/anthropic_prompt_service.dart';
 import 'package:buildr_studio/services/prompt_service/authenticated_buildr_studio_request_builder.dart';
+import 'package:buildr_studio/services/prompt_service/google_gemini_prompt_service.dart';
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:buildr_studio/utils/api_key_manager.dart';
 import 'package:buildr_studio/utils/file_utils.dart';
@@ -86,6 +87,9 @@ Future<void> setupDependencyInjection() async {
   GetIt.I.registerFactory<PromptService>(
       () => AnthropicPromptService(apiKeyManager: GetIt.I.get()),
       instanceName: AIService.anthropic.name);
+  GetIt.I.registerFactory<PromptService>(
+      () => GoogleGeminiPromptService(apiKeyManager: GetIt.I.get()),
+      instanceName: AIService.google.name);
 }
 
 class MyApp extends StatelessWidget {

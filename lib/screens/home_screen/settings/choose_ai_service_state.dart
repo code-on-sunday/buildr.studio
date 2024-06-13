@@ -27,9 +27,11 @@ class ChooseAIServiceState extends ChangeNotifier {
 
 enum AIService {
   buildrStudio("buildr.studio"),
-  anthropic("Anthropic");
+  anthropic("Anthropic", keyName: 'anthropic_api_key'),
+  google("Google", keyName: 'google_api_key');
 
   final String displayName;
+  final String? keyName;
 
-  const AIService(this.displayName);
+  const AIService(this.displayName, {this.keyName});
 }

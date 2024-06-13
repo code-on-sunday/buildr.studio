@@ -1,4 +1,4 @@
-import 'package:buildr_studio/screens/home_screen/settings/api_key_state.dart';
+import 'package:buildr_studio/screens/home_screen/api_key_missing_notification.dart';
 import 'package:buildr_studio/screens/home_screen/settings/tab_settings.dart';
 import 'package:buildr_studio/screens/home_screen/sidebar.dart';
 import 'package:buildr_studio/screens/home_screen/status_bar.dart';
@@ -114,41 +114,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           const StatusBar(),
-        ],
-      ),
-    );
-  }
-}
-
-class ApiKeyMissingNotification extends StatelessWidget {
-  const ApiKeyMissingNotification({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final apiKeyState = context.watch<ApiKeyState>();
-    final homeState = context.watch<HomeScreenState>();
-
-    if (apiKeyState.apiKey != null) return const SizedBox.shrink();
-
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      color: Theme.of(context).colorScheme.error,
-      child: Row(
-        children: [
-          const Text(
-            'You need to set up Claude AI\'s API key.',
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(width: 8),
-          OutlinedButton(
-              onPressed: () {
-                homeState.onNavRailItemTapped(2);
-              },
-              child: const Text('Set up')),
         ],
       ),
     );

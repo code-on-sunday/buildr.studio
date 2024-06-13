@@ -17,7 +17,8 @@ class AiServiceContext extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (_) => ApiKeyState(apiKeyManager: GetIt.I.get())),
+            create: (_) => ApiKeyState(
+                aiService: aiService, apiKeyManager: GetIt.I.get())),
         ChangeNotifierProvider(
             create: (_) => ToolUsageManager(
                 promptService: GetIt.I.get(instanceName: aiService.name))),

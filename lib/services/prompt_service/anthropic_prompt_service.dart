@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart';
 import 'package:buildr_studio/models/prompt_service_connection_status.dart';
+import 'package:buildr_studio/screens/home_screen/settings/choose_ai_service_state.dart';
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:buildr_studio/utils/api_key_manager.dart';
 import 'package:get_it/get_it.dart';
@@ -18,21 +19,29 @@ class AnthropicPromptService implements PromptService {
   final _responseController = StreamController<String>.broadcast();
   final _errorController = StreamController<String>.broadcast();
   final _endController = StreamController<void>.broadcast();
+  bool _connected = false;
+
+  @override
+  bool get connected => _connected;
 
   @override
   Future<void> connect() async {
-    final apiKey = await _apiKeyManager.getApiKey();
+    final apiKey = await _apiKeyManager.getApiKey(AIService.anthropic.keyName!);
     if (apiKey == null) {
       _errorController.sink.add('Anthropic API Key is not set.');
       return;
     }
 
     _client = AnthropicClient(apiKey: apiKey);
+    _connected = true;
   }
 
   @override
   void sendPrompt(String prompt) async {
     try {
+      if (!connected) {
+        await connect();
+      }
       final responseStream = _client.createMessageStream(
         request: CreateMessageRequest(
           model: const Model.model(Models.claude3Haiku20240307),

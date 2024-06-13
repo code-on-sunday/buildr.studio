@@ -51,6 +51,15 @@ class SettingsAiService extends StatelessWidget {
                 SizedBox(height: 24),
               ],
             ),
+          AIService.google => const Column(
+              children: [
+                SettingsApiKey(
+                  title: "Gemini AI",
+                  helpUrl: "https://ai.google.dev/gemini-api/docs/api-key",
+                ),
+                SizedBox(height: 24),
+              ],
+            ),
           AIService.buildrStudio => const SettingsAiServiceBuildrStudio(),
         },
       ],

@@ -28,6 +28,9 @@ class BuildrStudioPromptService implements PromptService {
   final List<dynamic Function()> _connectionStatusListeners = [];
 
   @override
+  bool get connected => _socket.connected;
+
+  @override
   void connect() {
     _logger.d('Connecting to server');
 
