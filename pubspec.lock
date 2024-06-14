@@ -26,7 +26,7 @@ packages:
     source: hosted
     version: "0.0.1-dev.1"
   archive:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: archive
       sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
@@ -637,6 +637,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  open_dir:
+    dependency: "direct main"
+    description:
+      name: open_dir
+      sha256: "84cff5b84a6b3ad7bfdfc3e8f03e85d86a6c8aea1d3472cf71546e2a6378ebbf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1+6"
+  open_dir_linux:
+    dependency: transitive
+    description:
+      name: open_dir_linux
+      sha256: "018287c9d3ecc4dcbb2f299fc704e33908ea9d570b8cf1d2af6a9b57a1af6426"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1+2"
+  open_dir_macos:
+    dependency: transitive
+    description:
+      name: open_dir_macos
+      sha256: f35d85cc20872bf6eb79623d6559b82f98115fed2ec4fe4fbb4539dd0d3f007c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1+2"
+  open_dir_platform_interface:
+    dependency: transitive
+    description:
+      name: open_dir_platform_interface
+      sha256: "405a6f89849af379c3de7ad5a2551fab219da36089d14623b1469550dcd7d8c9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1+2"
+  open_dir_windows:
+    dependency: transitive
+    description:
+      name: open_dir_windows
+      sha256: ca6baff2aef2479f6afea83ae0b66c976cdc05709c1cd969607ae2babbc9ab24
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1+3"
   package_config:
     dependency: transitive
     description:

@@ -6,6 +6,7 @@ import 'package:buildr_studio/repositories/user_preferences_repository.dart';
 import 'package:buildr_studio/screens/home_screen.dart';
 import 'package:buildr_studio/screens/home_screen/ai_service_context.dart';
 import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
+import 'package:buildr_studio/screens/home_screen/export_logs_state.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/settings/choose_ai_service_state.dart';
 import 'package:buildr_studio/screens/home_screen/settings/token_usage_refresher.dart';
@@ -22,6 +23,7 @@ import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:buildr_studio/utils/api_key_manager.dart';
 import 'package:buildr_studio/utils/file_utils.dart';
 import 'package:buildr_studio/utils/git_ignore_checker.dart';
+import 'package:buildr_studio/utils/logs_exporter.dart';
 import 'package:context_menus/context_menus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -80,6 +82,7 @@ Future<void> setupDependencyInjection() async {
 
   GetIt.I.registerSingleton(FileUtils());
   GetIt.I.registerSingleton(ApiKeyManager(prefs: GetIt.I.get()));
+  GetIt.I.registerSingleton(LogsExporter());
 
   GetIt.I.registerFactory<PromptService>(
       () => BuildrStudioPromptService(requestBuilder: GetIt.I.get()),
@@ -127,7 +130,10 @@ class MyApp extends StatelessWidget {
                         create: (_) => TokenUsageState(
                               userPreferencesRepository: GetIt.I.get(),
                               accountRepository: GetIt.I.get(),
-                            ))
+                            )),
+                    ChangeNotifierProvider(
+                        create: (_) =>
+                            ExportLogsState(logsExporter: GetIt.I.get())),
                   ],
                   child: Consumer<ChooseAIServiceState>(
                     builder: (context, chooseAIServiceState, child) {

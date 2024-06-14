@@ -1,4 +1,5 @@
 import 'package:buildr_studio/screens/home_screen/api_key_missing_notification.dart';
+import 'package:buildr_studio/screens/home_screen/export_logs_state.dart';
 import 'package:buildr_studio/screens/home_screen/settings/tab_settings.dart';
 import 'package:buildr_studio/screens/home_screen/sidebar.dart';
 import 'package:buildr_studio/screens/home_screen/status_bar.dart';
@@ -18,6 +19,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final homeState = context.watch<HomeScreenState>();
+    final exportLogsState = context.read<ExportLogsState>();
     final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
 
     return Scaffold(
@@ -28,24 +30,47 @@ class HomeScreen extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                NavigationRail(
-                  selectedIndex: homeState.selectedNavRailIndex,
-                  onDestinationSelected: homeState.onNavRailItemTapped,
-                  destinations: [
-                    const NavigationRailDestination(
-                      icon: Icon(Icons.build),
-                      label: Text('Build'),
+                Column(
+                  children: [
+                    Expanded(
+                      child: NavigationRail(
+                        selectedIndex: homeState.selectedNavRailIndex,
+                        onDestinationSelected: homeState.onNavRailItemTapped,
+                        destinations: [
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.build),
+                            label: Text('Build'),
+                          ),
+                          const NavigationRailDestination(
+                            icon: Icon(Icons.folder),
+                            label: Text('File Explorer'),
+                          ),
+                          NavigationRailDestination(
+                            icon: const Icon(Icons.settings),
+                            label: Text(homeState.isSettingsVisible
+                                ? 'Close Settings'
+                                : 'Settings'),
+                          ),
+                        ],
+                      ),
                     ),
-                    const NavigationRailDestination(
-                      icon: Icon(Icons.folder),
-                      label: Text('File Explorer'),
+                    PopupMenuButton(
+                      tooltip: 'Get help',
+                      icon: const Icon(Icons.support),
+                      offset: const Offset(0, -120),
+                      itemBuilder: (context) {
+                        return [
+                          PopupMenuItem(
+                            onTap: () => exportLogsState.exportLogs(context),
+                            child: const Text('Export logs'),
+                          ),
+                          const PopupMenuItem(
+                            child: Text('Join group chat'),
+                          ),
+                        ];
+                      },
                     ),
-                    NavigationRailDestination(
-                      icon: const Icon(Icons.settings),
-                      label: Text(homeState.isSettingsVisible
-                          ? 'Close Settings'
-                          : 'Settings'),
-                    ),
+                    const SizedBox(height: 32),
                   ],
                 ),
                 if (isLargeScreen)

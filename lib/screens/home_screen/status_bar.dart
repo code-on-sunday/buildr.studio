@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:buildr_studio/models/prompt_service_connection_status.dart';
 import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
+import 'package:buildr_studio/screens/home_screen/export_logs_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,6 +38,8 @@ class _StatusBarState extends State<StatusBar> {
     late final toolUsageManager = context.watch<ToolUsageManager>();
     late final deviceRegistrationState =
         context.watch<DeviceRegistrationState>();
+    late final exportLogsState = context.watch<ExportLogsState>();
+
     return Container(
       height: 32,
       color: Theme.of(context).colorScheme.primary,
@@ -62,6 +65,19 @@ class _StatusBarState extends State<StatusBar> {
               ),
             Disconnected() => const Icon(Icons.link_off, color: Colors.red),
           },
+          const SizedBox(width: 8),
+          if (exportLogsState.isRunning)
+            const Tooltip(
+              message: 'Exporting logs',
+              child: SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  color: Colors.yellow,
+                ),
+              ),
+            ),
+          if (exportLogsState.isRunning) const Text('Exporting...'),
           const Spacer(),
           if (deviceRegistrationState.errorMessage != null)
             const Tooltip(
