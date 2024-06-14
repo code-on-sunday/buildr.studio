@@ -123,7 +123,14 @@ class BuildrStudioPromptService implements PromptService {
   }
 
   @override
-  void sendPrompt(String prompt) async {
+  void sendPrompt({
+    required String prompt,
+    String? deviceKey,
+  }) async {
+    if (deviceKey == null) {
+      _errorController.sink.add('Unable to get account information.');
+      return;
+    }
     try {
       if (_streaming) {
         _socket.emit('cancel');

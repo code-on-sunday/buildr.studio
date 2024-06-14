@@ -6,7 +6,10 @@ export 'buildr_studio_prompt_service.dart';
 
 abstract class PromptService {
   void connect();
-  void sendPrompt(String prompt);
+  void sendPrompt({
+    String? deviceKey,
+    required String prompt,
+  });
   void dispose();
   bool get connected;
   Stream<String> get responseStream;

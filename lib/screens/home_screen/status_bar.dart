@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:buildr_studio/models/prompt_service_connection_status.dart';
 import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
@@ -5,14 +7,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class StatusBar extends StatelessWidget {
+class StatusBar extends StatefulWidget {
   const StatusBar({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final toolUsageManager = context.watch<ToolUsageManager>();
-    final deviceRegistrationState = context.watch<DeviceRegistrationState>();
+  State<StatusBar> createState() => _StatusBarState();
+}
 
+class _StatusBarState extends State<StatusBar> {
+  StreamSubscription? _connectionStatusSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _connectionStatusSubscription =
+        context.read<ToolUsageManager>().connectionStatusStream.listen((event) {
+      context.read<DeviceRegistrationState>().registerDevice();
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectionStatusSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    late final toolUsageManager = context.watch<ToolUsageManager>();
+    late final deviceRegistrationState =
+        context.watch<DeviceRegistrationState>();
     return Container(
       height: 32,
       color: Theme.of(context).colorScheme.primary,

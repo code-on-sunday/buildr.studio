@@ -1,3 +1,4 @@
+import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:buildr_studio/screens/home_screen_state.dart';
@@ -14,6 +15,7 @@ class ToolAreaTopBar extends StatelessWidget {
     final homeState = context.watch<HomeScreenState>();
     final toolUsageManager = context.watch<ToolUsageManager>();
     final fileExplorerState = context.watch<FileExplorerState>();
+    final deviceRegistrationState = context.read<DeviceRegistrationState>();
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -45,9 +47,9 @@ class ToolAreaTopBar extends StatelessWidget {
                         ? null
                         : () {
                             toolUsageManager.submitPrompt(
-                              homeState.prompt?.prompt,
-                              fileExplorerState,
-                            );
+                                homeState.prompt?.prompt,
+                                fileExplorerState,
+                                deviceRegistrationState);
                           },
                     label: const Text('Run'),
                     icon: const Icon(Icons.play_arrow),

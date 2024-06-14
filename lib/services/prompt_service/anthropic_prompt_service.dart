@@ -19,6 +19,8 @@ class AnthropicPromptService implements PromptService {
   final _responseController = StreamController<String>.broadcast();
   final _errorController = StreamController<String>.broadcast();
   final _endController = StreamController<void>.broadcast();
+  final _connectionStatusController =
+      StreamController<PromptServiceConnectionStatus>.broadcast();
   bool _connected = false;
 
   @override
@@ -34,10 +36,15 @@ class AnthropicPromptService implements PromptService {
 
     _client = AnthropicClient(apiKey: apiKey);
     _connected = true;
+    _connectionStatusController.sink
+        .add(const PromptServiceConnectionStatus.connected());
   }
 
   @override
-  void sendPrompt(String prompt) async {
+  void sendPrompt({
+    required String prompt,
+    String? deviceKey,
+  }) async {
     try {
       if (!connected) {
         await connect();
@@ -90,12 +97,13 @@ class AnthropicPromptService implements PromptService {
 
   @override
   Stream<PromptServiceConnectionStatus> get connectionStatusStream =>
-      const Stream<PromptServiceConnectionStatus>.empty();
+      _connectionStatusController.stream;
 
   @override
   void dispose() {
     _responseController.close();
     _errorController.close();
     _endController.close();
+    _connectionStatusController.close();
   }
 }

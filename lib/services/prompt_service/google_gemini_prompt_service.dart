@@ -45,7 +45,10 @@ class GoogleGeminiPromptService extends PromptService {
   }
 
   @override
-  void sendPrompt(String prompt) async {
+  void sendPrompt({
+    required String prompt,
+    String? deviceKey,
+  }) async {
     try {
       if (!connected) {
         await connect();

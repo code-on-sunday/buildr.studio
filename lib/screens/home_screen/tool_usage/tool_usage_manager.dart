@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:buildr_studio/models/prompt_service_connection_status.dart';
+import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/prompt_submitter.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/variable_manager.dart';
@@ -44,6 +45,8 @@ class ToolUsageManager extends ChangeNotifier {
       _promptServiceConnectionStatus;
   Stream<String> get errorStream => _promptService.errorStream;
   Stream<void> get endStream => _promptService.endStream;
+  Stream<PromptServiceConnectionStatus> get connectionStatusStream =>
+      _promptService.connectionStatusStream;
 
   @override
   void dispose() {
@@ -74,6 +77,7 @@ class ToolUsageManager extends ChangeNotifier {
   Future<void> submitPrompt(
     String? prompt,
     FileExplorerState fileExplorerState,
+    DeviceRegistrationState deviceRegistrationState,
   ) async {
     _output = '';
     _isResponseStreaming = true;
@@ -84,6 +88,7 @@ class ToolUsageManager extends ChangeNotifier {
         prompt,
         fileExplorerState,
         _variableManager,
+        deviceRegistrationState,
       );
     } catch (e) {
       _isResponseStreaming = false;

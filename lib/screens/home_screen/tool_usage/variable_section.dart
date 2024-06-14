@@ -1,5 +1,6 @@
 import 'package:buildr_studio/models/tool.dart';
 import 'package:buildr_studio/models/variable.dart';
+import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/variable_input.dart';
@@ -23,6 +24,7 @@ class VariableSection extends StatelessWidget {
     final homeState = context.watch<HomeScreenState>();
     final fileExplorerState = context.watch<FileExplorerState>();
     final toolUsageManager = context.watch<ToolUsageManager>();
+    final deviceRegistrationState = context.read<DeviceRegistrationState>();
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.6,
@@ -121,6 +123,7 @@ class VariableSection extends StatelessWidget {
                                   toolUsageManager.submitPrompt(
                                     homeState.prompt?.prompt,
                                     fileExplorerState,
+                                    deviceRegistrationState,
                                   );
                                   homeState.toggleVariableSection();
                                 },

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:buildr_studio/models/prompt_service_connection_status.dart';
 import 'package:buildr_studio/screens/home_screen/settings/token_usage_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +18,26 @@ class _TokenUsageRefresherState extends State<TokenUsageRefresher> {
   late final _toolUsageManager = context.read<ToolUsageManager>();
   late final _tokenUsageState = context.read<TokenUsageState>();
 
-  late final StreamSubscription<void> _subscription;
+  final List<StreamSubscription> _subscriptions = [];
 
   @override
   void initState() {
     super.initState();
-    _subscription = _toolUsageManager.endStream.listen(_refreshTokenUsage);
+    _subscriptions.addAll([
+      _toolUsageManager.endStream.listen(_refreshTokenUsage),
+      _toolUsageManager.connectionStatusStream.listen((event) {
+        if (event is Connected) {
+          _refreshTokenUsage(null);
+        }
+      })
+    ]);
   }
 
   @override
   void dispose() {
-    _subscription.cancel();
+    for (var subscription in _subscriptions) {
+      subscription.cancel();
+    }
     super.dispose();
   }
 

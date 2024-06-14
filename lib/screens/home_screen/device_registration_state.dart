@@ -24,15 +24,19 @@ class DeviceRegistrationState extends ChangeNotifier {
   String? accountId;
   String? errorMessage;
 
-  Future<void> registerDevice() async {
+  Future<String?> registerDevice() async {
     try {
+      errorMessage = null;
       final deviceKey = await _deviceRegistration.loadDeviceKey();
       final id = accountId = await _accountRepository.getAccountId(deviceKey);
       _userPreferencesRepository.setAccountId(id);
+      notifyListeners();
+      return deviceKey;
     } catch (e) {
       _logger.e('Error registering device: $e');
       errorMessage = e.toString();
+      notifyListeners();
+      return null;
     }
-    notifyListeners();
   }
 }
