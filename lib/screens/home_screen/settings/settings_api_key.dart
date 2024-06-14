@@ -1,4 +1,5 @@
 import 'package:buildr_studio/screens/home_screen/settings/api_key_state.dart';
+import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -16,6 +17,7 @@ class SettingsApiKey extends StatefulWidget {
 class _SettingsApiKeyState extends State<SettingsApiKey> {
   final _apiKeyController = TextEditingController();
   late final _apiKeyState = context.read<ApiKeyState>();
+  late final _toolUsageManager = context.read<ToolUsageManager>();
 
   void _changeApiKey() {
     setState(() {
@@ -55,7 +57,8 @@ class _SettingsApiKeyState extends State<SettingsApiKey> {
             final apiKey = _apiKeyController.text.trim();
             if (apiKey.isNotEmpty) {
               try {
-                await context.read<ApiKeyState>().saveApiKey(apiKey);
+                await _apiKeyState.saveApiKey(apiKey);
+                _toolUsageManager.reconnectAiService();
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('API key saved successfully.'),

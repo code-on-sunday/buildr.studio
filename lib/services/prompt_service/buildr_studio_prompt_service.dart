@@ -104,16 +104,22 @@ class BuildrStudioPromptService implements PromptService {
       _endController.sink.add(null);
     });
 
-    _socket.on('error', (error) {
-      _logger.e('Received error: $error');
-      _streaming = false;
+    _socket.on('error', _onEventError);
 
-      if (error is Map && error.containsKey('message')) {
-        _errorController.sink.add(error['message']);
-      } else {
-        _errorController.sink.add(error.toString());
-      }
-    });
+    _socket.on('exception', _onEventError);
+  }
+
+  _onEventError(error) {
+    _logger.e('Received error: $error');
+    _streaming = false;
+
+    if (error is Map && error.containsKey('message')) {
+      final message = error['message'] as String;
+      final displayMessage = buildrStudioErrorMessages[message] ?? message;
+      _errorController.sink.add(displayMessage);
+    } else {
+      _errorController.sink.add(error.toString());
+    }
   }
 
   @override
@@ -163,3 +169,15 @@ class BuildrStudioPromptService implements PromptService {
     };
   }
 }
+
+enum ErrorCodes {
+  tooManyRequests,
+  insufficientBalance,
+}
+
+final buildrStudioErrorMessages = {
+  ErrorCodes.tooManyRequests.name:
+      'You have reached the maximum number of requests in 1 minute. Please wait a moment and try again.',
+  ErrorCodes.insufficientBalance.name:
+      'Insufficient balance. Please top up your account.'
+};

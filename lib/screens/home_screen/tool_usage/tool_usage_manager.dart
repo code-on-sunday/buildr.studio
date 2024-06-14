@@ -55,6 +55,10 @@ class ToolUsageManager extends ChangeNotifier {
     super.dispose();
   }
 
+  void reconnectAiService() {
+    _promptService.connect();
+  }
+
   void onPathsSelected(String variableName, List<String> paths) {
     _variableManager.onPathsSelected(variableName, paths);
   }

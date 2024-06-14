@@ -15,7 +15,7 @@ class AnthropicPromptService implements PromptService {
 
   final _logger = GetIt.I.get<Logger>();
   final ApiKeyManager _apiKeyManager;
-  late final AnthropicClient _client;
+  late AnthropicClient _client;
   final _responseController = StreamController<String>.broadcast();
   final _errorController = StreamController<String>.broadcast();
   final _endController = StreamController<void>.broadcast();

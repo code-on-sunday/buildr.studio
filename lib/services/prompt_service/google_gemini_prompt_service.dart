@@ -13,7 +13,7 @@ class GoogleGeminiPromptService extends PromptService {
 
   final _logger = Logger();
   final ApiKeyManager _apiKeyManager;
-  late final GenerativeModel _googleGenerativeAI;
+  late GenerativeModel _googleGenerativeAI;
 
   final _responseController = StreamController<String>.broadcast();
   final _errorController = StreamController<String>.broadcast();
