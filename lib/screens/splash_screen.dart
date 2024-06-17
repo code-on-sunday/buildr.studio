@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -76,9 +77,7 @@ class _SplashScreenState extends State<SplashScreen>
             const SizedBox(height: 32),
             const SizedBox(
               width: 300,
-              child: LinearProgressIndicator(
-                value: null,
-                backgroundColor: Colors.white,
+              child: ShadProgress(
                 minHeight: 28,
               ),
             ),

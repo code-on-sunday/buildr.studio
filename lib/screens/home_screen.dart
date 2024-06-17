@@ -10,6 +10,7 @@ import 'package:buildr_studio/screens/home_screen/tool_usage/output_section.dart
 import 'package:buildr_studio/screens/home_screen/tool_usage/variable_section.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import 'home_screen_state.dart';
@@ -37,6 +38,13 @@ class HomeScreen extends StatelessWidget {
                       child: NavigationRail(
                         selectedIndex: homeState.selectedNavRailIndex,
                         onDestinationSelected: homeState.onNavRailItemTapped,
+                        indicatorColor:
+                            ShadTheme.of(context).colorScheme.primary,
+                        selectedIconTheme: IconThemeData(
+                          color: ShadTheme.of(context)
+                              .colorScheme
+                              .primaryForeground,
+                        ),
                         destinations: [
                           const NavigationRailDestination(
                             icon: Icon(Icons.build),
@@ -99,25 +107,33 @@ class HomeScreen extends StatelessWidget {
                           children: [
                             const ApiKeyMissingNotification(),
                             if (homeState.selectedTool != null)
-                              const ToolAreaTopBar(),
-                            const Expanded(child: OutputSection()),
+                              ToolAreaTopBar(
+                                openVariableSection: () {
+                                  homeState.toggleVariableSection();
+                                },
+                              ),
+                            Expanded(
+                              child: Stack(
+                                children: [
+                                  const OutputSection(),
+                                  if (homeState.selectedTool != null)
+                                    AnimatedSlide(
+                                      duration: Durations.short4,
+                                      offset: homeState.isVariableSectionVisible
+                                          ? Offset.zero
+                                          : const Offset(1, 0),
+                                      child: VariableSection(
+                                        selectedTool: homeState.selectedTool!,
+                                        variables:
+                                            homeState.prompt?.variables ?? [],
+                                      ),
+                                    )
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      if (homeState.selectedTool != null)
-                        AnimatedPositioned(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          top: 0,
-                          bottom: 0,
-                          right: homeState.isVariableSectionVisible
-                              ? 0
-                              : -MediaQuery.of(context).size.width,
-                          child: VariableSection(
-                            selectedTool: homeState.selectedTool!,
-                            variables: homeState.prompt?.variables ?? [],
-                          ),
-                        ),
                       if (!isLargeScreen && homeState.isSidebarVisible)
                         Positioned(
                           top: 0,

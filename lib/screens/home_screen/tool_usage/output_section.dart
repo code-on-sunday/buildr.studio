@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class OutputSection extends StatelessWidget {
   const OutputSection({super.key});
@@ -16,19 +17,19 @@ class OutputSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
+          Text(
             'Output',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: ShadTheme.of(context).textTheme.h4,
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: Container(
+            child: DecoratedBox(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: ShadTheme.of(context).radius,
+                border: Border.all(
+                  width: 1,
+                  color: ShadTheme.of(context).colorScheme.border,
+                ),
               ),
               child: MarkdownWidget(
                   data: outputText,
@@ -53,16 +54,16 @@ class OutputSection extends StatelessWidget {
             Positioned(
               top: 16,
               right: 8.0,
-              child: ElevatedButton(
+              child: ShadButton(
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: code));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Code copied to clipboard'),
+                  ShadToaster.of(context).show(
+                    const ShadToast(
+                      description: Text('Code copied to clipboard'),
                     ),
                   );
                 },
-                child: const Text('Copy'),
+                text: const Text('Copy'),
               ),
             ),
           ],

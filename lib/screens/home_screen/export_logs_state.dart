@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class ExportLogsState extends ChangeNotifier {
   ExportLogsState({required LogsExporter logsExporter})
@@ -44,10 +45,9 @@ class ExportLogsState extends ChangeNotifier {
   }
 
   void showSnackBarError(BuildContext context, String errorMessage) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(errorMessage),
-        backgroundColor: Colors.red,
+    ShadToaster.of(context).show(
+      ShadToast.destructive(
+        description: Text(errorMessage),
       ),
     );
   }

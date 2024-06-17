@@ -41,7 +41,8 @@ class AuthenticatedBuildrStudioRequestBuilder {
 
   String getDeviceKeyHash(String deviceKey) {
     final salt = Env.deviceHashSalt;
-    final bytes = utf8.encode('$deviceKey:$salt');
+    final concatenated = '$deviceKey:$salt';
+    final bytes = utf8.encode(concatenated);
     final hash = sha256.convert(bytes).toString();
     return hash;
   }

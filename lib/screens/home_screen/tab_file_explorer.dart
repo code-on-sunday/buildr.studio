@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class FileExplorerTab extends StatelessWidget {
   FileExplorerTab({super.key});
@@ -35,6 +36,8 @@ class FileExplorerTab extends StatelessWidget {
             normalizedPath,
           );
 
+    final theme = ShadTheme.of(context);
+
     return ContextMenuRegion(
       behavior: const [ContextMenuShowBehavior.secondaryTap],
       contextMenu: GenericContextMenu(buttonConfigs: [
@@ -50,81 +53,70 @@ class FileExplorerTab extends StatelessWidget {
       child: MouseRegion(
         cursor:
             isIgnored ? SystemMouseCursors.forbidden : SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: isIgnored
-              ? null
-              : () {
-                  if (fileExplorerState.isControlPressed) {
-                    fileExplorerState.toggleSelection(entity);
-                  } else {
-                    if (entity is Directory) {
-                      fileExplorerState.toggleExpansion(entity);
-                    }
-                    fileExplorerState.toggleSelection(entity);
-                  }
-                },
-          child: Draggable<bool>(
-            data: true,
-            dragAnchorStrategy: pointerDragAnchorStrategy,
-            feedback: const CollectionIcon(),
-            onDragStarted: () {
-              final isSelected =
-                  fileExplorerState.isSelected[entity.path] == true;
-              if (!isSelected) {
+        child: Draggable<bool>(
+          data: true,
+          dragAnchorStrategy: pointerDragAnchorStrategy,
+          feedback: const CollectionIcon(),
+          onDragStarted: () {
+            final isSelected =
+                fileExplorerState.isSelected[entity.path] == true;
+            if (!isSelected) {
+              fileExplorerState.toggleSelection(entity);
+            }
+          },
+          child: ShadButton.ghost(
+            height: 32,
+            padding: const EdgeInsets.all(0),
+            decoration: const ShadDecoration(
+              secondaryBorder: ShadBorder.none,
+            ),
+            enabled: !isIgnored,
+            width: double.infinity,
+            mainAxisAlignment: MainAxisAlignment.start,
+            hoverBackgroundColor: theme.colorScheme.selection.withOpacity(0.9),
+            backgroundColor:
+                isSelected ? theme.colorScheme.selection : Colors.transparent,
+            onPressed: () {
+              if (fileExplorerState.isControlPressed) {
+                fileExplorerState.toggleSelection(entity);
+              } else {
+                if (entity is Directory) {
+                  fileExplorerState.toggleExpansion(entity);
+                }
                 fileExplorerState.toggleSelection(entity);
               }
             },
-            child: Container(
-              color: isSelected ? Colors.black : Colors.transparent,
-              padding: const EdgeInsets.all(4),
-              child: Row(
-                children: [
-                  if (entity is Directory)
-                    RotatedBox(
-                      quarterTurns: isExpanded ? 1 : 0,
-                      child: GestureDetector(
-                        onTap: () {
-                          if (!fileExplorerState.isControlPressed ||
-                              !isSelected) {
-                            fileExplorerState.toggleExpansion(entity);
-                          }
-                        },
-                        child: Icon(
-                          isExpanded
-                              ? Icons.chevron_right
-                              : Icons.chevron_right,
-                          color: isSelected
-                              ? Colors.white
-                              : (isIgnored ? Colors.grey : Colors.black),
-                        ),
+            text: Text(
+              fileName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            icon: (entity is Directory)
+                ? RotatedBox(
+                    quarterTurns: isExpanded ? 1 : 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (!fileExplorerState.isControlPressed ||
+                            !isSelected) {
+                          fileExplorerState.toggleExpansion(entity);
+                        }
+                      },
+                      child: Icon(
+                        isExpanded ? Icons.chevron_right : Icons.chevron_right,
+                        size: 16,
                       ),
-                    )
-                  else
-                    Icon(
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Icon(
                       Icons.insert_drive_file,
-                      size: 12,
+                      size: 8,
                       color: isSelected
                           ? Colors.white
                           : (isIgnored ? Colors.grey : Colors.black),
                     ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      fileName,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                        color: isSelected
-                            ? Colors.white
-                            : (isIgnored ? Colors.grey : Colors.black),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
                   ),
-                ],
-              ),
-            ),
           ),
         ),
       ),
@@ -145,16 +137,16 @@ class FileExplorerTab extends StatelessWidget {
       if (clipboard != null && clipboard.text != null) {
         final file = File(entity.path);
         await file.writeAsString(clipboard.text!);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Clipboard content pasted successfully.'),
+        ShadToaster.of(context).show(
+          const ShadToast(
+            description: Text('Clipboard content pasted successfully.'),
           ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to paste clipboard content.'),
+      ShadToaster.of(context).show(
+        const ShadToast.destructive(
+          description: Text('Failed to paste clipboard content.'),
         ),
       );
     }
@@ -220,9 +212,9 @@ class FileExplorerTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (fileExplorerState.selectedFolderPath == null)
-            ElevatedButton(
+            ShadButton(
               onPressed: fileExplorerState.openFolder,
-              child: const Text('Open Project'),
+              text: const Text('Open Project'),
             )
           else
             Expanded(
@@ -234,10 +226,7 @@ class FileExplorerTab extends StatelessWidget {
                     children: [
                       Text(
                         'Explorer: ${path.basename(fileExplorerState.selectedFolderPath!)}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: ShadTheme.of(context).textTheme.h4,
                       ),
                       PopupMenuButton(
                         icon: const Icon(Icons.more_vert),

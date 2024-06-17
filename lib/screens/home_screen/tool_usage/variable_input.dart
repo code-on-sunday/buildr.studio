@@ -5,6 +5,7 @@ import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class VariableInput extends StatefulWidget {
   final Variable variable;
@@ -47,29 +48,20 @@ class _VariableInputState extends State<VariableInput> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              '<${widget.variable.name.toUpperCase()}>',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(fontWeight: FontWeight.bold),
-            ),
-            Tooltip(
-              message: widget.variable.description,
-              child: const Icon(Icons.info_outline),
-            )
-          ],
+        ShadTooltip(
+          builder: (_) => Text(widget.variable.description),
+          child: Text(
+            '<${widget.variable.name.toUpperCase()}>',
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge!
+                .copyWith(fontWeight: FontWeight.bold),
+          ),
         ),
         const SizedBox(height: 8),
         if (widget.variable.inputType == 'text_field')
-          TextField(
+          ShadInput(
             controller: _textController,
-            decoration: InputDecoration(
-              hintText: widget.variable.hintLabel,
-              border: const OutlineInputBorder(),
-            ),
             minLines: 4,
             maxLines: 10,
             onChanged: (value) {
@@ -118,6 +110,7 @@ class SourcesInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fileExplorerState = context.watch<FileExplorerState>();
+    final theme = ShadTheme.of(context);
 
     return DragTarget<bool>(
       onAcceptWithDetails: (_) {
@@ -129,13 +122,13 @@ class SourcesInput extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
             color: isHighlighted || selectedPaths.isNotEmpty
-                ? Colors.orange.shade50
+                ? theme.colorScheme.secondary
                 : null,
+            borderRadius: ShadTheme.of(context).radius,
             border: Border.all(
-              color: isHighlighted ? Colors.orange : Colors.grey.shade400,
-              width: isHighlighted ? 4.0 : 2.0,
+              width: 1,
+              color: ShadTheme.of(context).colorScheme.border,
             ),
-            borderRadius: BorderRadius.circular(8.0),
           ),
           child: selectedPaths.isNotEmpty
               ? Wrap(
@@ -144,18 +137,33 @@ class SourcesInput extends StatelessWidget {
                   children: selectedPaths.map((path) {
                     try {
                       final isFolder = FileSystemEntity.isDirectorySync(path);
-                      return Chip(
-                        label: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (isFolder) const Icon(Icons.folder, size: 18),
-                            const SizedBox(width: 4),
-                            Text(
-                              fileExplorerState.getDisplayFileName(path),
+                      return switch (isFolder) {
+                        true => ShadBadge(
+                            text: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (isFolder)
+                                  Icon(
+                                    Icons.folder,
+                                    size: 18,
+                                    color: theme.colorScheme.primaryForeground,
+                                  ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  fileExplorerState.getDisplayFileName(path),
+                                  style: theme.textTheme.small.copyWith(
+                                      color:
+                                          theme.colorScheme.primaryForeground),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
+                          ),
+                        false => ShadBadge.outline(
+                            backgroundColor: theme.colorScheme.selection,
+                            hoverBackgroundColor: theme.colorScheme.selection,
+                            text: Text(
+                                fileExplorerState.getDisplayFileName(path))),
+                      };
                     } catch (e) {
                       return const SizedBox.shrink();
                     }

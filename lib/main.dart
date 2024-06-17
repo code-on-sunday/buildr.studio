@@ -1,4 +1,3 @@
-import 'package:buildr_studio/app_theme.dart';
 import 'package:buildr_studio/env/env.dart';
 import 'package:buildr_studio/repositories/account_repository.dart';
 import 'package:buildr_studio/repositories/tool_repository.dart';
@@ -34,6 +33,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:re_highlight/languages/all.dart';
 import 'package:re_highlight/re_highlight.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wiredash/wiredash.dart';
 
@@ -104,9 +104,10 @@ class MyApp extends StatelessWidget {
       child: Wiredash(
         projectId: Env.wireDashProjectId ?? '',
         secret: Env.wireDashSecret ?? '',
-        child: MaterialApp(
+        child: ShadApp(
           title: 'buildr.studio',
-          theme: AppTheme.blackAndWhiteTheme,
+          // theme: AppTheme.blackAndWhiteTheme,
+          themeMode: ThemeMode.light,
           debugShowCheckedModeBanner: false,
           routes: {
             '/': (context) => const SplashScreen(),

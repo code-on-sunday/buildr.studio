@@ -2,6 +2,7 @@ import 'package:buildr_studio/screens/home_screen/settings/api_key_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class SettingsApiKey extends StatefulWidget {
@@ -44,50 +45,44 @@ class _SettingsApiKeyState extends State<SettingsApiKey> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextField(
+        ShadInput(
           controller: _apiKeyController,
-          decoration: InputDecoration(
-            labelText: '${widget.title}\'s API Key',
-            border: const OutlineInputBorder(),
-          ),
+          placeholder: Text('${widget.title}\'s API Key'),
         ),
-        const SizedBox(height: 16),
-        ElevatedButton(
+        ShadButton(
           onPressed: () async {
             final apiKey = _apiKeyController.text.trim();
             if (apiKey.isNotEmpty) {
               try {
                 await _apiKeyState.saveApiKey(apiKey);
                 _toolUsageManager.reconnectAiService();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('API key saved successfully.'),
+                ShadToaster.of(context).show(
+                  const ShadToast(
+                    description: Text('API key saved successfully.'),
                   ),
                 );
               } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Error saving API key: $e.'),
+                ShadToaster.of(context).show(
+                  ShadToast.destructive(
+                    description: Text('Error saving API key: $e.'),
                   ),
                 );
               }
             } else {
-              // Display an error message to the user
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Please enter a valid API key.'),
+              ShadToaster.of(context).show(
+                const ShadToast.destructive(
+                  description: Text('Please enter a valid API key.'),
                 ),
               );
             }
           },
-          child: const Text('Save API Key'),
+          text: const Text('Save API Key'),
         ),
-        TextButton(
+        ShadButton.link(
             onPressed: () async {
               await launchUrlString(widget.helpUrl);
             },
-            child: const Text('How to get an API key?',
-                style: TextStyle(color: Colors.blue)))
+            text: const Text('How to get an API key?'))
       ],
     );
   }

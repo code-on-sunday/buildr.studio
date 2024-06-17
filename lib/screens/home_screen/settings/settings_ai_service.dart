@@ -3,6 +3,7 @@ import 'package:buildr_studio/screens/home_screen/settings/settings_ai_service_b
 import 'package:buildr_studio/screens/home_screen/settings/settings_api_key.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class SettingsAiService extends StatelessWidget {
   const SettingsAiService({super.key});
@@ -22,15 +23,19 @@ class SettingsAiService extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: DropdownButtonFormField<AIService>(
-                value: chooseAIServiceState.selectedService,
+              child: ShadSelect<AIService>(
+                placeholder: const Text('Select AI Service'),
+                initialValue: chooseAIServiceState.selectedService,
+                selectedOptionBuilder: (context, value) {
+                  return Text(value.displayName);
+                },
                 onChanged: (AIService? newService) {
                   if (newService != null) {
                     chooseAIServiceState.setSelectedService(newService);
                   }
                 },
-                items: AIService.values.map((service) {
-                  return DropdownMenuItem<AIService>(
+                options: AIService.values.map((service) {
+                  return ShadOption(
                     value: service,
                     child: Text(service.displayName),
                   );

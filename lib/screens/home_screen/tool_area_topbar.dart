@@ -4,11 +4,15 @@ import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.
 import 'package:buildr_studio/screens/home_screen_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class ToolAreaTopBar extends StatelessWidget {
   const ToolAreaTopBar({
     super.key,
+    required this.openVariableSection,
   });
+
+  final VoidCallback openVariableSection;
 
   @override
   Widget build(BuildContext context) {
@@ -22,38 +26,41 @@ class ToolAreaTopBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Tooltip(
-            message: 'Show variables',
-            child: OutlinedButton(
-              onPressed: homeState.toggleVariableSection,
-              child: const Text('{ }'),
+          ShadTooltip(
+            builder: (context) => const Text('Show variables'),
+            child: ShadButton.outline(
+              backgroundColor: homeState.isVariableSectionVisible
+                  ? ShadTheme.of(context).colorScheme.accent
+                  : null,
+              onPressed: openVariableSection,
+              text: const Text('{ }'),
             ),
           ),
           const SizedBox(width: 8),
-          SizedBox(
-            width: 300,
-            height: 40,
-            child: toolUsageManager.isResponseStreaming
-                ? const FilledButton(
-                    onPressed: null,
-                    child: SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(),
+          ShadButton(
+            enabled: !toolUsageManager.isResponseStreaming,
+            onPressed: () {
+              toolUsageManager.submitPrompt(
+                homeState.prompt?.prompt,
+                fileExplorerState,
+                deviceRegistrationState,
+              );
+              if (homeState.isVariableSectionVisible) {
+                homeState.toggleVariableSection();
+              }
+            },
+            text: const Text('Run'),
+            icon: toolUsageManager.isResponseStreaming
+                ? const Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: SizedBox.square(
+                      dimension: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
                     ),
                   )
-                : FilledButton.icon(
-                    onPressed: toolUsageManager.isResponseStreaming
-                        ? null
-                        : () {
-                            toolUsageManager.submitPrompt(
-                                homeState.prompt?.prompt,
-                                fileExplorerState,
-                                deviceRegistrationState);
-                          },
-                    label: const Text('Run'),
-                    icon: const Icon(Icons.play_arrow),
-                  ),
+                : const Icon(Icons.play_arrow),
           ),
         ],
       ),
