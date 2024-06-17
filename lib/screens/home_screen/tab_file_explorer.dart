@@ -241,10 +241,19 @@ class _FileExplorerTabState extends State<FileExplorerTab> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Explorer: ${path.basename(fileExplorerState.selectedFolderPath!)}',
-                        style: ShadTheme.of(context).textTheme.h4,
+                      Expanded(
+                        child: ShadTooltip(
+                          builder: (_) => Text(path
+                              .basename(fileExplorerState.selectedFolderPath!)),
+                          child: Text(
+                            'Explorer: ${path.basename(fileExplorerState.selectedFolderPath!)}',
+                            style: ShadTheme.of(context).textTheme.h4,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
                       ),
+                      const SizedBox(width: 4),
                       ShadPopover(
                           controller: _popOverController,
                           child: ShadButton.outline(

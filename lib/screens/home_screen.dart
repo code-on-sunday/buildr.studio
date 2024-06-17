@@ -23,6 +23,7 @@ class HomeScreen extends StatelessWidget {
     final homeState = context.watch<HomeScreenState>();
     final exportLogsState = context.read<ExportLogsState>();
     final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
+    final theme = ShadTheme.of(context);
 
     return Scaffold(
       backgroundColor: ShadTheme.of(context).colorScheme.muted,
@@ -35,11 +36,11 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: ShadTheme.of(context).colorScheme.background,
-                    borderRadius: ShadTheme.of(context).radius,
+                    color: theme.colorScheme.background,
+                    borderRadius: theme.radius,
                     border: Border.all(
                       width: 1,
-                      color: ShadTheme.of(context).colorScheme.border,
+                      color: theme.colorScheme.border,
                     ),
                   ),
                   child: Column(
@@ -48,12 +49,9 @@ class HomeScreen extends StatelessWidget {
                         child: NavigationRail(
                           selectedIndex: homeState.selectedNavRailIndex,
                           onDestinationSelected: homeState.onNavRailItemTapped,
-                          indicatorColor:
-                              ShadTheme.of(context).colorScheme.primary,
+                          indicatorColor: theme.colorScheme.primary,
                           selectedIconTheme: IconThemeData(
-                            color: ShadTheme.of(context)
-                                .colorScheme
-                                .primaryForeground,
+                            color: theme.colorScheme.primaryForeground,
                           ),
                           destinations: [
                             const NavigationRailDestination(

@@ -108,7 +108,7 @@ class _StatusBarState extends State<StatusBar> {
                     );
                   },
                   child: Text(
-                      "Account ID: ${deviceRegistrationState.accountId!.split("-").first}",
+                      "Account ID: ${deviceRegistrationState.accountId!}",
                       style: TextStyle(color: Colors.grey[600])),
                 ),
               ),
