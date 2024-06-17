@@ -51,11 +51,8 @@ class _VariableInputState extends State<VariableInput> {
         ShadTooltip(
           builder: (_) => Text(widget.variable.description),
           child: Text(
-            '<${widget.variable.name.toUpperCase()}>',
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge!
-                .copyWith(fontWeight: FontWeight.bold),
+            '{{${widget.variable.name}}}',
+            style: ShadTheme.of(context).textTheme.small,
           ),
         ),
         const SizedBox(height: 8),
@@ -126,8 +123,8 @@ class SourcesInput extends StatelessWidget {
                 : null,
             borderRadius: ShadTheme.of(context).radius,
             border: Border.all(
-              width: 1,
-              color: ShadTheme.of(context).colorScheme.border,
+              width: 2,
+              color: theme.colorScheme.border,
             ),
           ),
           child: selectedPaths.isNotEmpty
@@ -172,14 +169,11 @@ class SourcesInput extends StatelessWidget {
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.upload_file, size: 48, color: Colors.grey),
+                    const Icon(Icons.upload_file, size: 48),
                     const SizedBox(height: 16),
                     Text(
                       'Drag and drop your sources here',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(color: Colors.grey),
+                      style: theme.textTheme.p,
                     )
                   ],
                 ),

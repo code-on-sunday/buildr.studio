@@ -18,52 +18,40 @@ class SettingsAiService extends StatelessWidget {
         Row(
           children: [
             Text(
-              'AI Service: ',
+              'AI Service:',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: ShadSelect<AIService>(
-                placeholder: const Text('Select AI Service'),
-                initialValue: chooseAIServiceState.selectedService,
-                selectedOptionBuilder: (context, value) {
-                  return Text(value.displayName);
-                },
-                onChanged: (AIService? newService) {
-                  if (newService != null) {
-                    chooseAIServiceState.setSelectedService(newService);
-                  }
-                },
-                options: AIService.values.map((service) {
-                  return ShadOption(
-                    value: service,
-                    child: Text(service.displayName),
-                  );
-                }).toList(),
-              ),
+            const Spacer(),
+            ShadSelect<AIService>(
+              placeholder: const Text('Select AI Service'),
+              initialValue: chooseAIServiceState.selectedService,
+              selectedOptionBuilder: (context, value) {
+                return Text(value.displayName);
+              },
+              onChanged: (AIService? newService) {
+                if (newService != null) {
+                  chooseAIServiceState.setSelectedService(newService);
+                }
+              },
+              options: AIService.values.map((service) {
+                return ShadOption(
+                  value: service,
+                  child: Text(service.displayName),
+                );
+              }).toList(),
             ),
           ],
         ),
         const SizedBox(height: 24),
         switch (chooseAIServiceState.selectedService) {
-          AIService.anthropic => const Column(
-              children: [
-                SettingsApiKey(
-                  title: "Claude AI",
-                  helpUrl:
-                      "https://www.buildr.studio/blog/cach-lay-api-key-claude-anthropic",
-                ),
-                SizedBox(height: 24),
-              ],
+          AIService.anthropic => const SettingsApiKey(
+              title: "Claude AI",
+              helpUrl:
+                  "https://www.buildr.studio/blog/cach-lay-api-key-claude-anthropic",
             ),
-          AIService.google => const Column(
-              children: [
-                SettingsApiKey(
-                  title: "Gemini AI",
-                  helpUrl: "https://ai.google.dev/gemini-api/docs/api-key",
-                ),
-                SizedBox(height: 24),
-              ],
+          AIService.google => const SettingsApiKey(
+              title: "Gemini AI",
+              helpUrl: "https://ai.google.dev/gemini-api/docs/api-key",
             ),
           AIService.buildrStudio => const SettingsAiServiceBuildrStudio(),
         },

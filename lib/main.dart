@@ -8,6 +8,7 @@ import 'package:buildr_studio/screens/home_screen/device_registration_state.dart
 import 'package:buildr_studio/screens/home_screen/export_logs_state.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/settings/choose_ai_service_state.dart';
+import 'package:buildr_studio/screens/home_screen/settings/choose_theme_mode_state.dart';
 import 'package:buildr_studio/screens/home_screen/settings/token_usage_refresher.dart';
 import 'package:buildr_studio/screens/home_screen/settings/token_usage_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/prompt_error_notification.dart';
@@ -104,50 +105,65 @@ class MyApp extends StatelessWidget {
       child: Wiredash(
         projectId: Env.wireDashProjectId ?? '',
         secret: Env.wireDashSecret ?? '',
-        child: ShadApp(
-          title: 'buildr.studio',
-          // theme: AppTheme.blackAndWhiteTheme,
-          themeMode: ThemeMode.light,
-          debugShowCheckedModeBanner: false,
-          routes: {
-            '/': (context) => const SplashScreen(),
-            '/home': (context) => MultiProvider(
-                  providers: [
-                    ChangeNotifierProvider(
-                        create: (context) => HomeScreenState(context)),
-                    ChangeNotifierProvider(
-                        create: (_) => FileExplorerState(
-                            userPreferencesRepository: GetIt.I.get())),
-                    ChangeNotifierProvider(
-                        create: (_) => ChooseAIServiceState(
-                            userPreferencesRepository: GetIt.I.get())),
-                    ChangeNotifierProvider(
-                        lazy: false,
-                        create: (_) => DeviceRegistrationState(
-                            deviceRegistration: GetIt.I.get(),
-                            accountRepository: GetIt.I.get(),
-                            userPreferencesRepository: GetIt.I.get())),
-                    ChangeNotifierProvider(
-                        create: (_) => TokenUsageState(
-                              userPreferencesRepository: GetIt.I.get(),
-                              accountRepository: GetIt.I.get(),
-                            )),
-                    ChangeNotifierProvider(
-                        create: (_) =>
-                            ExportLogsState(logsExporter: GetIt.I.get())),
-                  ],
-                  child: Consumer<ChooseAIServiceState>(
-                    builder: (context, chooseAIServiceState, child) {
-                      return AiServiceContext(
-                          key: ValueKey(chooseAIServiceState.selectedService),
-                          aiService: chooseAIServiceState.selectedService,
-                          child: child!);
-                    },
-                    child: const TokenUsageRefresher(
-                        child: PromptErrorNotification(child: HomeScreen())),
-                  ),
-                ),
-          },
+        child: ChangeNotifierProvider(
+          create: (_) => ChooseThemeModeState(prefs: GetIt.I.get()),
+          child: Consumer<ChooseThemeModeState>(
+              builder: (context, themeState, child) {
+            return ShadApp(
+              title: 'buildr.studio',
+              theme: ShadThemeData(
+                brightness: Brightness.light,
+                colorScheme: const ShadZincColorScheme.light(),
+              ),
+              darkTheme: ShadThemeData(
+                brightness: Brightness.dark,
+                colorScheme: const ShadSlateColorScheme.dark(),
+              ),
+              themeMode: themeState.themeMode,
+              debugShowCheckedModeBanner: false,
+              routes: {
+                '/': (context) => const SplashScreen(),
+                '/home': (context) => MultiProvider(
+                      providers: [
+                        ChangeNotifierProvider(
+                            create: (context) => HomeScreenState(context)),
+                        ChangeNotifierProvider(
+                            create: (_) => FileExplorerState(
+                                userPreferencesRepository: GetIt.I.get())),
+                        ChangeNotifierProvider(
+                            create: (_) => ChooseAIServiceState(
+                                userPreferencesRepository: GetIt.I.get())),
+                        ChangeNotifierProvider(
+                            lazy: false,
+                            create: (_) => DeviceRegistrationState(
+                                deviceRegistration: GetIt.I.get(),
+                                accountRepository: GetIt.I.get(),
+                                userPreferencesRepository: GetIt.I.get())),
+                        ChangeNotifierProvider(
+                            create: (_) => TokenUsageState(
+                                  userPreferencesRepository: GetIt.I.get(),
+                                  accountRepository: GetIt.I.get(),
+                                )),
+                        ChangeNotifierProvider(
+                            create: (_) =>
+                                ExportLogsState(logsExporter: GetIt.I.get())),
+                      ],
+                      child: Consumer<ChooseAIServiceState>(
+                        builder: (context, chooseAIServiceState, child) {
+                          return AiServiceContext(
+                              key: ValueKey(
+                                  chooseAIServiceState.selectedService),
+                              aiService: chooseAIServiceState.selectedService,
+                              child: child!);
+                        },
+                        child: const TokenUsageRefresher(
+                            child:
+                                PromptErrorNotification(child: HomeScreen())),
+                      ),
+                    ),
+              },
+            );
+          }),
         ),
       ),
     );

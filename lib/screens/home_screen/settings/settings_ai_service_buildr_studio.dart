@@ -29,32 +29,26 @@ class _SettingsAiServiceBuildrStudioState
       children: [
         Expanded(
           flex: 2,
-          child: ShadCard(
-            padding: const EdgeInsets.all(24),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '\$${tokenUsageState.tokenUsage?.balance.toStringAsFixed(4) ?? '0'}',
-                  style: Theme.of(context)
-                      .textTheme
-                      .displayLarge!
-                      .copyWith(fontSize: 40),
-                ),
-                Text(
-                  'Remaining balance',
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '\$${tokenUsageState.tokenUsage?.balance.toStringAsFixed(4) ?? '0'}',
+                style: ShadTheme.of(context).textTheme.h2,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Remaining balance',
+                style: Theme.of(context).textTheme.labelSmall,
+              ),
+            ],
           ),
         ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: ShadButton(
-            onPressed: () {},
-            text: const Text('Add Funds'),
-          ),
+        const Spacer(),
+        ShadButton(
+          onPressed: () {},
+          text: const Text('Add Funds'),
         ),
       ],
     );

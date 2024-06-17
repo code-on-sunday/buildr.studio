@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:re_highlight/styles/github-dark.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class OutputSection extends StatelessWidget {
@@ -12,8 +13,11 @@ class OutputSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final outputText = context.watch<ToolUsageManager>().output;
+    final theme = ShadTheme.of(context);
+
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      margin: const EdgeInsets.all(4).copyWith(bottom: 0),
+      color: ShadTheme.of(context).colorScheme.muted,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -23,21 +27,41 @@ class OutputSection extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: DecoratedBox(
+            child: Container(
               decoration: BoxDecoration(
                 borderRadius: ShadTheme.of(context).radius,
                 border: Border.all(
                   width: 1,
                   color: ShadTheme.of(context).colorScheme.border,
                 ),
+                color: ShadTheme.of(context).colorScheme.background,
               ),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               child: MarkdownWidget(
                   data: outputText,
                   padding: const EdgeInsets.all(16),
                   config: MarkdownConfig(configs: [
+                    CodeConfig(
+                      style: theme.textTheme.p.copyWith(
+                        color: theme.colorScheme.secondaryForeground,
+                        fontStyle: FontStyle.italic,
+                        backgroundColor: theme.colorScheme.secondary,
+                      ),
+                    ),
                     PreConfig(
-                        theme: a11yLightTheme,
-                        textStyle: const TextStyle(fontSize: 14),
+                        decoration: BoxDecoration(
+                          borderRadius: theme.radius,
+                          border: Border.all(
+                            width: 1,
+                            color: theme.colorScheme.ring,
+                          ),
+                          color: theme.brightness == Brightness.dark
+                              ? theme.colorScheme.secondary
+                              : null,
+                        ),
+                        theme: theme.brightness == Brightness.dark
+                            ? githubDarkTheme
+                            : a11yLightTheme,
                         wrapper: buildCodeWrapper(context)),
                   ])),
             ),

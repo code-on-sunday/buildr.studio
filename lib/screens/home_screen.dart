@@ -25,6 +25,7 @@ class HomeScreen extends StatelessWidget {
     final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
 
     return Scaffold(
+      backgroundColor: ShadTheme.of(context).colorScheme.muted,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -32,58 +33,69 @@ class HomeScreen extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  children: [
-                    Expanded(
-                      child: NavigationRail(
-                        selectedIndex: homeState.selectedNavRailIndex,
-                        onDestinationSelected: homeState.onNavRailItemTapped,
-                        indicatorColor:
-                            ShadTheme.of(context).colorScheme.primary,
-                        selectedIconTheme: IconThemeData(
-                          color: ShadTheme.of(context)
-                              .colorScheme
-                              .primaryForeground,
+                Container(
+                  decoration: BoxDecoration(
+                    color: ShadTheme.of(context).colorScheme.background,
+                    borderRadius: ShadTheme.of(context).radius,
+                    border: Border.all(
+                      width: 1,
+                      color: ShadTheme.of(context).colorScheme.border,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: NavigationRail(
+                          selectedIndex: homeState.selectedNavRailIndex,
+                          onDestinationSelected: homeState.onNavRailItemTapped,
+                          indicatorColor:
+                              ShadTheme.of(context).colorScheme.primary,
+                          selectedIconTheme: IconThemeData(
+                            color: ShadTheme.of(context)
+                                .colorScheme
+                                .primaryForeground,
+                          ),
+                          destinations: [
+                            const NavigationRailDestination(
+                              icon: Icon(Icons.build),
+                              label: Text('Build'),
+                            ),
+                            const NavigationRailDestination(
+                              icon: Icon(Icons.folder),
+                              label: Text('File Explorer'),
+                            ),
+                            NavigationRailDestination(
+                              icon: const Icon(Icons.settings),
+                              label: Text(homeState.isSettingsVisible
+                                  ? 'Close Settings'
+                                  : 'Settings'),
+                            ),
+                          ],
                         ),
-                        destinations: [
-                          const NavigationRailDestination(
-                            icon: Icon(Icons.build),
-                            label: Text('Build'),
-                          ),
-                          const NavigationRailDestination(
-                            icon: Icon(Icons.folder),
-                            label: Text('File Explorer'),
-                          ),
-                          NavigationRailDestination(
-                            icon: const Icon(Icons.settings),
-                            label: Text(homeState.isSettingsVisible
-                                ? 'Close Settings'
-                                : 'Settings'),
-                          ),
-                        ],
                       ),
-                    ),
-                    PopupMenuButton(
-                      tooltip: 'Get help',
-                      icon: const Icon(Icons.support),
-                      offset: const Offset(0, -120),
-                      itemBuilder: (context) {
-                        return [
-                          PopupMenuItem(
-                            onTap: () => exportLogsState.exportLogs(context),
-                            child: const Text('Export logs'),
-                          ),
-                          PopupMenuItem(
-                            onTap: () {
-                              launchUrlString("https://discord.gg/JVQmxkBqMY");
-                            },
-                            child: const Text('Join group chat'),
-                          ),
-                        ];
-                      },
-                    ),
-                    const SizedBox(height: 32),
-                  ],
+                      PopupMenuButton(
+                        tooltip: 'Get help',
+                        icon: const Icon(Icons.support),
+                        offset: const Offset(0, -120),
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                              onTap: () => exportLogsState.exportLogs(context),
+                              child: const Text('Export logs'),
+                            ),
+                            PopupMenuItem(
+                              onTap: () {
+                                launchUrlString(
+                                    "https://discord.gg/JVQmxkBqMY");
+                              },
+                              child: const Text('Join group chat'),
+                            ),
+                          ];
+                        },
+                      ),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
                 ),
                 if (isLargeScreen)
                   Sidebar(
@@ -95,7 +107,7 @@ class HomeScreen extends StatelessWidget {
                             onToolSelected: homeState.onToolSelected,
                           )
                         : homeState.selectedNavRailIndex == 1
-                            ? FileExplorerTab()
+                            ? const FileExplorerTab()
                             : const SettingsTab(),
                   ),
                 Expanded(
@@ -148,7 +160,7 @@ class HomeScreen extends StatelessWidget {
                                     onToolSelected: homeState.onToolSelected,
                                   )
                                 : homeState.selectedNavRailIndex == 1
-                                    ? FileExplorerTab()
+                                    ? const FileExplorerTab()
                                     : const SettingsTab(),
                           ),
                         ),

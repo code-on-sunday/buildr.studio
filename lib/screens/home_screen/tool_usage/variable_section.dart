@@ -1,5 +1,6 @@
 import 'package:buildr_studio/models/tool.dart';
 import 'package:buildr_studio/models/variable.dart';
+import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/variable_input.dart';
@@ -24,6 +25,7 @@ class VariableSection extends StatelessWidget {
     final homeState = context.watch<HomeScreenState>();
     final fileExplorerState = context.watch<FileExplorerState>();
     final toolUsageManager = context.watch<ToolUsageManager>();
+    final deviceRegistrationState = context.read<DeviceRegistrationState>();
 
     return Container(
       decoration: BoxDecoration(
@@ -34,7 +36,7 @@ class VariableSection extends StatelessWidget {
           color: ShadTheme.of(context).colorScheme.border,
         ),
       ),
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(4).copyWith(bottom: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -96,11 +98,40 @@ class VariableSection extends StatelessWidget {
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 16).copyWith(bottom: 8),
-            child: ShadButton.destructive(
-              onPressed: () {
-                toolUsageManager.clearValues();
-              },
-              text: const Text('Clear values'),
+            child: Row(
+              children: [
+                ShadButton.destructive(
+                  onPressed: () {
+                    toolUsageManager.clearValues();
+                  },
+                  text: const Text('Clear values'),
+                ),
+                ShadButton(
+                  enabled: !toolUsageManager.isResponseStreaming,
+                  onPressed: () {
+                    toolUsageManager.submitPrompt(
+                      homeState.prompt?.prompt,
+                      fileExplorerState,
+                      deviceRegistrationState,
+                    );
+                    if (homeState.isVariableSectionVisible) {
+                      homeState.toggleVariableSection();
+                    }
+                  },
+                  text: const Text('Run'),
+                  icon: toolUsageManager.isResponseStreaming
+                      ? const Padding(
+                          padding: EdgeInsets.only(right: 8),
+                          child: SizedBox.square(
+                            dimension: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        )
+                      : const Icon(Icons.play_arrow),
+                ),
+              ],
             ),
           ),
         ],

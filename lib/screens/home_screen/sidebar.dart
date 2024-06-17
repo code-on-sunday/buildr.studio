@@ -17,14 +17,11 @@ class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
       width: 400,
+      margin: const EdgeInsets.all(4).copyWith(bottom: 0),
       decoration: BoxDecoration(
         color: ShadTheme.of(context).colorScheme.background,
-        borderRadius: ShadTheme.of(context).radius.copyWith(
-              topLeft: Radius.zero,
-              topRight: Radius.zero,
-            ),
+        borderRadius: ShadTheme.of(context).radius,
         border: Border.all(
           width: 1,
           color: ShadTheme.of(context).colorScheme.border,

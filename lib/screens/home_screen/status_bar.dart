@@ -43,11 +43,13 @@ class _StatusBarState extends State<StatusBar> {
 
     return ShadDecorator(
       decoration: ShadDecoration(
-          border: ShadBorder(
-        width: 1,
-        color: ShadTheme.of(context).colorScheme.border,
-        radius: ShadTheme.of(context).radius,
-      )),
+        border: ShadBorder(
+          width: 1,
+          color: ShadTheme.of(context).colorScheme.border,
+          radius: ShadTheme.of(context).radius,
+        ),
+        color: ShadTheme.of(context).colorScheme.background,
+      ),
       child: SizedBox(
         height: 32,
         child: Row(

@@ -10,10 +10,22 @@ import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class FileExplorerTab extends StatelessWidget {
-  FileExplorerTab({super.key});
+class FileExplorerTab extends StatefulWidget {
+  const FileExplorerTab({super.key});
 
+  @override
+  State<FileExplorerTab> createState() => _FileExplorerTabState();
+}
+
+class _FileExplorerTabState extends State<FileExplorerTab> {
   final _gitIgnoreChecker = GetIt.I.get<GitIgnoreChecker>();
+  final _popOverController = ShadPopoverController();
+
+  @override
+  void dispose() {
+    _popOverController.dispose();
+    super.dispose();
+  }
 
   Widget _buildFileSystemEntityTile(
     BuildContext context,
@@ -73,9 +85,14 @@ class FileExplorerTab extends StatelessWidget {
             enabled: !isIgnored,
             width: double.infinity,
             mainAxisAlignment: MainAxisAlignment.start,
-            hoverBackgroundColor: theme.colorScheme.selection.withOpacity(0.9),
+            hoverBackgroundColor:
+                isSelected ? theme.colorScheme.primary.withOpacity(0.9) : null,
             backgroundColor:
-                isSelected ? theme.colorScheme.selection : Colors.transparent,
+                isSelected ? theme.colorScheme.primary : Colors.transparent,
+            foregroundColor:
+                isSelected ? theme.colorScheme.primaryForeground : null,
+            hoverForegroundColor:
+                isSelected ? theme.colorScheme.primaryForeground : null,
             onPressed: () {
               if (fileExplorerState.isControlPressed) {
                 fileExplorerState.toggleSelection(entity);
@@ -228,20 +245,25 @@ class FileExplorerTab extends StatelessWidget {
                         'Explorer: ${path.basename(fileExplorerState.selectedFolderPath!)}',
                         style: ShadTheme.of(context).textTheme.h4,
                       ),
-                      PopupMenuButton(
-                        icon: const Icon(Icons.more_vert),
-                        onSelected: (value) {
-                          if (value == 'change_folder') {
-                            fileExplorerState.openFolder();
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'change_folder',
-                            child: Text('Change folder'),
+                      ShadPopover(
+                          controller: _popOverController,
+                          child: ShadButton.outline(
+                            onPressed: () {
+                              _popOverController.show();
+                            },
+                            icon: const Icon(Icons.more_vert),
                           ),
-                        ],
-                      ),
+                          popover: (_) => Column(
+                                children: [
+                                  ShadButton.ghost(
+                                    onPressed: () {
+                                      _popOverController.hide();
+                                      fileExplorerState.openFolder();
+                                    },
+                                    text: const Text('Change folder'),
+                                  ),
+                                ],
+                              )),
                     ],
                   ),
                   const SizedBox(height: 16),

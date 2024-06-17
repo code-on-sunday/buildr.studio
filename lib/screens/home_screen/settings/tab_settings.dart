@@ -1,4 +1,5 @@
 import 'package:buildr_studio/screens/home_screen/settings/settings_ai_service.dart';
+import 'package:buildr_studio/screens/home_screen/settings/settings_theme_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -17,7 +18,9 @@ class SettingsTab extends StatelessWidget {
             style: ShadTheme.of(context).textTheme.h4,
           ),
           const SizedBox(height: 16),
-          const SettingsAiService(),
+          const ShadCard(content: SettingsAiService()),
+          const SizedBox(height: 16),
+          const ShadCard(content: SettingsThemeMode()),
         ],
       ),
     );

@@ -21,8 +21,17 @@ class ToolAreaTopBar extends StatelessWidget {
     final fileExplorerState = context.watch<FileExplorerState>();
     final deviceRegistrationState = context.read<DeviceRegistrationState>();
 
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(16.0),
+      margin: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: ShadTheme.of(context).colorScheme.background,
+        borderRadius: ShadTheme.of(context).radius,
+        border: Border.all(
+          width: 1,
+          color: ShadTheme.of(context).colorScheme.border,
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

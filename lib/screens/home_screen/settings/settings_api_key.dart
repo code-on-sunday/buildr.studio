@@ -79,10 +79,12 @@ class _SettingsApiKeyState extends State<SettingsApiKey> {
           text: const Text('Save API Key'),
         ),
         ShadButton.link(
-            onPressed: () async {
-              await launchUrlString(widget.helpUrl);
-            },
-            text: const Text('How to get an API key?'))
+          padding: EdgeInsets.zero,
+          onPressed: () async {
+            await launchUrlString(widget.helpUrl);
+          },
+          text: const Text('How to get an API key?'),
+        )
       ],
     );
   }
