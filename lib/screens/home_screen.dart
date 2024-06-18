@@ -5,7 +5,6 @@ import 'package:buildr_studio/screens/home_screen/settings/tab_settings.dart';
 import 'package:buildr_studio/screens/home_screen/sidebar.dart';
 import 'package:buildr_studio/screens/home_screen/status_bar.dart';
 import 'package:buildr_studio/screens/home_screen/tab_file_explorer.dart';
-import 'package:buildr_studio/screens/home_screen/tab_tools.dart';
 import 'package:buildr_studio/screens/home_screen/tool_area_topbar.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/output_section.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/variable_section.dart';
@@ -58,10 +57,6 @@ class HomeScreen extends StatelessWidget {
                             ),
                             destinations: [
                               const NavigationRailDestination(
-                                icon: Icon(Icons.build),
-                                label: Text('Build'),
-                              ),
-                              const NavigationRailDestination(
                                 icon: Icon(Icons.folder),
                                 label: Text('File Explorer'),
                               ),
@@ -84,14 +79,8 @@ class HomeScreen extends StatelessWidget {
                   Sidebar(
                     onClose: homeState.toggleSidebar,
                     child: homeState.selectedNavRailIndex == 0
-                        ? ToolsTab(
-                            tools: homeState.tools,
-                            selectedTool: homeState.selectedTool,
-                            onToolSelected: homeState.onToolSelected,
-                          )
-                        : homeState.selectedNavRailIndex == 1
-                            ? const FileExplorerTab()
-                            : const SettingsTab(),
+                        ? const FileExplorerTab()
+                        : const SettingsTab(),
                   ),
                 Expanded(
                   child: Stack(
@@ -143,14 +132,8 @@ class HomeScreen extends StatelessWidget {
                             child: Sidebar(
                               onClose: homeState.toggleSidebar,
                               child: homeState.selectedNavRailIndex == 0
-                                  ? ToolsTab(
-                                      tools: homeState.tools,
-                                      selectedTool: homeState.selectedTool,
-                                      onToolSelected: homeState.onToolSelected,
-                                    )
-                                  : homeState.selectedNavRailIndex == 1
-                                      ? const FileExplorerTab()
-                                      : const SettingsTab(),
+                                  ? const FileExplorerTab()
+                                  : const SettingsTab(),
                             ),
                           ),
                         ),

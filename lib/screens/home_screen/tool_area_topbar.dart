@@ -20,6 +20,7 @@ class ToolAreaTopBar extends StatelessWidget {
     final toolUsageManager = context.watch<ToolUsageManager>();
     final fileExplorerState = context.watch<FileExplorerState>();
     final deviceRegistrationState = context.read<DeviceRegistrationState>();
+    final theme = ShadTheme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -70,6 +71,49 @@ class ToolAreaTopBar extends StatelessWidget {
                     ),
                   )
                 : const Icon(Icons.play_arrow),
+          ),
+          const Spacer(),
+          ShadButton.outline(
+            onPressed: () {
+              showShadSheet(
+                context: context,
+                side: ShadSheetSide.right,
+                builder: (context) => ShadSheet(
+                  constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.5),
+                  scrollable: true,
+                  title: const Text('Select Tool'),
+                  content: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (final tool in homeState.tools)
+                        ShadButton.ghost(
+                          width: double.infinity,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          text: Text(tool.name),
+                          onPressed: () {
+                            homeState.onToolSelected(tool);
+                            Navigator.of(context).pop();
+                          },
+                          backgroundColor: homeState.selectedTool == tool
+                              ? theme.colorScheme.primary
+                              : null,
+                          foregroundColor: homeState.selectedTool == tool
+                              ? theme.colorScheme.primaryForeground
+                              : null,
+                          hoverBackgroundColor: homeState.selectedTool == tool
+                              ? theme.colorScheme.primary.withOpacity(0.9)
+                              : null,
+                          hoverForegroundColor: homeState.selectedTool == tool
+                              ? theme.colorScheme.primaryForeground
+                              : null,
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            },
+            text: const Text('Change tool'),
           ),
         ],
       ),
