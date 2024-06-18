@@ -18,7 +18,10 @@ class SettingsTab extends StatelessWidget {
             style: ShadTheme.of(context).textTheme.h4,
           ),
           const SizedBox(height: 16),
-          const ShadCard(content: SettingsAiService()),
+          ShadCard(
+            content: const SettingsAiService(),
+            padding: const EdgeInsets.all(24).copyWith(bottom: 0),
+          ),
           const SizedBox(height: 16),
           const ShadCard(content: SettingsThemeMode()),
         ],

@@ -17,19 +17,29 @@ class TokenUsageState extends ChangeNotifier {
 
   TokenUsage? _tokenUsage;
   String? _errorMessage;
+  bool _isLoading = false;
 
   TokenUsage? get tokenUsage => _tokenUsage;
   String? get errorMessage => _errorMessage;
+  bool get isLoading => _isLoading;
 
   Future<void> loadTokenUsage() async {
     try {
+      _isLoading = true;
+      notifyListeners();
       final accountId = _userPreferencesRepository.getAccountId();
-      if (accountId == null) return;
+      if (accountId == null) {
+        _errorMessage = 'Account ID is not set';
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
 
       _tokenUsage = await _accountRepository.getTokenUsage(accountId);
     } catch (e) {
       _errorMessage = 'Error loading token usage: $e';
     } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }

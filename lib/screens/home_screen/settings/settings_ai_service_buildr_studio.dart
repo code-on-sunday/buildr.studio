@@ -30,34 +30,56 @@ class _SettingsAiServiceBuildrStudioState
   Widget build(BuildContext context) {
     final deviceRegistrationState = context.watch<DeviceRegistrationState>();
     final tokenUsageState = context.watch<TokenUsageState>();
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Column(
       children: [
-        Expanded(
-          flex: 2,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '\$${tokenUsageState.tokenUsage?.balance.toStringAsFixed(4) ?? '0'}',
-                style: ShadTheme.of(context).textTheme.h2,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              flex: 2,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  tokenUsageState.isLoading
+                      ? const SizedBox.square(
+                          dimension: 36,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          '\$${tokenUsageState.tokenUsage?.balance.toStringAsFixed(4) ?? '0'}',
+                          style: ShadTheme.of(context).textTheme.h2,
+                        ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Remaining balance',
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                'Remaining balance',
-                style: Theme.of(context).textTheme.labelSmall,
-              ),
-            ],
-          ),
+            ),
+            ShadButton(
+              onPressed: () {
+                launchUrlString(
+                    '${Env.webBaseUrl}/add-funds?account-id=${deviceRegistrationState.accountId}');
+              },
+              text: const Text('Add Funds'),
+            ),
+          ],
         ),
-        const Spacer(),
-        ShadButton(
-          onPressed: () {
-            launchUrlString(
-                '${Env.webBaseUrl}/add-funds?account-id=${deviceRegistrationState.accountId}');
-          },
-          text: const Text('Add Funds'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ShadButton.ghost(
+              size: ShadButtonSize.icon,
+              onPressed: () {
+                tokenUsageState.loadTokenUsage();
+              },
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
         ),
       ],
     );
