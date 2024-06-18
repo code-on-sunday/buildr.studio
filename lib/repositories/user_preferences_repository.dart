@@ -10,6 +10,7 @@ class UserPreferencesRepository {
   static const _keyAiService = 'ai_service';
   static const _keyLastWorkingDir = 'last_working_dir';
   static const _keyAccountId = 'account_id';
+  static const _keyHidePrimaryAlert = 'hide_primary_alert';
 
   Future<void> setAiService(AIService aiService) async {
     await _prefs.setString(_keyAiService, aiService.name);
@@ -37,5 +38,13 @@ class UserPreferencesRepository {
 
   String? getAccountId() {
     return _prefs.getString(_keyAccountId);
+  }
+
+  Future<void> setHidePrimaryAlert(bool hide) async {
+    await _prefs.setBool(_keyHidePrimaryAlert, hide);
+  }
+
+  bool getHidePrimaryAlert() {
+    return _prefs.getBool(_keyHidePrimaryAlert) ?? false;
   }
 }

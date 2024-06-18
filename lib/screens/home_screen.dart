@@ -1,5 +1,6 @@
 import 'package:buildr_studio/screens/home_screen/api_key_missing_notification.dart';
 import 'package:buildr_studio/screens/home_screen/export_logs_state.dart';
+import 'package:buildr_studio/screens/home_screen/primary_alert.dart';
 import 'package:buildr_studio/screens/home_screen/settings/tab_settings.dart';
 import 'package:buildr_studio/screens/home_screen/sidebar.dart';
 import 'package:buildr_studio/screens/home_screen/status_bar.dart';
@@ -121,6 +122,7 @@ class HomeScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             const ApiKeyMissingNotification(),
+                            const PrimaryAlert(),
                             if (homeState.selectedTool != null)
                               ToolAreaTopBar(
                                 openVariableSection: () {

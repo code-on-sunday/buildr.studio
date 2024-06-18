@@ -180,11 +180,17 @@ class BuildrStudioPromptService implements PromptService {
 enum ErrorCodes {
   tooManyRequests,
   insufficientBalance,
+  exceededTokenPerMinute,
+  exceededTokenPerDay
 }
 
 final buildrStudioErrorMessages = {
   ErrorCodes.tooManyRequests.name:
       'You have reached the maximum number of requests in 1 minute. Please wait a moment and try again.',
   ErrorCodes.insufficientBalance.name:
-      'Insufficient balance. Please top up your account.'
+      'Insufficient balance. Please top up your account.',
+  ErrorCodes.exceededTokenPerMinute.name:
+      'Exceeded token per minute limit. Please wait a moment and try again.',
+  ErrorCodes.exceededTokenPerDay.name:
+      'Exceeded token per day limit. Please wait until tomorrow and try again.',
 };
