@@ -35,6 +35,7 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
+                  margin: const EdgeInsets.all(4).copyWith(bottom: 0),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.background,
                     borderRadius: theme.radius,
@@ -46,29 +47,33 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       Expanded(
-                        child: NavigationRail(
-                          selectedIndex: homeState.selectedNavRailIndex,
-                          onDestinationSelected: homeState.onNavRailItemTapped,
-                          indicatorColor: theme.colorScheme.primary,
-                          selectedIconTheme: IconThemeData(
-                            color: theme.colorScheme.primaryForeground,
+                        child: ClipRRect(
+                          borderRadius: theme.radius,
+                          child: NavigationRail(
+                            selectedIndex: homeState.selectedNavRailIndex,
+                            onDestinationSelected:
+                                homeState.onNavRailItemTapped,
+                            indicatorColor: theme.colorScheme.primary,
+                            selectedIconTheme: IconThemeData(
+                              color: theme.colorScheme.primaryForeground,
+                            ),
+                            destinations: [
+                              const NavigationRailDestination(
+                                icon: Icon(Icons.build),
+                                label: Text('Build'),
+                              ),
+                              const NavigationRailDestination(
+                                icon: Icon(Icons.folder),
+                                label: Text('File Explorer'),
+                              ),
+                              NavigationRailDestination(
+                                icon: const Icon(Icons.settings),
+                                label: Text(homeState.isSettingsVisible
+                                    ? 'Close Settings'
+                                    : 'Settings'),
+                              ),
+                            ],
                           ),
-                          destinations: [
-                            const NavigationRailDestination(
-                              icon: Icon(Icons.build),
-                              label: Text('Build'),
-                            ),
-                            const NavigationRailDestination(
-                              icon: Icon(Icons.folder),
-                              label: Text('File Explorer'),
-                            ),
-                            NavigationRailDestination(
-                              icon: const Icon(Icons.settings),
-                              label: Text(homeState.isSettingsVisible
-                                  ? 'Close Settings'
-                                  : 'Settings'),
-                            ),
-                          ],
                         ),
                       ),
                       PopupMenuButton(
@@ -144,22 +149,28 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (!isLargeScreen && homeState.isSidebarVisible)
+                      if (!isLargeScreen)
                         Positioned(
                           top: 0,
                           left: 0,
                           bottom: 0,
-                          child: Sidebar(
-                            onClose: homeState.toggleSidebar,
-                            child: homeState.selectedNavRailIndex == 0
-                                ? ToolsTab(
-                                    tools: homeState.tools,
-                                    selectedTool: homeState.selectedTool,
-                                    onToolSelected: homeState.onToolSelected,
-                                  )
-                                : homeState.selectedNavRailIndex == 1
-                                    ? const FileExplorerTab()
-                                    : const SettingsTab(),
+                          child: AnimatedSlide(
+                            duration: Durations.short4,
+                            offset: homeState.isSidebarVisible
+                                ? Offset.zero
+                                : const Offset(-1.5, 0),
+                            child: Sidebar(
+                              onClose: homeState.toggleSidebar,
+                              child: homeState.selectedNavRailIndex == 0
+                                  ? ToolsTab(
+                                      tools: homeState.tools,
+                                      selectedTool: homeState.selectedTool,
+                                      onToolSelected: homeState.onToolSelected,
+                                    )
+                                  : homeState.selectedNavRailIndex == 1
+                                      ? const FileExplorerTab()
+                                      : const SettingsTab(),
+                            ),
                           ),
                         ),
                     ],
