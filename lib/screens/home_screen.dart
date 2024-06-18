@@ -1,5 +1,5 @@
 import 'package:buildr_studio/screens/home_screen/api_key_missing_notification.dart';
-import 'package:buildr_studio/screens/home_screen/export_logs_state.dart';
+import 'package:buildr_studio/screens/home_screen/get_help_menu.dart';
 import 'package:buildr_studio/screens/home_screen/primary_alert.dart';
 import 'package:buildr_studio/screens/home_screen/settings/tab_settings.dart';
 import 'package:buildr_studio/screens/home_screen/sidebar.dart';
@@ -12,7 +12,6 @@ import 'package:buildr_studio/screens/home_screen/tool_usage/variable_section.da
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import 'home_screen_state.dart';
 
@@ -22,7 +21,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final homeState = context.watch<HomeScreenState>();
-    final exportLogsState = context.read<ExportLogsState>();
     final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
     final theme = ShadTheme.of(context);
 
@@ -77,26 +75,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      PopupMenuButton(
-                        tooltip: 'Get help',
-                        icon: const Icon(Icons.support),
-                        offset: const Offset(0, -120),
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem(
-                              onTap: () => exportLogsState.exportLogs(context),
-                              child: const Text('Export logs'),
-                            ),
-                            PopupMenuItem(
-                              onTap: () {
-                                launchUrlString(
-                                    "https://discord.gg/JVQmxkBqMY");
-                              },
-                              child: const Text('Join group chat'),
-                            ),
-                          ];
-                        },
-                      ),
+                      const GetHelpMenu(),
                       const SizedBox(height: 32),
                     ],
                   ),
