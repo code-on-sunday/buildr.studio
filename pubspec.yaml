@@ -9,6 +9,7 @@ environment:
 dependencies:
   anthropic_sdk_dart: ^0.0.1-dev.1
   archive: ^3.6.1
+  collection: ^1.18.0
   context_menus: ^2.0.0+1
   crypto: ^3.0.3
   dio: ^5.4.3+1
@@ -34,6 +35,7 @@ dependencies:
   shadcn_ui: ^0.5.2
   shared_preferences: ^2.2.3
   socket_io_client: ^3.0.0-beta.2
+  two_dimensional_scrollables: ^0.3.1
   url_launcher: ^6.3.0
   wiredash: ^2.1.2
 

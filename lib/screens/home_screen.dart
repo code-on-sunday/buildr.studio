@@ -1,10 +1,10 @@
 import 'package:buildr_studio/screens/home_screen/api_key_missing_notification.dart';
+import 'package:buildr_studio/screens/home_screen/file_explorer_tree.dart';
 import 'package:buildr_studio/screens/home_screen/get_help_menu.dart';
 import 'package:buildr_studio/screens/home_screen/primary_alert.dart';
 import 'package:buildr_studio/screens/home_screen/settings/tab_settings.dart';
 import 'package:buildr_studio/screens/home_screen/sidebar.dart';
 import 'package:buildr_studio/screens/home_screen/status_bar.dart';
-import 'package:buildr_studio/screens/home_screen/tab_file_explorer.dart';
 import 'package:buildr_studio/screens/home_screen/tool_area_topbar.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/output_section.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/variable_section.dart';
@@ -77,11 +77,17 @@ class HomeScreen extends StatelessWidget {
                 ),
                 if (isLargeScreen)
                   Sidebar(
-                    onClose: homeState.toggleSidebar,
-                    child: homeState.selectedNavRailIndex == 0
-                        ? const FileExplorerTab()
-                        : const SettingsTab(),
-                  ),
+                      onClose: homeState.toggleSidebar,
+                      child: Stack(
+                        children: [
+                          Offstage(
+                              offstage: homeState.selectedNavRailIndex != 0,
+                              child: const FileExplorerTree()),
+                          Offstage(
+                              offstage: homeState.selectedNavRailIndex != 1,
+                              child: const SettingsTab()),
+                        ],
+                      )),
                 Expanded(
                   child: Stack(
                     children: [
@@ -130,11 +136,19 @@ class HomeScreen extends StatelessWidget {
                                 ? Offset.zero
                                 : const Offset(-1.5, 0),
                             child: Sidebar(
-                              onClose: homeState.toggleSidebar,
-                              child: homeState.selectedNavRailIndex == 0
-                                  ? const FileExplorerTab()
-                                  : const SettingsTab(),
-                            ),
+                                onClose: homeState.toggleSidebar,
+                                child: Stack(
+                                  children: [
+                                    Offstage(
+                                        offstage:
+                                            homeState.selectedNavRailIndex != 0,
+                                        child: const FileExplorerTree()),
+                                    Offstage(
+                                        offstage:
+                                            homeState.selectedNavRailIndex != 1,
+                                        child: const SettingsTab()),
+                                  ],
+                                )),
                           ),
                         ),
                     ],

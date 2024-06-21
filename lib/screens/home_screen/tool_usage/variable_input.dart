@@ -147,7 +147,7 @@ class SourcesInput extends StatelessWidget {
                                   ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  fileExplorerState.getDisplayFileName(path),
+                                  fileExplorerState.getDisplayName(path),
                                   style: theme.textTheme.small.copyWith(
                                       color:
                                           theme.colorScheme.primaryForeground),
@@ -158,8 +158,7 @@ class SourcesInput extends StatelessWidget {
                         false => ShadBadge.outline(
                             backgroundColor: theme.colorScheme.selection,
                             hoverBackgroundColor: theme.colorScheme.selection,
-                            text: Text(
-                                fileExplorerState.getDisplayFileName(path))),
+                            text: Text(fileExplorerState.getDisplayName(path))),
                       };
                     } catch (e) {
                       return const SizedBox.shrink();

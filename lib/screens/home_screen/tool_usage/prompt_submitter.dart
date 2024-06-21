@@ -20,7 +20,7 @@ class PromptSubmitter {
 
     final inflatedPrompt = variableManager.inflatePrompt(
         fileExplorerState.selectedFolderPath,
-        fileExplorerState.gitIgnoreContent,
+        fileExplorerState.isPathIgnored,
         prompt);
 
     _promptService.sendPrompt(
@@ -38,7 +38,7 @@ class PromptSubmitter {
 
     final inflatedPrompt = variableManager.inflatePrompt(
         fileExplorerState.selectedFolderPath,
-        fileExplorerState.gitIgnoreContent,
+        fileExplorerState.isPathIgnored,
         prompt);
 
     return inflatedPrompt;

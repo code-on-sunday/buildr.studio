@@ -49,7 +49,10 @@ class VariableManager extends ChangeNotifier {
   }
 
   String? _getConcatenatedContent(
-      String? rootDir, String? gitIgnoreContent, String variableName) {
+    String? rootDir,
+    bool Function(String) isPathIgnored,
+    String variableName,
+  ) {
     if (rootDir == null) return null;
 
     if (!_selectedPaths.containsKey(variableName) ||
@@ -60,7 +63,7 @@ class VariableManager extends ChangeNotifier {
     try {
       return GetIt.I.get<FileUtils>().getConcatenatedContent(
             _selectedPaths[variableName]!,
-            gitIgnoreContent,
+            isPathIgnored,
             rootDir,
           );
     } catch (e) {
@@ -71,10 +74,13 @@ class VariableManager extends ChangeNotifier {
   }
 
   String inflatePrompt(
-      String? rootDir, String? gitIgnoreContent, String prompt) {
+    String? rootDir,
+    bool Function(String) isPathIgnored,
+    String prompt,
+  ) {
     for (final variableName in _selectedPaths.keys) {
       _concatenatedContents[variableName] =
-          _getConcatenatedContent(rootDir, gitIgnoreContent, variableName);
+          _getConcatenatedContent(rootDir, isPathIgnored, variableName);
     }
     for (final entry in _inputValues.entries) {
       prompt = prompt.replaceAll('{{${entry.key}}}', entry.value);

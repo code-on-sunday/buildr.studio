@@ -22,7 +22,6 @@ import 'package:buildr_studio/services/prompt_service/google_gemini_prompt_servi
 import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:buildr_studio/utils/api_key_manager.dart';
 import 'package:buildr_studio/utils/file_utils.dart';
-import 'package:buildr_studio/utils/git_ignore_checker.dart';
 import 'package:buildr_studio/utils/logs_exporter.dart';
 import 'package:context_menus/context_menus.dart';
 import 'package:dio/dio.dart';
@@ -70,7 +69,6 @@ Future<void> setupDependencyInjection() async {
   GetIt.I.registerSingleton(Dio(BaseOptions(
     baseUrl: Env.apiBaseUrl,
   )));
-  GetIt.I.registerSingleton(GitIgnoreChecker());
 
   GetIt.I.registerSingleton(DeviceRegistrationService());
   GetIt.I.registerSingleton(
@@ -129,7 +127,8 @@ class MyApp extends StatelessWidget {
                             create: (context) => HomeScreenState(context)),
                         ChangeNotifierProvider(
                             create: (_) => FileExplorerState(
-                                userPreferencesRepository: GetIt.I.get())),
+                                userPreferencesRepository: GetIt.I.get(),
+                                fileUtils: GetIt.I.get())),
                         ChangeNotifierProvider(
                             create: (_) => ChooseAIServiceState(
                                 userPreferencesRepository: GetIt.I.get())),
