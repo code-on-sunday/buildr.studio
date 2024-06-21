@@ -1,7 +1,22 @@
 [
   {
-    "description": "Add new features to existing implementation",
-    "id": "new_functionalities",
-    "name": "Add new features"
+    "description": "Modify existing implementation to satisfy new requirements",
+    "id": "modify_existing_implementation",
+    "name": "Modify existing implementation"
+  },
+  {
+    "description": "Explain source code to a new developer",
+    "id": "explain_code",
+    "name": "Explain this code to me"
+  },
+  {
+    "description": "Answer specific question about code",
+    "id": "ask_question_about_code",
+    "name": "I have a question about this code"
+  },
+  {
+    "description": "Fix a failed test",
+    "id": "fix_failed_test",
+    "name": "Fix this test"
   }
 ]

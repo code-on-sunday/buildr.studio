@@ -24,8 +24,10 @@ jobs:
           echo "WIREDASH_PROJECT_ID=${{ secrets.WIREDASH_PROJECT_ID }}" > .env
           echo "WIREDASH_SECRET=${{ secrets.WIREDASH_SECRET }}" >> .env
           echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env
+          echo "WEB_BASE_URL=${{ secrets.WEB_BASE_URL }}" >> .env
           echo "DEVICE_KEY_HASH_SALT=${{ secrets.DEVICE_KEY_HASH_SALT }}" >> .env
-          echo "DEVICE_REGISTRATION_EXE_PATH=${{ secrets.DEVICE_REGISTRATION_EXE_PATH }}" >> .env
+          echo "LOG_AES_KEY=${{ secrets.LOG_AES_KEY }}" >> .env
+          echo "LOG_AES_NONCE=${{ secrets.LOG_AES_NONCE }}" >> .env
 
       - name: Get device registration file
         run: |

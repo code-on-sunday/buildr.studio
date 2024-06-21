@@ -1,0 +1,20 @@
+{
+  "prompt": "Here is some source code:\n\n<code>\n{{SOURCE_CODE}}\n</code>\n\nPlease carefully read through this code and make sure you understand what it is doing. Then, I would like you to explain the purpose and functionality of this code in simple, plain language that would be understandable to someone without a programming background. Focus on explaining the key steps and logic, and avoid getting too bogged down in minor syntactical details.\n\nThink through how you can break down the explanation into clear, easy to follow steps. Use analogies to familiar concepts where appropriate to make the explanation more relatable and intuitive. \n\nProvide your explanation inside <explanation> tags.\n\nMy preferred language is:\n{{LANGUAGE}}",
+  "variables": [
+    {
+      "description": "Source code to be explained",
+      "hint_label": "Paste the code here",
+      "input_type": "text_field",
+      "name": "SOURCE_CODE",
+      "value_format": "text"
+    },
+    {
+      "default_value": "English",
+      "description": "Language that I prefer the explanation to be in",
+      "hint_label": "Enter your language",
+      "input_type": "text_field",
+      "name": "LANGUAGE",
+      "value_format": "text"
+    }
+  ]
+}

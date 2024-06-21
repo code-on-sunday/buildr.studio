@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:buildr_studio/models/variable.dart';
@@ -5,6 +6,7 @@ import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 class VariableInput extends StatefulWidget {
   final Variable variable;
@@ -26,20 +28,36 @@ class VariableInput extends StatefulWidget {
 
 class _VariableInputState extends State<VariableInput> {
   late final TextEditingController _textController;
+  late final _toolUsageManager = context.read<ToolUsageManager>();
+  late final StreamSubscription<void> _clearValuesSubscription;
 
   @override
   void initState() {
     super.initState();
     _textController = TextEditingController();
-    context.read<ToolUsageManager>().clearValuesStream.listen((_) {
+    _updateValues();
+    _toolUsageManager.addListener(_updateValues);
+    _clearValuesSubscription = _toolUsageManager.clearValuesStream.listen((_) {
       _textController.clear();
     });
   }
 
   @override
   void dispose() {
+    _clearValuesSubscription.cancel();
     _textController.dispose();
+    _toolUsageManager.removeListener(_updateValues);
     super.dispose();
+  }
+
+  void _updateValues() {
+    // TO-DO: Support other input types
+    if (widget.variable.inputType == 'text_field') {
+      final value = _toolUsageManager.inputValues[widget.variable.name];
+      if (value != null) {
+        _textController.text = value;
+      }
+    }
   }
 
   @override
@@ -47,29 +65,18 @@ class _VariableInputState extends State<VariableInput> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              '<${widget.variable.name.toUpperCase()}>',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(fontWeight: FontWeight.bold),
-            ),
-            Tooltip(
-              message: widget.variable.description,
-              child: const Icon(Icons.info_outline),
-            )
-          ],
+        ShadTooltip(
+          builder: (_) => Text(widget.variable.description),
+          child: Text(
+            widget.variable.name,
+            style: ShadTheme.of(context).textTheme.muted.copyWith(fontSize: 10),
+          ),
         ),
         const SizedBox(height: 8),
         if (widget.variable.inputType == 'text_field')
-          TextField(
+          ShadInput(
+            placeholder: Text(widget.variable.hintLabel),
             controller: _textController,
-            decoration: InputDecoration(
-              hintText: widget.variable.hintLabel,
-              border: const OutlineInputBorder(),
-            ),
             minLines: 4,
             maxLines: 10,
             onChanged: (value) {
@@ -118,6 +125,7 @@ class SourcesInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fileExplorerState = context.watch<FileExplorerState>();
+    final theme = ShadTheme.of(context);
 
     return DragTarget<bool>(
       onAcceptWithDetails: (_) {
@@ -129,13 +137,13 @@ class SourcesInput extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
             color: isHighlighted || selectedPaths.isNotEmpty
-                ? Colors.orange.shade50
+                ? theme.colorScheme.secondary
                 : null,
+            borderRadius: ShadTheme.of(context).radius,
             border: Border.all(
-              color: isHighlighted ? Colors.orange : Colors.grey.shade400,
-              width: isHighlighted ? 4.0 : 2.0,
+              width: 2,
+              color: theme.colorScheme.border,
             ),
-            borderRadius: BorderRadius.circular(8.0),
           ),
           child: selectedPaths.isNotEmpty
               ? Wrap(
@@ -144,21 +152,33 @@ class SourcesInput extends StatelessWidget {
                   children: selectedPaths.map((path) {
                     try {
                       final isFolder = FileSystemEntity.isDirectorySync(path);
-                      return Chip(
-                        label: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (isFolder) const Icon(Icons.folder, size: 18),
-                            const SizedBox(width: 4),
-                            Text(
-                              fileExplorerState.getDisplayFileName(path),
+                      return switch (isFolder) {
+                        true => ShadBadge(
+                            text: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (isFolder)
+                                  Icon(
+                                    Icons.folder,
+                                    size: 18,
+                                    color: theme.colorScheme.primaryForeground,
+                                  ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  fileExplorerState.getDisplayName(path),
+                                  style: theme.textTheme.small.copyWith(
+                                      color:
+                                          theme.colorScheme.primaryForeground),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
+                          ),
+                        false => ShadBadge.outline(
+                            backgroundColor: theme.colorScheme.selection,
+                            hoverBackgroundColor: theme.colorScheme.selection,
+                            text: Text(fileExplorerState.getDisplayName(path))),
+                      };
                     } catch (e) {
-                      // Log the error or display it to the UI
-                      print('Error checking file type: $e');
                       return const SizedBox.shrink();
                     }
                   }).toList(),
@@ -166,14 +186,11 @@ class SourcesInput extends StatelessWidget {
               : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.upload_file, size: 48, color: Colors.grey),
+                    const Icon(Icons.upload_file, size: 48),
                     const SizedBox(height: 16),
                     Text(
                       'Drag and drop your sources here',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(color: Colors.grey),
+                      style: theme.textTheme.p,
                     )
                   ],
                 ),

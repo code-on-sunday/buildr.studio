@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:buildr_studio/utils/file_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 
 class VariableManager extends ChangeNotifier {
+  final _logger = GetIt.I.get<Logger>();
+
   final Map<String, List<String>> _selectedPaths = {};
   final Map<String, String?> _concatenatedContents = {};
   final Map<String, String> _inputValues = {};
@@ -32,6 +35,12 @@ class VariableManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setInitialInputvalue(String variableName, String value) {
+    if (_inputValues.containsKey(variableName)) return;
+    _inputValues[variableName] = value;
+    notifyListeners();
+  }
+
   void setInputValue(String variableName, String value) {
     _inputValues[variableName] = value;
     notifyListeners();
@@ -46,7 +55,10 @@ class VariableManager extends ChangeNotifier {
   }
 
   String? _getConcatenatedContent(
-      String? rootDir, String? gitIgnoreContent, String variableName) {
+    String? rootDir,
+    bool Function(String) isPathIgnored,
+    String variableName,
+  ) {
     if (rootDir == null) return null;
 
     if (!_selectedPaths.containsKey(variableName) ||
@@ -57,21 +69,24 @@ class VariableManager extends ChangeNotifier {
     try {
       return GetIt.I.get<FileUtils>().getConcatenatedContent(
             _selectedPaths[variableName]!,
-            gitIgnoreContent,
+            isPathIgnored,
             rootDir,
           );
     } catch (e) {
-      // Log or display the error to the UI
-      print('Error concatenating file contents for variable $variableName: $e');
+      _logger.e(
+          'Error concatenating file contents for variable $variableName: $e');
       return null;
     }
   }
 
   String inflatePrompt(
-      String? rootDir, String? gitIgnoreContent, String prompt) {
+    String? rootDir,
+    bool Function(String) isPathIgnored,
+    String prompt,
+  ) {
     for (final variableName in _selectedPaths.keys) {
       _concatenatedContents[variableName] =
-          _getConcatenatedContent(rootDir, gitIgnoreContent, variableName);
+          _getConcatenatedContent(rootDir, isPathIgnored, variableName);
     }
     for (final entry in _inputValues.entries) {
       prompt = prompt.replaceAll('{{${entry.key}}}', entry.value);

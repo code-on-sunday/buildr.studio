@@ -6,6 +6,7 @@ class Variable {
   final String? sourceName;
   final String hintLabel;
   final String? selectLabel;
+  final String defaultValue;
 
   Variable({
     required this.name,
@@ -15,6 +16,7 @@ class Variable {
     this.sourceName,
     required this.hintLabel,
     this.selectLabel,
+    required this.defaultValue,
   });
 
   factory Variable.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Variable {
       sourceName: json['source_name'] as String?,
       hintLabel: json['hint_label'] as String,
       selectLabel: json['select_label'] as String?,
+      defaultValue: json['default_value'] as String? ?? '',
     );
   }
 }
