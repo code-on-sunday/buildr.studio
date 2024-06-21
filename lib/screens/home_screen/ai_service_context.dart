@@ -21,8 +21,7 @@ class AiServiceContext extends StatefulWidget {
 }
 
 class _AiServiceContextState extends State<AiServiceContext> {
-  final Map<String, ToolUsageManager> _toolUsageManagers = {};
-  late final ToolUsageManager _toolUsageManagerForNull = ToolUsageManager(
+  late final _toolUsageManager = ToolUsageManager(
     promptService: GetIt.I.get(instanceName: widget.aiService.name),
   );
   late final _homeState = context.read<HomeScreenState>();
@@ -36,10 +35,7 @@ class _AiServiceContextState extends State<AiServiceContext> {
 
   @override
   void dispose() {
-    for (var toolUsageManager in _toolUsageManagers.values) {
-      toolUsageManager.dispose();
-    }
-    _toolUsageManagerForNull.dispose();
+    _toolUsageManager.dispose();
     _homeState.removeListener(_onToolLoaded);
     super.dispose();
   }
@@ -47,20 +43,12 @@ class _AiServiceContextState extends State<AiServiceContext> {
   void _onToolLoaded() {
     final toolDetails = _homeState.prompt;
     if (toolDetails != null && _homeState.selectedTool != null) {
-      _toolUsageManagers
-          .putIfAbsent(
-              _homeState.selectedTool!.id,
-              () => ToolUsageManager(
-                    promptService:
-                        GetIt.I.get(instanceName: widget.aiService.name),
-                  ))
-          .setInitialValues(toolDetails);
+      _toolUsageManager.onToolChanged(_homeState.selectedTool!.id, toolDetails);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final selectedTool = context.watch<HomeScreenState>().selectedTool;
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -70,9 +58,7 @@ class _AiServiceContextState extends State<AiServiceContext> {
           ),
         ),
         ChangeNotifierProvider.value(
-          value: selectedTool == null
-              ? _toolUsageManagerForNull
-              : _toolUsageManagers[selectedTool.id],
+          value: _toolUsageManager,
         ),
       ],
       child: widget.child,

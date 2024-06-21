@@ -10,9 +10,10 @@ import 'package:buildr_studio/services/prompt_service/prompt_service.dart';
 import 'package:flutter/material.dart';
 
 class ToolUsageManager extends ChangeNotifier {
-  final VariableManager _variableManager;
+  final Map<String, VariableManager> _variableManagers = {};
   final PromptSubmitter _promptSubmitter;
   final PromptService _promptService;
+  VariableManager _currentToolVariableManager = VariableManager();
   String _output = '';
   String? _error;
   bool _isResponseStreaming = false;
@@ -21,23 +22,22 @@ class ToolUsageManager extends ChangeNotifier {
   final List<StreamSubscription> _promptServiceSubscriptions = [];
 
   ToolUsageManager({required PromptService promptService})
-      : _variableManager = VariableManager(),
-        _promptSubmitter = PromptSubmitter(
+      : _promptSubmitter = PromptSubmitter(
           promptService: promptService,
         ),
         _promptService = promptService {
     _listenForOutput();
     _promptService.connect();
-    _variableManager.addListener(() {
-      notifyListeners();
-    });
   }
 
-  Map<String, List<String>> get selectedPaths => _variableManager.selectedPaths;
+  Map<String, List<String>> get selectedPaths =>
+      _currentToolVariableManager.selectedPaths;
   Map<String, String?> get concatenatedContents =>
-      _variableManager.concatenatedContents;
-  Map<String, String> get inputValues => _variableManager.inputValues;
-  Stream<bool> get clearValuesStream => _variableManager.clearValuesStream;
+      _currentToolVariableManager.concatenatedContents;
+  Map<String, String> get inputValues =>
+      _currentToolVariableManager.inputValues;
+  Stream<bool> get clearValuesStream =>
+      _currentToolVariableManager.clearValuesStream;
 
   bool get isResponseStreaming => _isResponseStreaming;
   String get output => _output;
@@ -51,7 +51,9 @@ class ToolUsageManager extends ChangeNotifier {
 
   @override
   void dispose() {
-    _variableManager.dispose();
+    for (var variableManager in _variableManagers.values) {
+      variableManager.dispose();
+    }
     _promptService.dispose();
     for (var subscription in _promptServiceSubscriptions) {
       subscription.cancel();
@@ -59,11 +61,20 @@ class ToolUsageManager extends ChangeNotifier {
     super.dispose();
   }
 
+  void onToolChanged(String toolId, ToolDetails toolDetails) {
+    _currentToolVariableManager = _variableManagers.putIfAbsent(
+      toolId,
+      () => VariableManager(),
+    );
+    setInitialValues(toolDetails);
+    notifyListeners();
+  }
+
   void setInitialValues(ToolDetails toolDetails) {
     for (var variable in toolDetails.variables) {
       // TO-DO: Support other input types
       if (variable.inputType == 'text_field') {
-        _variableManager.setInitialInputvalue(
+        _currentToolVariableManager.setInitialInputvalue(
             variable.name, variable.defaultValue);
       }
     }
@@ -75,15 +86,15 @@ class ToolUsageManager extends ChangeNotifier {
   }
 
   void onPathsSelected(String variableName, List<String> paths) {
-    _variableManager.onPathsSelected(variableName, paths);
+    _currentToolVariableManager.onPathsSelected(variableName, paths);
   }
 
   void setInputValue(String variableName, String value) {
-    _variableManager.setInputValue(variableName, value);
+    _currentToolVariableManager.setInputValue(variableName, value);
   }
 
   void clearValues() {
-    _variableManager.clearValues();
+    _currentToolVariableManager.clearValues();
   }
 
   Future<void> submitPrompt(
@@ -99,7 +110,7 @@ class ToolUsageManager extends ChangeNotifier {
       await _promptSubmitter.submit(
         prompt,
         fileExplorerState,
-        _variableManager,
+        _currentToolVariableManager,
         deviceRegistrationState,
       );
     } catch (e) {
@@ -117,7 +128,7 @@ class ToolUsageManager extends ChangeNotifier {
     return _promptSubmitter.exportPrompt(
       prompt,
       fileExplorerState,
-      _variableManager,
+      _currentToolVariableManager,
     );
   }
 

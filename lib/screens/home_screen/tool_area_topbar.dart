@@ -74,67 +74,78 @@ class ToolAreaTopBar extends StatelessWidget {
           ),
           const Spacer(),
           ShadButton.link(
-            onPressed: openVariableSection,
+            onPressed: () {
+              _showToolSidebar(
+                context,
+                homeState,
+                theme,
+              );
+            },
             text: Text(homeState.selectedTool?.name ?? ''),
             textDecoration: TextDecoration.underline,
           ),
           ShadButton.outline(
             onPressed: () {
-              showShadSheet(
-                context: context,
-                side: ShadSheetSide.right,
-                builder: (context) => ShadSheet(
-                  constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.5),
-                  scrollable: true,
-                  title: const Row(
-                    children: [
-                      Icon(Icons.home_repair_service),
-                      SizedBox(width: 16),
-                      Text('AI Toolbox'),
-                    ],
-                  ),
-                  description: const Text(
-                      'Select a tool to use. The tool you select will determine the available variables to run.'),
-                  content: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 16),
-                      const Divider(),
-                      const SizedBox(height: 16),
-                      for (final tool in homeState.tools)
-                        ShadButton.ghost(
-                          width: double.infinity,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          text: Text(tool.name),
-                          onPressed: () {
-                            homeState.onToolSelected(tool);
-                            if (!homeState.isVariableSectionVisible) {
-                              openVariableSection();
-                            }
-                            Navigator.of(context).pop();
-                          },
-                          backgroundColor: homeState.selectedTool == tool
-                              ? theme.colorScheme.primary
-                              : null,
-                          foregroundColor: homeState.selectedTool == tool
-                              ? theme.colorScheme.primaryForeground
-                              : null,
-                          hoverBackgroundColor: homeState.selectedTool == tool
-                              ? theme.colorScheme.primary.withOpacity(0.9)
-                              : null,
-                          hoverForegroundColor: homeState.selectedTool == tool
-                              ? theme.colorScheme.primaryForeground
-                              : null,
-                        ),
-                    ],
-                  ),
-                ),
-              );
+              _showToolSidebar(context, homeState, theme);
             },
             text: const Text('Change'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showToolSidebar(
+      BuildContext context, HomeScreenState homeState, ShadThemeData theme) {
+    showShadSheet(
+      context: context,
+      side: ShadSheetSide.right,
+      builder: (context) => ShadSheet(
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.5),
+        scrollable: true,
+        title: const Row(
+          children: [
+            Icon(Icons.home_repair_service),
+            SizedBox(width: 16),
+            Text('AI Toolbox'),
+          ],
+        ),
+        description: const Text(
+            'Select a tool to use. The tool you select will determine the available variables to run.'),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 16),
+            for (final tool in homeState.tools)
+              ShadButton.ghost(
+                width: double.infinity,
+                mainAxisAlignment: MainAxisAlignment.start,
+                text: Text(tool.name),
+                onPressed: () {
+                  homeState.onToolSelected(tool);
+                  if (!homeState.isVariableSectionVisible) {
+                    openVariableSection();
+                  }
+                  Navigator.of(context).pop();
+                },
+                backgroundColor: homeState.selectedTool == tool
+                    ? theme.colorScheme.primary
+                    : null,
+                foregroundColor: homeState.selectedTool == tool
+                    ? theme.colorScheme.primaryForeground
+                    : null,
+                hoverBackgroundColor: homeState.selectedTool == tool
+                    ? theme.colorScheme.primary.withOpacity(0.9)
+                    : null,
+                hoverForegroundColor: homeState.selectedTool == tool
+                    ? theme.colorScheme.primaryForeground
+                    : null,
+              ),
+          ],
+        ),
       ),
     );
   }
