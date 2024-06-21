@@ -11,7 +11,7 @@ abstract class Env {
   @EnviedField(varName: 'API_BASE_URL', obfuscate: true)
   static final String apiBaseUrl = _Env.apiBaseUrl;
   @EnviedField(varName: 'WEB_BASE_URL')
-  static final String webBaseUrl = _Env.webBaseUrl;
+  static const String webBaseUrl = _Env.webBaseUrl;
   @EnviedField(varName: 'DEVICE_KEY_HASH_SALT', obfuscate: true)
   static final String deviceHashSalt = _Env.deviceHashSalt;
   @EnviedField(varName: 'DEVICE_REGISTRATION_EXE_PATH', obfuscate: true)

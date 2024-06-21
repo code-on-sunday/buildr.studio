@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class Sidebar extends StatelessWidget {
   final VoidCallback onClose;
@@ -41,17 +42,24 @@ class Sidebar extends StatelessWidget {
                   width: 24,
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  'buildr.studio',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                ShadButton.link(
+                  padding: EdgeInsets.zero,
+                  height: 20,
+                  onPressed: () {
+                    launchUrlString(Env.webBaseUrl);
+                  },
+                  text: const Text(
+                    'buildr.studio',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 if (Env.wireDashProjectId != null && Env.wireDashSecret != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: 6),
                     child: Text('(v${GetIt.I<PackageInfo>().version})',
                         style: const TextStyle(fontSize: 12)),
                   ),
