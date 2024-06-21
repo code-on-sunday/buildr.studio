@@ -21,7 +21,7 @@ class AiServiceContext extends StatefulWidget {
 }
 
 class _AiServiceContextState extends State<AiServiceContext> {
-  Map<String, ToolUsageManager> _toolUsageManagers = {};
+  final Map<String, ToolUsageManager> _toolUsageManagers = {};
   late final ToolUsageManager _toolUsageManagerForNull = ToolUsageManager(
     promptService: GetIt.I.get(instanceName: widget.aiService.name),
   );
@@ -30,18 +30,8 @@ class _AiServiceContextState extends State<AiServiceContext> {
   @override
   void initState() {
     super.initState();
+    _onToolLoaded();
     _homeState.addListener(_onToolLoaded);
-  }
-
-  @override
-  void didUpdateWidget(covariant AiServiceContext oldWidget) {
-    if (oldWidget.aiService != widget.aiService) {
-      for (var toolUsageManager in _toolUsageManagers.values) {
-        toolUsageManager.dispose();
-      }
-      _toolUsageManagers = {};
-    }
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
