@@ -86,7 +86,7 @@ class _PrimaryAlertState extends State<PrimaryAlert> {
             hoverForegroundColor: theme.colorScheme.primary,
             onPressed: () {
               _hide();
-              homeState.onNavRailItemTapped(2);
+              homeState.onNavRailItemTapped(1);
             },
             text: const Text('Click here'),
           ),

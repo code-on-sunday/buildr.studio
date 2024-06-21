@@ -1,7 +1,7 @@
 name: buildr_studio
 description: "The AI toolbox to build more in less time"
 publish_to: "none"
-version: 0.2.0+10
+version: 0.2.0+11
 
 environment:
   sdk: ">=3.3.3 <4.0.0"

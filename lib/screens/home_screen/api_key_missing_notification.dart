@@ -31,7 +31,7 @@ class ApiKeyMissingNotification extends StatelessWidget {
           const SizedBox(width: 8),
           ShadButton(
               onPressed: () {
-                homeState.onNavRailItemTapped(2);
+                homeState.onNavRailItemTapped(1);
               },
               text: const Text('Set up')),
         ],

@@ -75,7 +75,7 @@ class HomeScreenState extends ChangeNotifier {
       }
     }
     _selectedNavRailIndex = index;
-    if (_selectedNavRailIndex == 2) {
+    if (_selectedNavRailIndex == 1) {
       _isSettingsVisible = !_isSettingsVisible;
     } else {
       _isSettingsVisible = false;
