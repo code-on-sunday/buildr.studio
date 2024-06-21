@@ -8,5 +8,15 @@
     "description": "Explain source code to a new developer",
     "id": "explain_code",
     "name": "Explain this code to me"
+  },
+  {
+    "description": "Answer specific question about code",
+    "id": "ask_question_about_code",
+    "name": "I have a question about this code"
+  },
+  {
+    "description": "Fix a failed test",
+    "id": "fix_failed_test",
+    "name": "Fix this test"
   }
 ]

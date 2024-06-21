@@ -72,6 +72,14 @@ class VariableSection extends StatelessWidget {
               ],
             ),
           ),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16).copyWith(bottom: 8),
+            child: Text(
+              selectedTool.description,
+              style: ShadTheme.of(context).textTheme.muted,
+            ),
+          ),
           const Divider(),
           Expanded(
             child: SingleChildScrollView(

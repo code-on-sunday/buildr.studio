@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:buildr_studio/models/variable.dart';
@@ -28,6 +29,7 @@ class VariableInput extends StatefulWidget {
 class _VariableInputState extends State<VariableInput> {
   late final TextEditingController _textController;
   late final _toolUsageManager = context.read<ToolUsageManager>();
+  late final StreamSubscription<void> _clearValuesSubscription;
 
   @override
   void initState() {
@@ -35,13 +37,14 @@ class _VariableInputState extends State<VariableInput> {
     _textController = TextEditingController();
     _updateValues();
     _toolUsageManager.addListener(_updateValues);
-    _toolUsageManager.clearValuesStream.listen((_) {
+    _clearValuesSubscription = _toolUsageManager.clearValuesStream.listen((_) {
       _textController.clear();
     });
   }
 
   @override
   void dispose() {
+    _clearValuesSubscription.cancel();
     _textController.dispose();
     _toolUsageManager.removeListener(_updateValues);
     super.dispose();
@@ -65,8 +68,8 @@ class _VariableInputState extends State<VariableInput> {
         ShadTooltip(
           builder: (_) => Text(widget.variable.description),
           child: Text(
-            '{{${widget.variable.name}}}',
-            style: ShadTheme.of(context).textTheme.small,
+            widget.variable.name,
+            style: ShadTheme.of(context).textTheme.muted.copyWith(fontSize: 10),
           ),
         ),
         const SizedBox(height: 8),

@@ -1,0 +1,27 @@
+{
+  "prompt": "I will provide you with some source code and ask a question about it. Your task is to carefully analyze the code and answer the question to the best of your ability. Here is the source code:\n\n<source_code>\n{{SOURCE_CODE}}\n</source_code>\n\nAnd here is the question I would like you to answer:\n<question>\n{{QUESTION}}\n</question>\n\nFirst, thoroughly analyze the provided source code, paying close attention to any aspects that are relevant to answering the question. Write your analysis in <analysis> tags.\n\nThen, based on your analysis, answer the question I posed. Explain your reasoning. If you believe links to external references would help explain concepts or provide useful background information for the answer, include them.\n\nFinally, summarize your overall answer inside <answer> tags.\n\nRemember, the focus is on answering the specific question I asked based on your analysis of the provided source code. Don't stray off-topic or provide general information not directly relevant to addressing the question.\n\nIf there is not enough information in the source code to conclusively answer the question, state that in your <answer>.\n\nLanguage that I prefer the explanation to be in:\n{{LANGUAGE}}",
+  "variables": [
+    {
+      "description": "Source code to be analyzed",
+      "hint_label": "Provide files that contains the source code to be analyzed",
+      "input_type": "sources",
+      "name": "SOURCE_CODE",
+      "value_format": "text"
+    },
+    {
+      "description": "Question to be answered",
+      "hint_label": "Enter your question",
+      "input_type": "text_field",
+      "name": "QUESTION",
+      "value_format": "text"
+    },
+    {
+      "default_value": "English",
+      "description": "Language that I prefer the explanation to be in",
+      "hint_label": "Enter your language",
+      "input_type": "text_field",
+      "name": "LANGUAGE",
+      "value_format": "text"
+    }
+  ]
+}

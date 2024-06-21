@@ -1,0 +1,34 @@
+{
+  "prompt": "Here is the implementation code:\n\n<implementation>\n{{IMPLEMENTATION}}\n</implementation>\n\nHere are the tests:\n\n<tests>\n{{TESTS}} \n</tests>\n\nHere is the description of the failing test and its output:\n\n<failure_description>\n{{FAILURE_DESCRIPTION}}\n</failure_description>\n\nPlease carefully review the implementation code, focusing on the part that is relevant to the failing test described above.\n\nIn <bug_explanation> tags, identify the bug or issue in the implementation that is causing this test to fail. Explain the root cause of why this bug is resulting in the test failure.\n\nThen, in <solution> tags, propose a specific change to the implementation code that would fix this bug and make the failing test pass.\n\nProvide your full response with no further commentary outside the specified tags.\n\nLanguage that I prefer the explanation to be in:\n{{LANGUAGE}}",
+  "variables": [
+    {
+      "description": "Source code to be analyzed",
+      "hint_label": "Provide files that contains the source code to be analyzed",
+      "input_type": "sources",
+      "name": "IMPLEMENTATION",
+      "value_format": "text"
+    },
+    {
+      "description": "Test cases to be analyzed",
+      "hint_label": "Paste your test cases here",
+      "input_type": "text_field",
+      "name": "TESTS",
+      "value_format": "text"
+    },
+    {
+      "description": "Description of the failing test and its output",
+      "hint_label": "Paste the test output here and give more information about the failing test",
+      "input_type": "text_field",
+      "name": "FAILURE_DESCRIPTION",
+      "value_format": "text"
+    },
+    {
+      "default_value": "English",
+      "description": "Language that I prefer the explanation to be in",
+      "hint_label": "Enter your language",
+      "input_type": "text_field",
+      "name": "LANGUAGE",
+      "value_format": "text"
+    }
+  ]
+}
