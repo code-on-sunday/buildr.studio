@@ -35,6 +35,12 @@ class VariableManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setInitialInputvalue(String variableName, String value) {
+    if (_inputValues.containsKey(variableName)) return;
+    _inputValues[variableName] = value;
+    notifyListeners();
+  }
+
   void setInputValue(String variableName, String value) {
     _inputValues[variableName] = value;
     notifyListeners();

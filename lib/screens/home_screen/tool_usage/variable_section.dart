@@ -82,6 +82,8 @@ class VariableSection extends StatelessWidget {
                     .map((variable) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: VariableInput(
+                            key: Key(
+                                '${variable.name}-${homeState.selectedTool?.id}'),
                             variable: variable,
                             selectedPaths:
                                 toolUsageManager.selectedPaths[variable.name] ??

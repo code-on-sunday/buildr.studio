@@ -27,12 +27,15 @@ class VariableInput extends StatefulWidget {
 
 class _VariableInputState extends State<VariableInput> {
   late final TextEditingController _textController;
+  late final _toolUsageManager = context.read<ToolUsageManager>();
 
   @override
   void initState() {
     super.initState();
     _textController = TextEditingController();
-    context.read<ToolUsageManager>().clearValuesStream.listen((_) {
+    _updateValues();
+    _toolUsageManager.addListener(_updateValues);
+    _toolUsageManager.clearValuesStream.listen((_) {
       _textController.clear();
     });
   }
@@ -40,7 +43,18 @@ class _VariableInputState extends State<VariableInput> {
   @override
   void dispose() {
     _textController.dispose();
+    _toolUsageManager.removeListener(_updateValues);
     super.dispose();
+  }
+
+  void _updateValues() {
+    // TO-DO: Support other input types
+    if (widget.variable.inputType == 'text_field') {
+      final value = _toolUsageManager.inputValues[widget.variable.name];
+      if (value != null) {
+        _textController.text = value;
+      }
+    }
   }
 
   @override
@@ -58,6 +72,7 @@ class _VariableInputState extends State<VariableInput> {
         const SizedBox(height: 8),
         if (widget.variable.inputType == 'text_field')
           ShadInput(
+            placeholder: Text(widget.variable.hintLabel),
             controller: _textController,
             minLines: 4,
             maxLines: 10,

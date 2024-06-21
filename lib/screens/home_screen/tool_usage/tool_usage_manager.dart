@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:buildr_studio/models/prompt_service_connection_status.dart';
+import 'package:buildr_studio/models/tool_details.dart';
 import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/prompt_submitter.dart';
@@ -56,6 +57,17 @@ class ToolUsageManager extends ChangeNotifier {
       subscription.cancel();
     }
     super.dispose();
+  }
+
+  void setInitialValues(ToolDetails toolDetails) {
+    for (var variable in toolDetails.variables) {
+      // TO-DO: Support other input types
+      if (variable.inputType == 'text_field') {
+        _variableManager.setInitialInputvalue(
+            variable.name, variable.defaultValue);
+      }
+    }
+    notifyListeners();
   }
 
   void reconnectAiService() {

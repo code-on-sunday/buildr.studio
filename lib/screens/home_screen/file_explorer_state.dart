@@ -86,7 +86,9 @@ class FileExplorerState extends ChangeNotifier {
   bool isIgnored(TreeViewNode<FileSystemEntity> node) =>
       _ignoredNodes.contains(node.content.path);
 
-  bool isPathIgnored(String path) => _ignoredNodes.contains(path);
+  bool isPathIgnored(String path) {
+    return _ignoredNodes.contains(path);
+  }
 
   GlobalKey getNodeKey(TreeViewNode<FileSystemEntity> node) =>
       _nodeKeys[node.content.path]!;

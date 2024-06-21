@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -78,6 +79,13 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
                       _fileExplorerTreeState.openInVSCode(node.content);
                     },
                     child: const Text("Open in VSCode"),
+                  ),
+                  PopupMenuItem(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(
+                          text: File(node.content.path).readAsStringSync()));
+                    },
+                    child: const Text("Copy"),
                   ),
                 ],
                 elevation: 8.0,

@@ -3,5 +3,10 @@
     "description": "Modify existing implementation to satisfy new requirements",
     "id": "modify_existing_implementation",
     "name": "Modify existing implementation"
+  },
+  {
+    "description": "Explain source code to a new developer",
+    "id": "explain_code",
+    "name": "Explain this code to me"
   }
 ]
