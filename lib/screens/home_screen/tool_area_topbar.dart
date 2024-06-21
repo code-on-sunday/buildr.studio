@@ -73,6 +73,11 @@ class ToolAreaTopBar extends StatelessWidget {
                 : const Icon(Icons.play_arrow),
           ),
           const Spacer(),
+          ShadButton.link(
+            onPressed: openVariableSection,
+            text: Text(homeState.selectedTool?.name ?? ''),
+            textDecoration: TextDecoration.underline,
+          ),
           ShadButton.outline(
             onPressed: () {
               showShadSheet(
@@ -83,6 +88,8 @@ class ToolAreaTopBar extends StatelessWidget {
                       maxWidth: MediaQuery.of(context).size.width * 0.5),
                   scrollable: true,
                   title: const Text('Select Tool'),
+                  description: const Text(
+                      'Select a tool to use. The tool you select will determine the available variables to run.'),
                   content: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -93,6 +100,9 @@ class ToolAreaTopBar extends StatelessWidget {
                           text: Text(tool.name),
                           onPressed: () {
                             homeState.onToolSelected(tool);
+                            if (!homeState.isVariableSectionVisible) {
+                              openVariableSection();
+                            }
                             Navigator.of(context).pop();
                           },
                           backgroundColor: homeState.selectedTool == tool
@@ -113,7 +123,7 @@ class ToolAreaTopBar extends StatelessWidget {
                 ),
               );
             },
-            text: const Text('Change tool'),
+            text: const Text('Change'),
           ),
         ],
       ),

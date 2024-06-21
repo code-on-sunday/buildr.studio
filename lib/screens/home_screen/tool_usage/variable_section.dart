@@ -46,7 +46,7 @@ class VariableSection extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  'Variables',
+                  homeState.selectedTool?.name ?? '',
                   style: ShadTheme.of(context).textTheme.h4,
                 ),
                 const Spacer(),
