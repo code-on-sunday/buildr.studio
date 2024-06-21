@@ -87,12 +87,21 @@ class ToolAreaTopBar extends StatelessWidget {
                   constraints: BoxConstraints(
                       maxWidth: MediaQuery.of(context).size.width * 0.5),
                   scrollable: true,
-                  title: const Text('Select Tool'),
+                  title: const Row(
+                    children: [
+                      Icon(Icons.home_repair_service),
+                      SizedBox(width: 16),
+                      Text('AI Toolbox'),
+                    ],
+                  ),
                   description: const Text(
                       'Select a tool to use. The tool you select will determine the available variables to run.'),
                   content: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      const SizedBox(height: 16),
+                      const Divider(),
+                      const SizedBox(height: 16),
                       for (final tool in homeState.tools)
                         ShadButton.ghost(
                           width: double.infinity,
