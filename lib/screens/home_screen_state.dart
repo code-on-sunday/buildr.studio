@@ -41,6 +41,7 @@ class HomeScreenState extends ChangeNotifier {
       _tools = await _toolRepository.getTools();
       if (_tools.isNotEmpty) {
         _selectedTool = _tools.first;
+        _prompt = null;
         await _loadPromptAndVariables(_selectedTool!.id);
       }
       notifyListeners();
@@ -85,6 +86,7 @@ class HomeScreenState extends ChangeNotifier {
 
   void onToolSelected(Tool tool) {
     _selectedTool = tool;
+    _prompt = null;
     notifyListeners();
     _loadPromptAndVariables(tool.id);
   }

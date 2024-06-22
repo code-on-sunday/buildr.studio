@@ -135,10 +135,15 @@ class SourcesInput extends StatelessWidget {
         final isHighlighted = candidateData.isNotEmpty;
         return Container(
           padding: const EdgeInsets.all(16.0),
+          width: double.infinity,
           decoration: BoxDecoration(
-            color: isHighlighted || selectedPaths.isNotEmpty
-                ? theme.colorScheme.secondary
-                : null,
+            color: isHighlighted
+                ? selectedPaths.isEmpty
+                    ? theme.colorScheme.secondary
+                    : theme.colorScheme.secondary.withOpacity(0.3)
+                : selectedPaths.isNotEmpty
+                    ? theme.colorScheme.secondary
+                    : null,
             borderRadius: ShadTheme.of(context).radius,
             border: Border.all(
               width: 2,
@@ -183,10 +188,11 @@ class SourcesInput extends StatelessWidget {
                     }
                   }).toList(),
                 )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.upload_file, size: 48),
+                    const Icon(Icons.upload_file, size: 24),
                     const SizedBox(height: 16),
                     Text(
                       'Drag and drop your sources here',

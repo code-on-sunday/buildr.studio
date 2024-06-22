@@ -3,8 +3,8 @@
   "variables": [
     {
       "description": "Source code to be explained",
-      "hint_label": "Paste the code here",
-      "input_type": "text_field",
+      "hint_label": "Provide files that contains the source code to be explained",
+      "input_type": "sources",
       "name": "SOURCE_CODE",
       "value_format": "text"
     },

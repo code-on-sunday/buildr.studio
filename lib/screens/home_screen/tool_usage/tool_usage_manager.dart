@@ -62,10 +62,15 @@ class ToolUsageManager extends ChangeNotifier {
   }
 
   void onToolChanged(String toolId, ToolDetails toolDetails) {
-    _currentToolVariableManager = _variableManagers.putIfAbsent(
-      toolId,
-      () => VariableManager(),
-    );
+    if (_variableManagers.containsKey(toolId)) {
+      _currentToolVariableManager = _variableManagers[toolId]!;
+    } else {
+      _currentToolVariableManager = VariableManager();
+      _variableManagers[toolId] = _currentToolVariableManager;
+      _currentToolVariableManager.addListener(() {
+        notifyListeners();
+      });
+    }
     setInitialValues(toolDetails);
     notifyListeners();
   }
