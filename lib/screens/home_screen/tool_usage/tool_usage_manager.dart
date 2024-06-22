@@ -20,6 +20,7 @@ class ToolUsageManager extends ChangeNotifier {
   PromptServiceConnectionStatus _promptServiceConnectionStatus =
       const PromptServiceConnectionStatus.connected();
   final List<StreamSubscription> _promptServiceSubscriptions = [];
+  final _initialValuesLoadedController = StreamController<bool>.broadcast();
 
   ToolUsageManager({required PromptService promptService})
       : _promptSubmitter = PromptSubmitter(
@@ -38,6 +39,8 @@ class ToolUsageManager extends ChangeNotifier {
       _currentToolVariableManager.inputValues;
   Stream<bool> get clearValuesStream =>
       _currentToolVariableManager.clearValuesStream;
+  Stream<bool> get initialValuesLoadedStream =>
+      _initialValuesLoadedController.stream;
 
   bool get isResponseStreaming => _isResponseStreaming;
   String get output => _output;
@@ -58,6 +61,7 @@ class ToolUsageManager extends ChangeNotifier {
     for (var subscription in _promptServiceSubscriptions) {
       subscription.cancel();
     }
+    _initialValuesLoadedController.close();
     super.dispose();
   }
 
@@ -72,6 +76,7 @@ class ToolUsageManager extends ChangeNotifier {
       });
     }
     setInitialValues(toolDetails);
+    _initialValuesLoadedController.add(true);
     notifyListeners();
   }
 

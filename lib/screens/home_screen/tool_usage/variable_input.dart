@@ -30,27 +30,31 @@ class _VariableInputState extends State<VariableInput> {
   late final TextEditingController _textController;
   late final _toolUsageManager = context.read<ToolUsageManager>();
   late final StreamSubscription<void> _clearValuesSubscription;
+  late final StreamSubscription<bool> _initialValuesLoadedSubscription;
 
   @override
   void initState() {
     super.initState();
     _textController = TextEditingController();
-    _updateValues();
-    _toolUsageManager.addListener(_updateValues);
     _clearValuesSubscription = _toolUsageManager.clearValuesStream.listen((_) {
       _textController.clear();
+    });
+    _updateTextControllerValue();
+    _initialValuesLoadedSubscription =
+        _toolUsageManager.initialValuesLoadedStream.listen((_) {
+      _updateTextControllerValue();
     });
   }
 
   @override
   void dispose() {
     _clearValuesSubscription.cancel();
+    _initialValuesLoadedSubscription.cancel();
     _textController.dispose();
-    _toolUsageManager.removeListener(_updateValues);
     super.dispose();
   }
 
-  void _updateValues() {
+  void _updateTextControllerValue() {
     // TO-DO: Support other input types
     if (widget.variable.inputType == 'text_field') {
       final value = _toolUsageManager.inputValues[widget.variable.name];
