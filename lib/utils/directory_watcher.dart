@@ -21,6 +21,9 @@ class DirectoryWatcher {
   void _startWatching() {
     _directorySubscription?.cancel();
     _directorySubscription = _directory.watch().listen((event) {
+      if (event is FileSystemModifyEvent) {
+        return;
+      }
       _controller.sink.add(DirectoryChangeEvent(
         type: _getChangeType(event),
         path: event.path,
