@@ -30,10 +30,10 @@ jobs:
           echo "LOG_AES_KEY=${{ secrets.LOG_AES_KEY }}" >> .env
           echo "LOG_AES_NONCE=${{ secrets.LOG_AES_NONCE }}" >> .env
 
-      - name: Get device registration file
+      - name: Get Windows device registration file
         run: |
           try {
-            $url = "${{ secrets.DEVICE_REGISTRATION }}"
+            $url = "${{ secrets.DEVICE_REGISTRATION_WIN_URL }}"
             $output = "assets/device_registration.exe"
             Invoke-WebRequest -Uri $url -OutFile $output
           }

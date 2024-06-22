@@ -18,8 +18,9 @@ class DeviceRegistrationService {
 
     final String appExePath = Platform.resolvedExecutable;
     final String appPath = p.dirname(appExePath);
-    final String exePath =
-        p.joinAll([appPath, ...Env.deviceRegistrationExePath.split(",")]);
+    final String exePath = Platform.isWindows
+        ? p.joinAll([appPath, ...Env.deviceRegistrationExePath.split(",")])
+        : p.join(appPath, 'device_registration');
     final process = await Process.start(
       exePath,
       [deviceKeyPath, deviceRegistrationPath],
