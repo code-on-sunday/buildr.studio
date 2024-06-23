@@ -1,4 +1,5 @@
 import 'package:buildr_studio/repositories/user_preferences_repository.dart';
+import 'package:buildr_studio/screens/home_screen/settings/token_usage_state.dart';
 import 'package:buildr_studio/screens/home_screen_state.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -87,6 +88,7 @@ class _PrimaryAlertState extends State<PrimaryAlert> {
             onPressed: () {
               _hide();
               homeState.onNavRailItemTapped(1);
+              context.read<TokenUsageState>().loadTokenUsage();
             },
             text: const Text('Click here'),
           ),
