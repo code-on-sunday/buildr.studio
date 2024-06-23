@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:buildr_studio/env/env.dart';
+import 'package:buildr_studio/utils/logs_decryptor.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/foundation.dart' hide Key;
 import 'package:logger/logger.dart';
@@ -52,6 +53,7 @@ class LogDumpScheduler {
   }) : _logMemoryStorage = logMemoryStorage;
 
   final LogMemoryStorage _logMemoryStorage;
+  final LogFileDecryptor _logFileDecryptor = LogFileDecryptor();
   Timer? _timer;
   int _logFileIndex = 0;
 
@@ -117,7 +119,8 @@ class LogDumpScheduler {
     try {
       final encryptedLogFile = await _getLogFile();
       final decryptedLogFile = await _getDecryptedLogFile();
-      final decryptedLogs = _decryptLogs(encryptedLogFile.readAsStringSync());
+      final decryptedLogs =
+          _logFileDecryptor.decryptLogs(encryptedLogFile.readAsStringSync());
       await decryptedLogFile.writeAsString(decryptedLogs, mode: FileMode.write);
     } catch (e) {
       print('Error writing decrypted logs: $e');
@@ -131,24 +134,10 @@ class LogDumpScheduler {
     return encryptedLogs;
   }
 
-  String _decryptLogs(String encryptedLogs) {
-    final key = Key.fromUtf8(Env.logAesKey);
-    final iv = IV.fromUtf8(Env.logAesNonce);
-    final decryptedLogs = _decryptAES(encryptedLogs, key, iv);
-    return decryptedLogs;
-  }
-
   String _encryptAES(String data, Key key, IV iv) {
     final cipher = Encrypter(AES(key, mode: AESMode.cbc));
     final encrypted = cipher.encrypt(data, iv: iv);
     return encrypted.base16;
-  }
-
-  String _decryptAES(String encryptedData, Key key, IV iv) {
-    final cipher = Encrypter(AES(key, mode: AESMode.cbc));
-    final decrypted =
-        cipher.decrypt(Encrypted.fromBase16(encryptedData), iv: iv);
-    return decrypted;
   }
 
   Future<File> _getLogFile() async {

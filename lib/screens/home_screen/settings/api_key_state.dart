@@ -48,7 +48,7 @@ class ApiKeyState extends ChangeNotifier {
       _apiKey = apiKey;
       notifyListeners();
       // Set the API key in the environment variables or use it as needed
-      _logger.d('API key saved: $apiKey');
+      _logger.d('API key saved');
     } catch (e) {
       // Log the error or display it to the UI
       _logger.e('Error saving API key: $e');

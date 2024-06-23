@@ -90,7 +90,8 @@ class _StatusBarState extends State<StatusBar> {
             const Spacer(),
             if (deviceRegistrationState.errorMessage != null)
               ShadTooltip(
-                builder: (_) => const Text('Cannot register device'),
+                builder: (_) => Text(
+                    'Cannot register device: ${deviceRegistrationState.errorMessage}'),
                 child: const Icon(Icons.error, color: Colors.red),
               ),
             if (deviceRegistrationState.accountId != null)
