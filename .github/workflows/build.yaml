@@ -34,8 +34,8 @@ jobs:
 
       - name: Create Firebase files from base64 secrets
         run: |
-          echo ${{ secrets.FIREBASE_OPTIONS }} | base64 -d > lib/firebase_options.dart
-          echo ${{ secrets.FIREBASE_JSON }} | base64 -d > firebase.json
+          echo "${{ secrets.FIREBASE_OPTIONS }}" | base64 -d > lib/firebase_options.dart
+          echo "${{ secrets.FIREBASE_JSON }}" | base64 -d > firebase.json
 
       - name: Get Windows device registration file
         run: |
