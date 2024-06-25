@@ -50,3 +50,5 @@ app.*.map.json
 macos/Podfile.lock
 *.exe
 lib/env/env.g.dart
+lib/firebase_options.dart
+firebase.json

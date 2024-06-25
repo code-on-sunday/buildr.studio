@@ -1,4 +1,6 @@
+import 'package:ambilytics/ambilytics.dart';
 import 'package:buildr_studio/env/env.dart';
+import 'package:buildr_studio/firebase_options.dart';
 import 'package:buildr_studio/repositories/account_repository.dart';
 import 'package:buildr_studio/repositories/tool_repository.dart';
 import 'package:buildr_studio/repositories/user_preferences_repository.dart';
@@ -39,6 +41,13 @@ import 'package:wiredash/wiredash.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (Env.measurementId.isNotEmpty &&
+      Env.measurementProtocolApiSecret.isNotEmpty) {
+    await initAnalytics(
+        measurementId: Env.measurementId,
+        apiSecret: Env.measurementProtocolApiSecret,
+        firebaseOptions: DefaultFirebaseOptions.currentPlatform);
+  }
   await setupDependencyInjection();
   runApp(const MyApp());
 }

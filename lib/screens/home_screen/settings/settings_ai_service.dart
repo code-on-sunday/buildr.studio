@@ -1,3 +1,5 @@
+import 'package:ambilytics/ambilytics.dart';
+import 'package:buildr_studio/analytics_events.dart';
 import 'package:buildr_studio/screens/home_screen/settings/choose_ai_service_state.dart';
 import 'package:buildr_studio/screens/home_screen/settings/settings_ai_service_buildr_studio.dart';
 import 'package:buildr_studio/screens/home_screen/settings/settings_api_key.dart';
@@ -22,23 +24,34 @@ class SettingsAiService extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const Spacer(),
-            ShadSelect<AIService>(
-              placeholder: const Text('Select AI Service'),
-              initialValue: chooseAIServiceState.selectedService,
-              selectedOptionBuilder: (context, value) {
-                return Text(value.displayName);
+            Listener(
+              onPointerDown: (_) {
+                ambilytics?.sendEvent(
+                    AnalyticsEvents.aiServiceDropdownOpened.name, null);
               },
-              onChanged: (AIService? newService) {
-                if (newService != null) {
-                  chooseAIServiceState.setSelectedService(newService);
-                }
-              },
-              options: AIService.values.map((service) {
-                return ShadOption(
-                  value: service,
-                  child: Text(service.displayName),
-                );
-              }).toList(),
+              behavior: HitTestBehavior.translucent,
+              child: ShadSelect<AIService>(
+                placeholder: const Text('Select AI Service'),
+                initialValue: chooseAIServiceState.selectedService,
+                selectedOptionBuilder: (context, value) {
+                  return Text(value.displayName);
+                },
+                onChanged: (AIService? newService) {
+                  if (newService != null) {
+                    ambilytics
+                        ?.sendEvent(AnalyticsEvents.aiServiceSelected.name, {
+                      'service': newService.displayName,
+                    });
+                    chooseAIServiceState.setSelectedService(newService);
+                  }
+                },
+                options: AIService.values.map((service) {
+                  return ShadOption(
+                    value: service,
+                    child: Text(service.displayName),
+                  );
+                }).toList(),
+              ),
             ),
           ],
         ),

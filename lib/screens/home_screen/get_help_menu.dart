@@ -1,3 +1,5 @@
+import 'package:ambilytics/ambilytics.dart';
+import 'package:buildr_studio/analytics_events.dart';
 import 'package:buildr_studio/screens/home_screen/export_logs_state.dart';
 import 'package:buildr_studio/utils/logs_decryptor.dart';
 import 'package:flutter/foundation.dart';
@@ -66,6 +68,8 @@ class _GetHelpMenuState extends State<GetHelpMenu> {
           ),
           ShadButton.ghost(
             onPressed: () {
+              ambilytics?.sendEvent(
+                  AnalyticsEvents.joinChatRoomPressed.name, null);
               launchUrlString("https://discord.gg/JVQmxkBqMY");
               _popOverController.hide();
             },

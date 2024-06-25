@@ -1,3 +1,5 @@
+import 'package:ambilytics/ambilytics.dart';
+import 'package:buildr_studio/analytics_events.dart';
 import 'package:buildr_studio/env/env.dart';
 import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
 import 'package:buildr_studio/screens/home_screen/settings/token_usage_state.dart';
@@ -62,6 +64,8 @@ class _SettingsAiServiceBuildrStudioState
             ),
             ShadButton(
               onPressed: () {
+                ambilytics?.sendEvent(
+                    AnalyticsEvents.addFundsPressed.name, null);
                 launchUrlString(
                     '${Env.webBaseUrl}/add-funds?account-id=${deviceRegistrationState.accountId}');
               },

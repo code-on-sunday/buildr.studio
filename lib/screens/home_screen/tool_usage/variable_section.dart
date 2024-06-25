@@ -1,6 +1,6 @@
 import 'package:buildr_studio/models/tool.dart';
 import 'package:buildr_studio/models/variable.dart';
-import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
+import 'package:buildr_studio/screens/home_screen/button_run.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/variable_input.dart';
@@ -25,7 +25,6 @@ class VariableSection extends StatelessWidget {
     final homeState = context.watch<HomeScreenState>();
     final fileExplorerState = context.watch<FileExplorerState>();
     final toolUsageManager = context.watch<ToolUsageManager>();
-    final deviceRegistrationState = context.read<DeviceRegistrationState>();
 
     return Container(
       decoration: BoxDecoration(
@@ -116,31 +115,7 @@ class VariableSection extends StatelessWidget {
                   },
                   text: const Text('Clear values'),
                 ),
-                ShadButton(
-                  enabled: !toolUsageManager.isResponseStreaming,
-                  onPressed: () {
-                    toolUsageManager.submitPrompt(
-                      homeState.prompt?.prompt,
-                      fileExplorerState,
-                      deviceRegistrationState,
-                    );
-                    if (homeState.isVariableSectionVisible) {
-                      homeState.toggleVariableSection();
-                    }
-                  },
-                  text: const Text('Run'),
-                  icon: toolUsageManager.isResponseStreaming
-                      ? const Padding(
-                          padding: EdgeInsets.only(right: 8),
-                          child: SizedBox.square(
-                            dimension: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          ),
-                        )
-                      : const Icon(Icons.play_arrow),
-                ),
+                const ButtonRun(),
               ],
             ),
           ),

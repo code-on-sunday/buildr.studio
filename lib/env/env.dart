@@ -21,4 +21,9 @@ abstract class Env {
   static final String logAesKey = _Env.logAesKey;
   @EnviedField(varName: 'LOG_AES_NONCE', obfuscate: true)
   static final String logAesNonce = _Env.logAesNonce;
+  @EnviedField(varName: 'MEASUREMENT_PROTOCOL_API_SECRET', obfuscate: true)
+  static final String measurementProtocolApiSecret =
+      _Env.measurementProtocolApiSecret;
+  @EnviedField(varName: 'MEASUREMENT_ID', obfuscate: true)
+  static final String measurementId = _Env.measurementId;
 }
