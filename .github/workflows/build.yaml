@@ -33,9 +33,13 @@ jobs:
           echo "MEASUREMENT_ID=${{ secrets.MEASUREMENT_ID }}" >> .env
 
       - name: Create Firebase files from base64 secrets
+        env:
+          FIREBASE_OPTIONS: ${{ secrets.FIREBASE_OPTIONS }}
+          FIREBASE_JSON: ${{ secrets.FIREBASE_JSON }}
+        shell: bash
         run: |
-          echo "${{ secrets.FIREBASE_OPTIONS }}" | base64 -d > lib/firebase_options.dart
-          echo "${{ secrets.FIREBASE_JSON }}" | base64 -d > firebase.json
+          echo $FIREBASE_OPTIONS | base64 --decode > lib/firebase_options.dart
+          echo $FIREBASE_JSON | base64 --decode > firebase.json
 
       - name: Get Windows device registration file
         run: |
