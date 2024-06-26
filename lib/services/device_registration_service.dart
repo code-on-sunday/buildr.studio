@@ -11,6 +11,15 @@ class DeviceRegistrationService {
   final _logger = GetIt.I.get<Logger>();
   Completer<String>? _deviceKeyCompleter;
 
+  Future<void> deleteDeviceKey() async {
+    final directory = await getApplicationSupportDirectory();
+    final deviceKeyPath = p.join(directory.path, 'device_key');
+
+    if (File(deviceKeyPath).existsSync()) {
+      await File(deviceKeyPath).delete();
+    }
+  }
+
   Future<String> loadDeviceKey() async {
     final directory = await getApplicationSupportDirectory();
     final deviceKeyPath = p.join(directory.path, 'device_key');

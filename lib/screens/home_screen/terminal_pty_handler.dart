@@ -19,57 +19,61 @@ class TerminalPtyHandler {
     }
 
     void startPty(String? workingDirectory) {
-      if (Platform.isMacOS) {
-        pty = Pty.start(
-          Platform.environment['SHELL'] ?? 'bash',
-          columns: 80,
-          rows: 24,
-        );
-      } else {
-        // Check if pwsh is available
-        if (isPwshAvailable()) {
-          sendPort
-              .send(['log', 'pwsh is available, using it instead of cmd.exe']);
+      try {
+        if (Platform.isMacOS) {
           pty = Pty.start(
-            'cmd.exe',
-            arguments: [
-              "/k",
-              "pwsh",
-              "-ExecutionPolicy",
-              "Bypass",
-            ],
-            environment: {...Platform.environment},
+            Platform.environment['SHELL'] ?? 'bash',
             columns: 80,
             rows: 24,
           );
         } else {
-          // Fall back to cmd.exe
-          sendPort
-              .send(['log', 'pwsh is not available, falling back to cmd.exe']);
-          pty = Pty.start(
-            'cmd.exe',
-            environment: {...Platform.environment},
-            columns: 80,
-            rows: 24,
-          );
+          // Check if pwsh is available
+          if (isPwshAvailable()) {
+            sendPort.send(
+                ['log', 'pwsh is available, using it instead of cmd.exe']);
+            pty = Pty.start(
+              'cmd.exe',
+              arguments: [
+                "/k",
+                "pwsh",
+                "-ExecutionPolicy",
+                "Bypass",
+              ],
+              environment: {...Platform.environment},
+              columns: 80,
+              rows: 24,
+            );
+          } else {
+            // Fall back to cmd.exe
+            sendPort.send(
+                ['log', 'pwsh is not available, falling back to cmd.exe']);
+            pty = Pty.start(
+              'cmd.exe',
+              environment: {...Platform.environment},
+              columns: 80,
+              rows: 24,
+            );
+          }
         }
+
+        if (workingDirectory != null) {
+          pty.write(const Utf8Encoder()
+              .convert('cd "$workingDirectory"${Platform.lineTerminator}'));
+        }
+
+        pty.output
+            .cast<List<int>>()
+            .transform(const Utf8Decoder())
+            .listen((data) {
+          sendPort.send(['output', data]);
+        });
+
+        pty.exitCode.then((code) {
+          sendPort.send(['exit', code]);
+        });
+      } catch (e) {
+        sendPort.send(['error', e.toString()]);
       }
-
-      if (workingDirectory != null) {
-        pty.write(const Utf8Encoder()
-            .convert('cd $workingDirectory${Platform.lineTerminator}'));
-      }
-
-      pty.output
-          .cast<List<int>>()
-          .transform(const Utf8Decoder())
-          .listen((data) {
-        sendPort.send(['output', data]);
-      });
-
-      pty.exitCode.then((code) {
-        sendPort.send(['exit', code]);
-      });
     }
 
     ReceivePort receivePort = ReceivePort();

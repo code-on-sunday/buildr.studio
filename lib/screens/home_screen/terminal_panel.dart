@@ -74,6 +74,16 @@ class _TerminalPanelState extends State<TerminalPanel> {
         case ['log', String message]:
           _logger.d(message);
           break;
+        case ['error', String message]:
+          _logger.e(message);
+          showShadDialog(
+            context: context,
+            builder: (_) => ShadDialog.alert(
+              title: const Text('Error while running terminal'),
+              content: Text(message),
+            ),
+          );
+          break;
         case ['exit', int code]:
           terminal.write('the process exited with exit code $code');
           break;

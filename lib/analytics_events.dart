@@ -5,4 +5,5 @@ enum AnalyticsEvents {
   aiServiceSelected,
   addFundsPressed,
   joinChatRoomPressed,
+  account427Removed
 }

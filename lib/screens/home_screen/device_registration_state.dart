@@ -1,3 +1,5 @@
+import 'package:ambilytics/ambilytics.dart';
+import 'package:buildr_studio/analytics_events.dart';
 import 'package:buildr_studio/repositories/account_repository.dart';
 import 'package:buildr_studio/repositories/user_preferences_repository.dart';
 import 'package:buildr_studio/services/device_registration_service.dart';
@@ -27,8 +29,17 @@ class DeviceRegistrationState extends ChangeNotifier {
   Future<String?> registerDevice() async {
     try {
       errorMessage = null;
-      final deviceKey = await _deviceRegistration.loadDeviceKey();
-      final id = accountId = await _accountRepository.getAccountId(deviceKey);
+      var deviceKey = await _deviceRegistration.loadDeviceKey();
+      var id = accountId = await _accountRepository.getAccountId(deviceKey);
+
+      // Solve the issue of multiple devices registered to the same account id 427 in the past by re-registering the device
+      if (id == '427') {
+        ambilytics?.sendEvent(AnalyticsEvents.account427Removed.name, null);
+        await _deviceRegistration.deleteDeviceKey();
+        deviceKey = await _deviceRegistration.loadDeviceKey();
+        id = accountId = await _accountRepository.getAccountId(deviceKey);
+      }
+
       _userPreferencesRepository.setAccountId(id);
       notifyListeners();
       return deviceKey;
