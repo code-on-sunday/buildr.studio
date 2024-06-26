@@ -3,7 +3,7 @@ import 'dart:io';
 
 class DirectoryWatcher {
   late Directory _directory;
-  late final StreamController<DirectoryChangeEvent> _controller;
+  late final StreamController<FileSystemEvent> _controller;
   StreamSubscription<FileSystemEvent>? _directorySubscription;
 
   DirectoryWatcher() {
@@ -17,46 +17,19 @@ class DirectoryWatcher {
     _startWatching();
   }
 
-  Stream<DirectoryChangeEvent> get events => _controller.stream;
+  Stream<FileSystemEvent> get events => _controller.stream;
   void _startWatching() {
     _directorySubscription?.cancel();
-    _directorySubscription = _directory.watch().listen((event) {
+    _directorySubscription = _directory.watch(recursive: true).listen((event) {
       if (event is FileSystemModifyEvent) {
         return;
       }
-      _controller.sink.add(DirectoryChangeEvent(
-        type: _getChangeType(event),
-        path: event.path,
-      ));
+      _controller.add(event);
     });
-  }
-
-  ChangeType _getChangeType(FileSystemEvent event) {
-    switch (event) {
-      case FileSystemCreateEvent():
-        return ChangeType.create;
-      case FileSystemDeleteEvent():
-        return ChangeType.delete;
-      case FileSystemModifyEvent():
-        return ChangeType.modify;
-      case FileSystemMoveEvent():
-        return ChangeType.move;
-    }
   }
 
   void dispose() {
     _directorySubscription?.cancel();
     _controller.close();
   }
-}
-
-enum ChangeType { create, delete, modify, move }
-
-class DirectoryChangeEvent {
-  final ChangeType type;
-  final String path;
-  DirectoryChangeEvent({
-    required this.type,
-    required this.path,
-  });
 }

@@ -11,6 +11,7 @@ class UserPreferencesRepository {
   static const _keyLastWorkingDir = 'last_working_dir';
   static const _keyAccountId = 'account_id';
   static const _keyHidePrimaryAlert = 'hide_primary_alert';
+  static const _keyLastSelectedToolId = 'last_selected_tool_id';
 
   Future<void> setAiService(AIService aiService) async {
     await _prefs.setString(_keyAiService, aiService.name);
@@ -26,6 +27,10 @@ class UserPreferencesRepository {
 
   Future<void> setLastWorkingDir(String path) async {
     await _prefs.setString(_keyLastWorkingDir, path);
+  }
+
+  Future<void> clearLastWorkingDir() async {
+    await _prefs.remove(_keyLastWorkingDir);
   }
 
   String? getLastWorkingDir() {
@@ -46,5 +51,17 @@ class UserPreferencesRepository {
 
   bool getHidePrimaryAlert() {
     return _prefs.getBool(_keyHidePrimaryAlert) ?? false;
+  }
+
+  Future<void> setLastSelectedToolId(String? toolId) async {
+    if (toolId == null) {
+      await _prefs.remove(_keyLastSelectedToolId);
+      return;
+    }
+    await _prefs.setString(_keyLastSelectedToolId, toolId);
+  }
+
+  String? getLastSelectedToolId() {
+    return _prefs.getString(_keyLastSelectedToolId);
   }
 }

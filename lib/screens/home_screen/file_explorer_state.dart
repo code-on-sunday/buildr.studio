@@ -15,6 +15,7 @@ import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:process_run/process_run.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 class FileExplorerState extends ChangeNotifier {
@@ -22,7 +23,7 @@ class FileExplorerState extends ChangeNotifier {
 
   final UserPreferencesRepository _userPreferencesRepository;
   final FileUtils _fileUtils;
-  final DirectoryWatcher _directoryWatcher = DirectoryWatcher();
+  DirectoryWatcher? _directoryWatcher;
 
   bool _isControlPressed = false;
   String? _selectedFolderPath;
@@ -38,6 +39,8 @@ class FileExplorerState extends ChangeNotifier {
   final popOverController = ShadPopoverController();
   final ScrollController horizontalController = ScrollController();
   final ScrollController verticalController = ScrollController();
+  void Function(TreeViewNode<FileSystemEntity> node)?
+      toggleNodeExpansionHandler;
 
   FileExplorerState({
     required UserPreferencesRepository userPreferencesRepository,
@@ -47,7 +50,6 @@ class FileExplorerState extends ChangeNotifier {
     ServicesBinding.instance.keyboard.addHandler(
       onKeyEvent,
     );
-    _directoryWatcher.events.listen(_onContentChanged);
     _loadStoredLastWorkingDir();
   }
 
@@ -56,7 +58,7 @@ class FileExplorerState extends ChangeNotifier {
     ServicesBinding.instance.keyboard.removeHandler(
       onKeyEvent,
     );
-    _directoryWatcher.dispose();
+    _directoryWatcher?.dispose();
     popOverController.dispose();
     verticalController.dispose();
     horizontalController.dispose();
@@ -132,8 +134,92 @@ class FileExplorerState extends ChangeNotifier {
     _userPreferencesRepository.setLastWorkingDir(selectedDirectory);
   }
 
-  void openInVSCode(FileSystemEntity entity) {
-    Process.start("code", [entity.path], runInShell: true);
+  Future<void> createNewProject(
+      Future<String?> Function() requestProjectName) async {
+    String? newFolderPath;
+
+    // Open directory picker to select the parent folder
+    final directory = await getApplicationDocumentsDirectory();
+    final selectedDirectory = await FilePicker.platform.getDirectoryPath(
+      dialogTitle: 'Select parent folder for new project',
+      initialDirectory: _selectedFolderPath ?? directory.path,
+    );
+
+    if (selectedDirectory == null) return;
+
+    final projectName = await requestProjectName();
+
+    if (projectName == null) return;
+
+    // Create a new folder in the selected parent directory
+    newFolderPath = path.join(selectedDirectory, projectName);
+
+    try {
+      _directoryWatcher?.dispose();
+      await Directory(newFolderPath).create();
+      await _inflateSelectedWorkingDir(newFolderPath);
+      _userPreferencesRepository.setLastWorkingDir(newFolderPath);
+    } catch (e, st) {
+      _logger.e('Error creating new folder', error: e, stackTrace: st);
+    }
+  }
+
+  void createNewFile(String fileName) {
+    final lastSelectedNode = _selectedNodes.lastOrNull;
+    String? parentDir;
+    if (lastSelectedNode != null) {
+      parentDir = switch (lastSelectedNode.content) {
+        File() => path.dirname(lastSelectedNode.content.path),
+        Directory() => lastSelectedNode.content.path,
+        _ => null,
+      };
+    }
+    parentDir ??= _selectedFolderPath!;
+    final newFilePath = path.join(parentDir, fileName);
+    File(newFilePath).createSync();
+  }
+
+  void createNewFolder(String folderName) {
+    final lastSelectedNode = _selectedNodes.lastOrNull;
+    String? parentDir;
+    if (lastSelectedNode != null) {
+      parentDir = switch (lastSelectedNode.content) {
+        File() => path.dirname(lastSelectedNode.content.path),
+        Directory() => lastSelectedNode.content.path,
+        _ => null,
+      };
+    }
+    parentDir ??= _selectedFolderPath!;
+    final newFolderPath = path.join(parentDir, folderName);
+    Directory(newFolderPath).createSync();
+  }
+
+  void delete(FileSystemEntity entity) {
+    if (entity is Directory) {
+      entity.deleteSync(recursive: true);
+    } else {
+      entity.deleteSync();
+    }
+    _selectedNodes.clear();
+  }
+
+  void openInVSCode(BuildContext context, FileSystemEntity entity) async {
+    try {
+      final vscodePath = await which('code');
+      if (vscodePath == null) {
+        throw Exception('VSCode not found on the system.');
+      }
+      await Process.run(vscodePath, [entity.path]);
+    } catch (e) {
+      _logger.e('Error opening file in VSCode: $e');
+      showShadDialog(
+        context: context,
+        builder: (_) => ShadDialog.alert(
+          title: const Text('Error opening file in VSCode'),
+          description: Text('$e'),
+        ),
+      );
+    }
   }
 
   Future<void> pasteClipboardContent(
@@ -170,6 +256,10 @@ class FileExplorerState extends ChangeNotifier {
   void _loadStoredLastWorkingDir() async {
     final lastWorkingDir = _userPreferencesRepository.getLastWorkingDir();
     if (lastWorkingDir == null) return;
+    if (!Directory(lastWorkingDir).existsSync()) {
+      _userPreferencesRepository.clearLastWorkingDir();
+      return;
+    }
     await _inflateSelectedWorkingDir(lastWorkingDir);
   }
 
@@ -188,7 +278,9 @@ class FileExplorerState extends ChangeNotifier {
     _nodeKeys.clear();
     _hoveredNode = null;
     _selectedFolderPath = path;
-    _directoryWatcher.folderPath = path;
+    _directoryWatcher = DirectoryWatcher();
+    _directoryWatcher!.events.listen(_updateTree);
+    _directoryWatcher!.folderPath = path;
     await _buildTree();
     notifyListeners();
   }
@@ -200,6 +292,7 @@ class FileExplorerState extends ChangeNotifier {
       _isTreeLoading = true;
       notifyListeners();
     }
+
     try {
       final (nodes, ignoredNodes, allNodes) = await compute(
           (rootDir) => _buildTreeNodes((Directory(rootDir), Queue.from([]))),
@@ -215,12 +308,151 @@ class FileExplorerState extends ChangeNotifier {
       _logger.e('Error loading tree', error: e, stackTrace: st);
     }
     _isTreeLoading = false;
+
     notifyListeners();
   }
 
-  void _onContentChanged(DirectoryChangeEvent event) async {
-    await _buildTree(showLoading: false);
+  Future<void> _buildChildrenTree(TreeViewNode<FileSystemEntity> node) async {
+    if (node.content is Directory) {
+      final (childNodes, childIgnoredNodes, allDescendantNodes) = await compute(
+        (rootDir) => _buildTreeNodes((rootDir, Queue.from([]))),
+        Directory(node.content.path),
+      );
+      node.children.addAll(childNodes);
+      _ignoredNodes.addAll(childIgnoredNodes);
+      _allNodes.addAll(Map.fromEntries(
+        allDescendantNodes.map((n) => MapEntry(n.content.path, n)),
+      ));
+      _nodeKeys.addAll(Map.fromEntries(
+        allDescendantNodes.map((n) => MapEntry(n.content.path, GlobalKey())),
+      ));
+    }
+  }
+
+  Future<void> _updateTree(FileSystemEvent event) async {
+    switch (event) {
+      case FileSystemCreateEvent():
+        await _handleCreate(event.path);
+        break;
+      case FileSystemDeleteEvent():
+        await _handleDelete(event.path);
+        break;
+      case FileSystemMoveEvent():
+        await _handleMove(event.path, event.destination);
+        break;
+      default:
+    }
     notifyListeners();
+  }
+
+  Future<void> _handleCreate(String newPath) async {
+    final newNode = switch (FileSystemEntity.typeSync(newPath)) {
+      FileSystemEntityType.directory =>
+        TreeViewNode<FileSystemEntity>(Directory(newPath)),
+      FileSystemEntityType.file =>
+        TreeViewNode<FileSystemEntity>(File(newPath)),
+      _ => null,
+    };
+
+    if (newNode == null) return;
+
+    // Add the new node to the tree in the proper position
+    final parentDir = path.dirname(newPath);
+    final parentNode = _allNodes[parentDir];
+    if (parentNode != null) {
+      parentNode.children
+          .insert(_findInsertIndex(parentNode.children, newNode), newNode);
+    } else {
+      _tree.insert(_findInsertIndex(_tree, newNode), newNode);
+    }
+    _allNodes[newPath] = newNode;
+    _nodeKeys[newPath] = GlobalKey();
+
+    // Build the children tree for the new node
+    await _buildChildrenTree(newNode);
+  }
+
+  Future<void> _handleMove(String oldPath, String? newPath) async {
+    if (newPath == null) {
+      await _buildTree();
+      return;
+    }
+    final movedNode = _allNodes[oldPath];
+    if (movedNode == null) return;
+    // Remove the moved node from the old location
+    final oldParentNode = movedNode.parent;
+    if (oldParentNode != null) {
+      oldParentNode.children.remove(movedNode);
+    } else {
+      _tree.remove(movedNode);
+    }
+    _allNodes.remove(oldPath);
+    _nodeKeys.remove(oldPath);
+    // Add the moved node to the new location in the proper position
+    final newNode = TreeViewNode<FileSystemEntity>(
+      File(newPath),
+      children: movedNode.children,
+    );
+    final newParentDir = path.dirname(newPath);
+    final newParentNode = _allNodes[newParentDir];
+    if (newParentNode != null) {
+      newParentNode.children
+          .insert(_findInsertIndex(newParentNode.children, newNode), newNode);
+    } else {
+      _tree.insert(_findInsertIndex(_tree, newNode), newNode);
+    }
+    _allNodes[newPath] = newNode;
+    _nodeKeys[newPath] = GlobalKey();
+    // Update the selected nodes if necessary
+    if (_selectedNodes.contains(movedNode)) {
+      _selectedNodes.remove(movedNode);
+      _selectedNodes.add(newNode);
+    }
+  }
+
+  Future<void> _handleDelete(String deletedPath) async {
+    final deletedNode = _allNodes[deletedPath];
+    if (deletedNode == null) return;
+    // Remove the deleted node from the tree
+    final parentNode = deletedNode.parent;
+    if (parentNode != null) {
+      parentNode.children.remove(deletedNode);
+    } else {
+      _tree.remove(deletedNode);
+    }
+    _allNodes.remove(deletedPath);
+    _nodeKeys.remove(deletedPath);
+    _selectedNodes.remove(deletedNode);
+  }
+
+  int _findInsertIndex(List<TreeViewNode<FileSystemEntity>> siblingNodes,
+      TreeViewNode<FileSystemEntity> newNode) {
+    int startingIndex = 0;
+    int insertIndex = siblingNodes.length;
+
+    if (newNode.content is File) {
+      final firstFileIndex = siblingNodes.indexWhere(
+        (node) => node.content is File,
+      );
+      if (firstFileIndex == -1) {
+        startingIndex = siblingNodes.length;
+      } else {
+        startingIndex = firstFileIndex;
+      }
+    }
+
+    for (int i = startingIndex; i < siblingNodes.length; i++) {
+      final childNode = siblingNodes[i];
+      if (childNode.content.path
+              .toLowerCase()
+              .compareTo(newNode.content.path.toLowerCase()) >
+          0) {
+        insertIndex = i;
+        break;
+      }
+    }
+
+    return insertIndex;
   }
 
   void onHover(TreeViewNode<FileSystemEntity> node) {

@@ -1,6 +1,8 @@
 import 'package:buildr_studio/models/tool.dart';
 import 'package:buildr_studio/models/tool_details.dart';
 import 'package:buildr_studio/repositories/tool_repository.dart';
+import 'package:buildr_studio/repositories/user_preferences_repository.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
@@ -10,6 +12,7 @@ class HomeScreenState extends ChangeNotifier {
 
   final BuildContext _context;
   late final ToolRepository _toolRepository;
+  late final UserPreferencesRepository _userPreferencesRepository;
   List<Tool> _tools = [];
   Tool? _selectedTool;
   ToolDetails? _prompt;
@@ -17,9 +20,11 @@ class HomeScreenState extends ChangeNotifier {
   int _selectedNavRailIndex = 0;
   bool _isSettingsVisible = false;
   bool _isVariableSectionVisible = false;
+  bool _isTerminalVisible = false;
 
   HomeScreenState(this._context) {
     _toolRepository = GetIt.I.get<ToolRepository>();
+    _userPreferencesRepository = GetIt.I.get<UserPreferencesRepository>();
     _loadTools();
   }
 
@@ -30,6 +35,7 @@ class HomeScreenState extends ChangeNotifier {
   int get selectedNavRailIndex => _selectedNavRailIndex;
   bool get isSettingsVisible => _isSettingsVisible;
   bool get isVariableSectionVisible => _isVariableSectionVisible;
+  bool get isTerminalVisible => _isTerminalVisible;
 
   void toggleVariableSection() {
     _isVariableSectionVisible = !_isVariableSectionVisible;
@@ -39,11 +45,7 @@ class HomeScreenState extends ChangeNotifier {
   Future<void> _loadTools() async {
     try {
       _tools = await _toolRepository.getTools();
-      if (_tools.isNotEmpty) {
-        _selectedTool = _tools.first;
-        _prompt = null;
-        await _loadPromptAndVariables(_selectedTool!.id);
-      }
+      _selectLastTool();
       notifyListeners();
     } catch (e) {
       _logger.e('Error loading tools: $e');
@@ -89,5 +91,33 @@ class HomeScreenState extends ChangeNotifier {
     _prompt = null;
     notifyListeners();
     _loadPromptAndVariables(tool.id);
+    _userPreferencesRepository.setLastSelectedToolId(tool.id);
+  }
+
+  void toggleTerminal() {
+    _isTerminalVisible = !_isTerminalVisible;
+    notifyListeners();
+  }
+
+  Future<void> _selectLastTool() async {
+    final lastSelectedToolId =
+        _userPreferencesRepository.getLastSelectedToolId();
+    if (lastSelectedToolId != null) {
+      final tool = _tools.firstWhereOrNull((t) => t.id == lastSelectedToolId);
+      if (tool != null) {
+        _selectedTool = tool;
+        await _loadPromptAndVariables(tool.id);
+      } else {
+        // If the last selected tool no longer exists, remove it from storage
+        await _userPreferencesRepository.setLastSelectedToolId(null);
+        if (_tools.isNotEmpty) {
+          _selectedTool = _tools.first;
+          await _loadPromptAndVariables(_selectedTool!.id);
+        }
+      }
+    } else if (_tools.isNotEmpty) {
+      _selectedTool = _tools.first;
+      await _loadPromptAndVariables(_selectedTool!.id);
+    }
   }
 }

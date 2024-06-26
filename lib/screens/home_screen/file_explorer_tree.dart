@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
+import 'package:buildr_studio/screens/home_screen/file_explorer_tree_topbar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -24,6 +24,8 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
   void initState() {
     super.initState();
     _fileExplorerTreeState = context.read<FileExplorerState>();
+    _fileExplorerTreeState.toggleNodeExpansionHandler =
+        _treeController.toggleNode;
   }
 
   Map<Type, GestureRecognizerFactory> _getTapRecognizer(
@@ -44,7 +46,9 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
             }
           };
           Offset lastTapDownPosition = Offset.zero;
-          if (!_fileExplorerTreeState.isIgnored(node) && node.content is File) {
+          if (!_fileExplorerTreeState.isIgnored(node)) {
+            final isFile = node.content is File;
+
             t.onSecondaryTapDown = (details) {
               lastTapDownPosition = details.globalPosition;
             };
@@ -67,25 +71,35 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
                     Offset.zero & overlay.size // Bigger rect, the entire screen
                     ),
                 items: [
+                  if (isFile)
+                    PopupMenuItem(
+                      onTap: () {
+                        _fileExplorerTreeState.pasteClipboardContent(
+                            context, node.content);
+                      },
+                      child: const Text("Paste"),
+                    ),
+                  if (isFile)
+                    PopupMenuItem(
+                      onTap: () {
+                        _fileExplorerTreeState.openInVSCode(
+                            context, node.content);
+                      },
+                      child: const Text("Open in VSCode"),
+                    ),
+                  if (isFile)
+                    PopupMenuItem(
+                      onTap: () {
+                        Clipboard.setData(ClipboardData(
+                            text: File(node.content.path).readAsStringSync()));
+                      },
+                      child: const Text("Copy"),
+                    ),
                   PopupMenuItem(
                     onTap: () {
-                      _fileExplorerTreeState.pasteClipboardContent(
-                          context, node.content);
+                      _fileExplorerTreeState.delete(node.content);
                     },
-                    child: const Text("Paste"),
-                  ),
-                  PopupMenuItem(
-                    onTap: () {
-                      _fileExplorerTreeState.openInVSCode(node.content);
-                    },
-                    child: const Text("Open in VSCode"),
-                  ),
-                  PopupMenuItem(
-                    onTap: () {
-                      Clipboard.setData(ClipboardData(
-                          text: File(node.content.path).readAsStringSync()));
-                    },
-                    child: const Text("Copy"),
+                    child: const Text("Delete"),
                   ),
                 ],
                 elevation: 8.0,
@@ -267,44 +281,7 @@ class _FileExplorerTreeState extends State<FileExplorerTree> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: ShadTooltip(
-                          builder: (_) =>
-                              Text(fileExplorerTreeState.selectedFolderPath!),
-                          child: Text(
-                            'Explorer: ${path.basename(fileExplorerTreeState.selectedFolderPath!)}',
-                            style: ShadTheme.of(context).textTheme.h4,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      ShadPopover(
-                          controller: fileExplorerTreeState.popOverController,
-                          child: ShadButton.outline(
-                            onPressed: () {
-                              fileExplorerTreeState.popOverController.show();
-                            },
-                            icon: const Icon(Icons.more_vert),
-                          ),
-                          popover: (_) => Column(
-                                children: [
-                                  ShadButton.ghost(
-                                    onPressed: () {
-                                      fileExplorerTreeState.popOverController
-                                          .hide();
-                                      fileExplorerTreeState.openFolder();
-                                    },
-                                    text: const Text('Change folder'),
-                                  ),
-                                ],
-                              )),
-                    ],
-                  ),
+                  const FileExplorerTreeTopbar(),
                   const SizedBox(height: 16),
                   Expanded(
                     child: child,

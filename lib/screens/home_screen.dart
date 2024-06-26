@@ -1,12 +1,15 @@
 import 'package:buildr_studio/screens/home_screen/api_key_missing_notification.dart';
+import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_tree.dart';
 import 'package:buildr_studio/screens/home_screen/get_help_menu.dart';
 import 'package:buildr_studio/screens/home_screen/primary_alert.dart';
 import 'package:buildr_studio/screens/home_screen/settings/tab_settings.dart';
 import 'package:buildr_studio/screens/home_screen/sidebar.dart';
 import 'package:buildr_studio/screens/home_screen/status_bar.dart';
+import 'package:buildr_studio/screens/home_screen/terminal_panel.dart';
 import 'package:buildr_studio/screens/home_screen/tool_area_topbar.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/output_section.dart';
+import 'package:buildr_studio/screens/home_screen/tool_usage/output_section_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/variable_section.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +26,7 @@ class HomeScreen extends StatelessWidget {
     final isLargeScreen = MediaQuery.of(context).size.width >= 1024;
     final theme = ShadTheme.of(context);
 
-    return Scaffold(
+    final child = Scaffold(
       backgroundColor: ShadTheme.of(context).colorScheme.muted,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -106,7 +109,10 @@ class HomeScreen extends StatelessWidget {
                             Expanded(
                               child: Stack(
                                 children: [
-                                  const OutputSection(),
+                                  ChangeNotifierProvider(
+                                    create: (_) => OutputSectionState(),
+                                    child: const OutputSection(),
+                                  ),
                                   if (homeState.selectedTool != null)
                                     AnimatedSlide(
                                       duration: Durations.short4,
@@ -160,6 +166,22 @@ class HomeScreen extends StatelessWidget {
           const StatusBar(),
         ],
       ),
+    );
+
+    return Stack(
+      children: [
+        child,
+        Offstage(
+          offstage: !homeState.isTerminalVisible,
+          child: SizedBox(
+            height: 400,
+            child: TerminalPanel(
+              workingDirectory:
+                  context.watch<FileExplorerState>().selectedFolderPath,
+            ),
+          ),
+        )
+      ],
     );
   }
 }

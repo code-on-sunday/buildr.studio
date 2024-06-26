@@ -4,6 +4,7 @@ import 'package:buildr_studio/models/prompt_service_connection_status.dart';
 import 'package:buildr_studio/screens/home_screen/device_registration_state.dart';
 import 'package:buildr_studio/screens/home_screen/export_logs_state.dart';
 import 'package:buildr_studio/screens/home_screen/tool_usage/tool_usage_manager.dart';
+import 'package:buildr_studio/screens/home_screen_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -40,15 +41,17 @@ class _StatusBarState extends State<StatusBar> {
     late final deviceRegistrationState =
         context.watch<DeviceRegistrationState>();
     late final exportLogsState = context.watch<ExportLogsState>();
+    final homeState = context.read<HomeScreenState>();
+    final theme = ShadTheme.of(context);
 
     return ShadDecorator(
       decoration: ShadDecoration(
         border: ShadBorder(
           width: 1,
-          color: ShadTheme.of(context).colorScheme.border,
-          radius: ShadTheme.of(context).radius,
+          color: theme.colorScheme.border,
+          radius: theme.radius,
         ),
-        color: ShadTheme.of(context).colorScheme.background,
+        color: theme.colorScheme.background,
       ),
       child: SizedBox(
         height: 32,
@@ -74,6 +77,22 @@ class _StatusBarState extends State<StatusBar> {
                 ),
               Disconnected() => const Icon(Icons.link_off, color: Colors.red),
             },
+            const SizedBox(width: 8),
+            ShadTooltip(
+              builder: (_) => const Text('Toggle terminal'),
+              child: ShadButton.ghost(
+                onPressed: () {
+                  homeState.toggleTerminal();
+                },
+                height: 20,
+                width: 25,
+                padding: const EdgeInsets.all(0),
+                icon: const Icon(
+                  Icons.terminal,
+                  size: 18,
+                ),
+              ),
+            ),
             const SizedBox(width: 8),
             if (exportLogsState.isRunning)
               ShadTooltip(

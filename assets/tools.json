@@ -5,6 +5,11 @@
     "name": "Modify existing implementation"
   },
   {
+    "description": "Create a new project from scratch",
+    "id": "create_new_project",
+    "name": "Create a new project"
+  },
+  {
     "description": "Explain source code to a new developer",
     "id": "explain_code",
     "name": "Explain this code to me"
