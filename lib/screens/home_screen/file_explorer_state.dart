@@ -559,7 +559,7 @@ class FileExplorerState extends ChangeNotifier {
     addedGitIgnore = true;
     var gitIgnoreContent = File(gitignoreFile.path).readAsLinesSync();
     final ignore = Ignore()..add(gitIgnoreContent);
-    ignore.addPattern('.git/');
+    ignore.addPattern('.git');
     ignores.add((ignore, posixContext.fromUri(directory.uri)));
   }
 
@@ -584,23 +584,26 @@ class FileExplorerState extends ChangeNotifier {
 
     if (isIgnored) {
       ignoredNodes.add(entity.path);
-    }
-
-    if (entity is Directory) {
-      final (childNodes, childIgnoredNodes, allDescendantNodes) =
-          _buildTreeNodes((entity, ignores));
-      final node = TreeViewNode<FileSystemEntity>(
-        entity,
-        children: childNodes,
-      );
-      nodes.add(node);
-      ignoredNodes.addAll(childIgnoredNodes);
-      allNodes.add(node);
-      allNodes.addAll(allDescendantNodes);
-    } else if (entity is File) {
       final node = TreeViewNode<FileSystemEntity>(entity);
       nodes.add(node);
       allNodes.add(node);
+    } else {
+      if (entity is Directory) {
+        final (childNodes, childIgnoredNodes, allDescendantNodes) =
+            _buildTreeNodes((entity, ignores));
+        final node = TreeViewNode<FileSystemEntity>(
+          entity,
+          children: childNodes,
+        );
+        nodes.add(node);
+        ignoredNodes.addAll(childIgnoredNodes);
+        allNodes.add(node);
+        allNodes.addAll(allDescendantNodes);
+      } else if (entity is File) {
+        final node = TreeViewNode<FileSystemEntity>(entity);
+        nodes.add(node);
+        allNodes.add(node);
+      }
     }
   }
   final folderNodes = nodes.where((node) => node.content is Directory).toList();
