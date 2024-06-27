@@ -1,7 +1,8 @@
 import 'package:buildr_studio/screens/home_screen/api_key_missing_notification.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_state.dart';
 import 'package:buildr_studio/screens/home_screen/file_explorer_tree.dart';
-import 'package:buildr_studio/screens/home_screen/get_help_menu.dart';
+import 'package:buildr_studio/screens/home_screen/get_support_button.dart';
+import 'package:buildr_studio/screens/home_screen/more_on_navigation_rail.dart';
 import 'package:buildr_studio/screens/home_screen/primary_alert.dart';
 import 'package:buildr_studio/screens/home_screen/settings/tab_settings.dart';
 import 'package:buildr_studio/screens/home_screen/sidebar.dart';
@@ -73,7 +74,8 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const GetHelpMenu(),
+                      const GetSupportButton(),
+                      const MoreOnNavigationRail(),
                       const SizedBox(height: 32),
                     ],
                   ),
