@@ -1,7 +1,7 @@
 name: buildr_studio
 description: "The AI toolbox to build more in less time"
 publish_to: "none"
-version: 0.3.1+20
+version: 0.3.2+21
 
 environment:
   sdk: ">=3.3.3 <4.0.0"
@@ -70,7 +70,7 @@ inno_bundle:
   id: 5d068604-f570-5319-ae9b-46315cf5a8ef
   publisher: "Code On Sunday"
   name: "buildr.studio"
-  version: "0.3.1"
+  version: "0.3.2"
   description: "The AI Toolbox to Build More in Less Time"
   url: "https://buildr.studio"
   installer_icon: "windows/runner/resources/app_icon.ico"
