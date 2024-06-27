@@ -10,6 +10,11 @@
     "name": "Create a new project"
   },
   {
+    "description": "Create a new 2D web game project from scratch",
+    "id": "create_2d_web_game_project",
+    "name": "Create a new 2D web game project"
+  },
+  {
     "description": "Explain source code to a new developer",
     "id": "explain_code",
     "name": "Explain this code to me"

@@ -6,7 +6,7 @@ import 'package:flutter_pty/flutter_pty.dart';
 
 class TerminalPtyHandler {
   static void run(SendPort sendPort) {
-    late Pty pty;
+    Pty? pty;
 
     bool isPwshAvailable() {
       try {
@@ -57,18 +57,18 @@ class TerminalPtyHandler {
         }
 
         if (workingDirectory != null) {
-          pty.write(const Utf8Encoder()
+          pty?.write(const Utf8Encoder()
               .convert('cd "$workingDirectory"${Platform.lineTerminator}'));
         }
 
-        pty.output
+        pty?.output
             .cast<List<int>>()
             .transform(const Utf8Decoder())
             .listen((data) {
           sendPort.send(['output', data]);
         });
 
-        pty.exitCode.then((code) {
+        pty?.exitCode.then((code) {
           sendPort.send(['exit', code]);
         });
       } catch (e) {
@@ -85,13 +85,13 @@ class TerminalPtyHandler {
           startPty(dir);
           break;
         case ['write', String data]:
-          pty.write(const Utf8Encoder().convert(data));
+          pty?.write(const Utf8Encoder().convert(data));
           break;
         case ['resize', int columns, int rows]:
-          pty.resize(columns, rows);
+          pty?.resize(columns, rows);
           break;
         case ['kill']:
-          pty.kill();
+          pty?.kill();
           break;
         default:
       }

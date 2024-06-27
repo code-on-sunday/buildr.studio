@@ -35,6 +35,7 @@ class FileExplorerState extends ChangeNotifier {
   final _selectedNodes = <TreeViewNode<FileSystemEntity>>{};
   TreeViewNode<FileSystemEntity>? _hoveredNode;
   bool _dragStarted = false;
+  StreamSubscription<FileSystemEvent>? _directorySubscription;
 
   final popOverController = ShadPopoverController();
   final ScrollController horizontalController = ScrollController();
@@ -54,11 +55,11 @@ class FileExplorerState extends ChangeNotifier {
   }
 
   @override
-  void dispose() {
+  Future<void> dispose() async {
     ServicesBinding.instance.keyboard.removeHandler(
       onKeyEvent,
     );
-    _directoryWatcher?.dispose();
+    await _directoryWatcher?.dispose();
     popOverController.dispose();
     verticalController.dispose();
     horizontalController.dispose();
@@ -155,8 +156,10 @@ class FileExplorerState extends ChangeNotifier {
     newFolderPath = path.join(selectedDirectory, projectName);
 
     try {
-      _directoryWatcher?.dispose();
-      await Directory(newFolderPath).create();
+      await _directoryWatcher?.dispose();
+      await _directorySubscription?.cancel();
+      Directory(newFolderPath).createSync();
+      print('New project folder created at: $newFolderPath');
       await _inflateSelectedWorkingDir(newFolderPath);
       _userPreferencesRepository.setLastWorkingDir(newFolderPath);
     } catch (e, st) {
@@ -279,8 +282,13 @@ class FileExplorerState extends ChangeNotifier {
     _hoveredNode = null;
     _selectedFolderPath = path;
     _directoryWatcher = DirectoryWatcher();
-    _directoryWatcher!.events.listen(_updateTree);
-    _directoryWatcher!.folderPath = path;
+    _directorySubscription = _directoryWatcher!.events.listen(_updateTree);
+    Future.delayed(
+      const Duration(seconds: 1),
+      () {
+        _directoryWatcher!.folderPath = path;
+      },
+    );
     await _buildTree();
     notifyListeners();
   }
@@ -357,6 +365,10 @@ class FileExplorerState extends ChangeNotifier {
     if (newNode == null) return;
 
     // Add the new node to the tree in the proper position
+    if (_allNodes.containsKey(newPath)) return;
+
+    _allNodes[newPath] = newNode;
+    _nodeKeys[newPath] = GlobalKey();
     final parentDir = path.dirname(newPath);
     final parentNode = _allNodes[parentDir];
     if (parentNode != null) {
@@ -365,8 +377,6 @@ class FileExplorerState extends ChangeNotifier {
     } else {
       _tree.insert(_findInsertIndex(_tree, newNode), newNode);
     }
-    _allNodes[newPath] = newNode;
-    _nodeKeys[newPath] = GlobalKey();
 
     // Build the children tree for the new node
     await _buildChildrenTree(newNode);
@@ -379,20 +389,25 @@ class FileExplorerState extends ChangeNotifier {
     }
     final movedNode = _allNodes[oldPath];
     if (movedNode == null) return;
+
     // Remove the moved node from the old location
+    _allNodes.remove(oldPath);
+    _nodeKeys.remove(oldPath);
     final oldParentNode = movedNode.parent;
     if (oldParentNode != null) {
       oldParentNode.children.remove(movedNode);
     } else {
       _tree.remove(movedNode);
     }
-    _allNodes.remove(oldPath);
-    _nodeKeys.remove(oldPath);
+
     // Add the moved node to the new location in the proper position
     final newNode = TreeViewNode<FileSystemEntity>(
       File(newPath),
       children: movedNode.children,
     );
+    if (_allNodes.containsKey(newPath)) return;
+    _allNodes[newPath] = newNode;
+    _nodeKeys[newPath] = GlobalKey();
     final newParentDir = path.dirname(newPath);
     final newParentNode = _allNodes[newParentDir];
     if (newParentNode != null) {
@@ -401,8 +416,6 @@ class FileExplorerState extends ChangeNotifier {
     } else {
       _tree.insert(_findInsertIndex(_tree, newNode), newNode);
     }
-    _allNodes[newPath] = newNode;
-    _nodeKeys[newPath] = GlobalKey();
     // Update the selected nodes if necessary
     if (_selectedNodes.contains(movedNode)) {
       _selectedNodes.remove(movedNode);

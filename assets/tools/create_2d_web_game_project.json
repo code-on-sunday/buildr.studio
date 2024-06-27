@@ -1,0 +1,19 @@
+{
+  "prompt": "You are an AI assistant tasked with creating a simple 2D game using HTML, JavaScript, and CSS. The game should be playable right from the first version of the generated code. Follow these instructions carefully to create the game:\n\n1. Read the game description provided in the GAME_DESCRIPTION variable. This will give you an overview of the game concept and mechanics.\n\n2. Review the list of desired game features in the GAME_FEATURES variable. These are the specific elements and functionalities that should be included in the game.\n\n3. Based on the description and features, plan out the game development process. Consider the following aspects:\n   - Game objects and their properties\n   - User interactions and controls\n   - Game logic and rules\n   - Visual design and layout\n\n4. Create the HTML structure for the game:\n   - Use a single HTML file\n   - Include necessary meta tags and title\n   - Create a container for the game area\n   - Add any required UI elements (score, timer, buttons, etc.)\n\n5. Write the CSS styles to make the game visually appealing:\n   - Style the game container and UI elements\n   - Define classes for game objects\n   - Use appropriate colors, fonts, and layouts\n   - Ensure the game is centered on the page\n\n6. Implement the game logic using JavaScript:\n   - Create variables for game state and objects\n   - Implement functions for game initialization, updates, and rendering\n   - Add event listeners for user input (keyboard, mouse, or touch)\n   - Include game loop using requestAnimationFrame\n   - Implement collision detection if required\n   - Add scoring system and win/lose conditions\n\n7. Test the game logic and make sure it's playable:\n   - Check for any errors in the console\n   - Ensure all features mentioned in GAME_FEATURES are implemented\n   - Verify that the game runs smoothly without crashing\n\n8. Output the complete game code in the following format (wrapped in Markdown)\n\n```html\n   <!DOCTYPE html>\n   <html lang=\"en\">\n   <head>\n       <meta charset=\"UTF-8\">\n       <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n       <title>Your Game Title</title>\n       <style>\n           /* Your CSS styles here */\n       </style>\n   </head>\n   <body>\n       <!-- Your HTML structure here -->\n       <script>\n           // Your JavaScript code here\n       </script>\n   </body>\n   </html>\n```\n\n\n9. After the game code, provide a brief explanation of how to play the game and any additional notes or instructions for the user.\n\nRemember to keep the code clean, well-commented, and easy to understand. Ensure that all features mentioned in the GAME_FEATURES are implemented and that the game is playable right from the first version of the generated code.\n\nHere are the inputs:\n\nDescription:\n{{GAME_DESCRIPTION}}\n\nFeatures:\n{{GAME_FEATURES}}",
+  "variables": [
+    {
+      "description": "Description of the game to be created",
+      "hint_label": "Provide a description of the game",
+      "input_type": "text_field",
+      "name": "GAME_DESCRIPTION",
+      "value_format": "text"
+    },
+    {
+      "description": "List of desired features for the game",
+      "hint_label": "Provide a list of game features",
+      "input_type": "text_field",
+      "name": "GAME_FEATURES",
+      "value_format": "text"
+    }
+  ]
+}

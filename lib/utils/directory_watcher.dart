@@ -28,8 +28,8 @@ class DirectoryWatcher {
     });
   }
 
-  void dispose() {
-    _directorySubscription?.cancel();
-    _controller.close();
+  Future<void> dispose() async {
+    await _directorySubscription?.cancel();
+    await _controller.close();
   }
 }
