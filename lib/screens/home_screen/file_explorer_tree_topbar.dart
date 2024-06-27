@@ -29,26 +29,55 @@ class FileExplorerTreeTopbar extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         if (fileExplorerTreeState.selectedFolderPath != null)
-          ShadButton.ghost(
-            onPressed: () async {
-              final fileName =
-                  await enterTargetName(context, 'Enter file name');
-              if (fileName == null) return;
-              fileExplorerTreeState.createNewFile(fileName);
-            },
-            size: ShadButtonSize.icon,
-            icon: const Icon(Icons.note_add_outlined),
+          ShadTooltip(
+            builder: (_) => const Text('Refresh'),
+            child: ShadButton.ghost(
+              onPressed: () {
+                fileExplorerTreeState.loadStoredLastWorkingDir();
+              },
+              size: ShadButtonSize.icon,
+              width: 24,
+              height: 24,
+              icon: const Icon(
+                Icons.refresh_sharp,
+                size: 16,
+              ),
+            ),
           ),
         if (fileExplorerTreeState.selectedFolderPath != null)
-          ShadButton.ghost(
-            onPressed: () async {
-              final folderName =
-                  await enterTargetName(context, 'Enter folder name');
-              if (folderName == null) return;
-              fileExplorerTreeState.createNewFolder(folderName);
-            },
-            size: ShadButtonSize.icon,
-            icon: const Icon(Icons.create_new_folder_outlined),
+          ShadTooltip(
+            builder: (_) => const Text('New file'),
+            child: ShadButton.ghost(
+              onPressed: () async {
+                final fileName =
+                    await enterTargetName(context, 'Enter file name');
+                if (fileName == null) return;
+                fileExplorerTreeState.createNewFile(fileName);
+              },
+              size: ShadButtonSize.icon,
+              width: 24,
+              height: 24,
+              icon: const Icon(
+                Icons.note_add_sharp,
+                size: 16,
+              ),
+            ),
+          ),
+        if (fileExplorerTreeState.selectedFolderPath != null)
+          ShadTooltip(
+            builder: (_) => const Text('New folder'),
+            child: ShadButton.ghost(
+              onPressed: () async {
+                final folderName =
+                    await enterTargetName(context, 'Enter folder name');
+                if (folderName == null) return;
+                fileExplorerTreeState.createNewFolder(folderName);
+              },
+              size: ShadButtonSize.icon,
+              width: 24,
+              height: 24,
+              icon: const Icon(Icons.create_new_folder_sharp, size: 16),
+            ),
           ),
         ShadPopover(
             controller: fileExplorerTreeState.popOverController,

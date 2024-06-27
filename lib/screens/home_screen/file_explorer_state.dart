@@ -51,7 +51,7 @@ class FileExplorerState extends ChangeNotifier {
     ServicesBinding.instance.keyboard.addHandler(
       onKeyEvent,
     );
-    _loadStoredLastWorkingDir();
+    loadStoredLastWorkingDir();
   }
 
   @override
@@ -159,7 +159,6 @@ class FileExplorerState extends ChangeNotifier {
       await _directoryWatcher?.dispose();
       await _directorySubscription?.cancel();
       Directory(newFolderPath).createSync();
-      print('New project folder created at: $newFolderPath');
       await _inflateSelectedWorkingDir(newFolderPath);
       _userPreferencesRepository.setLastWorkingDir(newFolderPath);
     } catch (e, st) {
@@ -256,7 +255,7 @@ class FileExplorerState extends ChangeNotifier {
     );
   }
 
-  void _loadStoredLastWorkingDir() async {
+  void loadStoredLastWorkingDir() async {
     final lastWorkingDir = _userPreferencesRepository.getLastWorkingDir();
     if (lastWorkingDir == null) return;
     if (!Directory(lastWorkingDir).existsSync()) {
@@ -364,9 +363,13 @@ class FileExplorerState extends ChangeNotifier {
 
     if (newNode == null) return;
 
-    // Add the new node to the tree in the proper position
     if (_allNodes.containsKey(newPath)) return;
 
+    for (final ignoredNode in _ignoredNodes) {
+      if (path.isWithin(ignoredNode, newPath)) return;
+    }
+
+    // Add the new node to the tree in the proper position
     _allNodes[newPath] = newNode;
     _nodeKeys[newPath] = GlobalKey();
     final parentDir = path.dirname(newPath);
@@ -390,36 +393,60 @@ class FileExplorerState extends ChangeNotifier {
     final movedNode = _allNodes[oldPath];
     if (movedNode == null) return;
 
-    // Remove the moved node from the old location
-    _allNodes.remove(oldPath);
-    _nodeKeys.remove(oldPath);
-    final oldParentNode = movedNode.parent;
-    if (oldParentNode != null) {
-      oldParentNode.children.remove(movedNode);
-    } else {
-      _tree.remove(movedNode);
+    bool isSelectedOldNode = false;
+
+    bool isIgnoredOldPath = false;
+    for (final ignoredNode in _ignoredNodes) {
+      if (path.isWithin(ignoredNode, oldPath)) {
+        isIgnoredOldPath = true;
+        break;
+      }
+    }
+    if (!isIgnoredOldPath) {
+      // Remove the moved node from the old location
+      _allNodes.remove(oldPath);
+      _nodeKeys.remove(oldPath);
+      final oldParentNode = movedNode.parent;
+      if (oldParentNode != null) {
+        oldParentNode.children.remove(movedNode);
+      } else {
+        _tree.remove(movedNode);
+      }
+
+      isSelectedOldNode = _selectedNodes.contains(movedNode);
+      if (isSelectedOldNode) {
+        _selectedNodes.remove(movedNode);
+      }
     }
 
-    // Add the moved node to the new location in the proper position
-    final newNode = TreeViewNode<FileSystemEntity>(
-      File(newPath),
-      children: movedNode.children,
-    );
-    if (_allNodes.containsKey(newPath)) return;
-    _allNodes[newPath] = newNode;
-    _nodeKeys[newPath] = GlobalKey();
-    final newParentDir = path.dirname(newPath);
-    final newParentNode = _allNodes[newParentDir];
-    if (newParentNode != null) {
-      newParentNode.children
-          .insert(_findInsertIndex(newParentNode.children, newNode), newNode);
-    } else {
-      _tree.insert(_findInsertIndex(_tree, newNode), newNode);
+    bool isIgnoredNewPath = false;
+    for (final ignoredNode in _ignoredNodes) {
+      if (path.isWithin(ignoredNode, newPath)) {
+        isIgnoredNewPath = true;
+        break;
+      }
     }
-    // Update the selected nodes if necessary
-    if (_selectedNodes.contains(movedNode)) {
-      _selectedNodes.remove(movedNode);
-      _selectedNodes.add(newNode);
+    if (!isIgnoredNewPath) {
+      // Add the moved node to the new location in the proper position
+      final newNode = TreeViewNode<FileSystemEntity>(
+        File(newPath),
+        children: movedNode.children,
+      );
+      if (_allNodes.containsKey(newPath)) return;
+      _allNodes[newPath] = newNode;
+      _nodeKeys[newPath] = GlobalKey();
+      final newParentDir = path.dirname(newPath);
+      final newParentNode = _allNodes[newParentDir];
+      if (newParentNode != null) {
+        newParentNode.children
+            .insert(_findInsertIndex(newParentNode.children, newNode), newNode);
+      } else {
+        _tree.insert(_findInsertIndex(_tree, newNode), newNode);
+      }
+
+      if (isSelectedOldNode) {
+        _selectedNodes.add(newNode);
+      }
     }
   }
 
@@ -530,32 +557,28 @@ class FileExplorerState extends ChangeNotifier {
       (e) => e is File && path.basename(e.path) == '.gitignore');
   if (gitignoreFile != null) {
     addedGitIgnore = true;
-    ignores.add((
-      Ignore()..add(File(gitignoreFile.path).readAsLinesSync()),
-      posixContext.fromUri(directory.uri)
-    ));
+    var gitIgnoreContent = File(gitignoreFile.path).readAsLinesSync();
+    final ignore = Ignore()..add(gitIgnoreContent);
+    ignore.addPattern('.git/');
+    ignores.add((ignore, posixContext.fromUri(directory.uri)));
   }
 
   for (final entity in directory.listSync()) {
     final tempIgnores = ignores.toList();
     bool isIgnored = false;
 
-    if (entity is Directory && path.basename(entity.path) == '.git') {
-      isIgnored = true;
-    } else {
-      while (tempIgnores.isNotEmpty) {
-        final lastIgnore = tempIgnores.removeLast();
-        final (ignore, posixDirPath) = lastIgnore;
-        final posixEntityPath = posixContext.fromUri(entity.uri);
-        var posixRelativePath =
-            posixContext.relative(posixEntityPath, from: posixDirPath);
-        if (entity is Directory) {
-          posixRelativePath += posixContext.separator;
-        }
-        isIgnored = ignore.ignores(posixRelativePath);
-        if (isIgnored) {
-          break;
-        }
+    while (tempIgnores.isNotEmpty) {
+      final lastIgnore = tempIgnores.removeLast();
+      final (ignore, posixDirPath) = lastIgnore;
+      final posixEntityPath = posixContext.fromUri(entity.uri);
+      var posixRelativePath =
+          posixContext.relative(posixEntityPath, from: posixDirPath);
+      if (entity is Directory) {
+        posixRelativePath += posixContext.separator;
+      }
+      isIgnored = ignore.ignores(posixRelativePath);
+      if (isIgnored) {
+        break;
       }
     }
 
